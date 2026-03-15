@@ -1,8 +1,13 @@
 package com.example.horizonsystems.network
 
+import com.example.horizonsystems.models.LoginResponse
+import com.example.horizonsystems.models.TenantPage
 import com.example.horizonsystems.models.User
 import retrofit2.Response
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface HorizonApi {
@@ -33,4 +38,9 @@ interface HorizonApi {
         @Field("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<LoginResponse>
+    @GET("get_tenant.php")
+    suspend fun getTenantInfo(
+        @Query("gym") slug: String,
+        @Query("i") bypass: Int = 1
+    ): Response<TenantPage>
 }
