@@ -9,12 +9,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.horizonsystems.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import java.net.HttpURLConnection
-import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +25,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // InfinityFree has an anti-bot shield that requires JavaScript.
-        // We use a hidden WebView to "solve" the challenge and get the security cookie.
+        // InfinityFree Security Bypass
         bypassSecurityShieldAndFetchData()
     }
 
@@ -37,67 +34,63 @@ class MainActivity : AppCompatActivity() {
         
         val webView = WebView(this)
         webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
         val userAgent = webView.settings.userAgentString
         
         webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                Log.d("DatabaseResponse", "2. Page finished Loading: $url")
-                
-                // Wait 2 seconds for the anti-bot JavaScript to run and set the cookie
-                view?.postDelayed({
-                    val cookies = CookieManager.getInstance().getCookie(url)
-                    Log.d("DatabaseResponse", "3. Cookies found: $cookies")
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                Log.d("DatabaseResponse", "1.5. Loading security page: $url")
+            }
 
-                    if (cookies != null && cookies.contains("__test")) {
-                        Log.d("DatabaseResponse", "4. Security cookie obtained! Starting API request...")
-                        fetchDataWithCookie(cookies, userAgent)
-                    } else {
-                        Log.e("DatabaseResponse", "ERROR: Could not obtain security cookie.")
-                    }
-                }, 2000)
+            override fun onPageFinished(view: WebView?, url: String?) {
+                Log.d("DatabaseResponse", "2. Page finished Loading. Solving challenge...")
+                checkCookieLoop(url ?: "", userAgent, 0)
             }
         }
         
-        // Load the URL to trigger the security script
         webView.loadUrl("https://horizonfitnesscorp.gt.tc/get_data.php")
     }
 
-    private fun fetchDataWithCookie(cookie: String, userAgent: String) {
+    private fun checkCookieLoop(url: String, userAgent: String, attempts: Int) {
+        if (attempts > 15) {
+            Log.e("DatabaseResponse", "ERROR: Timeout waiting for security cookie.")
+            return
+        }
+
+        val cookies = CookieManager.getInstance().getCookie(url)
+        Log.d("DatabaseResponse", "3. Attempt $attempts - Cookies: $cookies")
+
+        if (cookies != null && cookies.contains("__test=")) {
+            Log.d("DatabaseResponse", "4. Security cookie obtained! Switching to Retrofit...")
+            fetchDataWithRetrofit(cookies, userAgent)
+        } else {
+            // Wait 1 second and try again
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                checkCookieLoop(url, userAgent, attempts + 1)
+            }, 1000)
+        }
+    }
+
+    private fun fetchDataWithRetrofit(cookie: String, userAgent: String) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                // THE SECRET: InfinityFree requires the ?i=1 suffix once the cookie is set
-                val url = URL("https://horizonfitnesscorp.gt.tc/get_data.php?i=1")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 15000
-                connection.readTimeout = 15000
-                
-                // Use the EXACT same User-Agent and Cookie as the WebView
-                connection.setRequestProperty("Cookie", cookie)
-                connection.setRequestProperty("User-Agent", userAgent)
+                // Now we use Retrofit for professional JSON handling
+                val api = RetrofitClient.getApi(cookie, userAgent)
+                val response = api.getUsers()
 
-                val responseCode = connection.responseCode
-                Log.d("DatabaseResponse", "5. API Response Code: $responseCode")
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val response = connection.inputStream.bufferedReader().use { it.readText() }
-                    Log.d("DatabaseResponse", "6. SUCCESS! Downloaded JSON: $response")
-
-                    if (response.trim().startsWith("[")) {
-                        val jsonArray = JSONArray(response)
-                        for (i in 0 until jsonArray.length()) {
-                            val row = jsonArray.getJSONObject(i)
-                            Log.d("DatabaseResponse", "Row Data: $row")
-                        }
-                    } else {
-                        Log.e("DatabaseResponse", "FAILED: Received HTML instead of JSON. Bypass blocked.")
+                if (response.isSuccessful) {
+                    val users = response.body()
+                    Log.d("DatabaseResponse", "5. SUCCESS! Retrieved ${users?.size} users.")
+                    
+                    users?.forEach { user ->
+                        Log.d("DatabaseResponse", "User: ${user.firstName} ${user.lastName} (${user.username})")
+                        Log.d("DatabaseResponse", "Email: ${user.email}")
                     }
                 } else {
-                    Log.e("DatabaseResponse", "API ERROR: Server returned $responseCode")
+                    Log.e("DatabaseResponse", "API ERROR: ${response.code()} - ${response.errorBody()?.string()}")
                 }
-                connection.disconnect()
             } catch (e: Exception) {
-                Log.e("DatabaseResponse", "CONNECTION ERROR: ${e.message}")
+                Log.e("DatabaseResponse", "RETROFIT ERROR: ${e.message}")
             }
         }
     }
