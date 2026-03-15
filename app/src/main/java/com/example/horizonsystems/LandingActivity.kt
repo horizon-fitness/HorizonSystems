@@ -18,6 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import com.example.horizonsystems.utils.NetworkBypass
+import com.example.horizonsystems.utils.GymManager
+
 class LandingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,8 +28,13 @@ class LandingActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
 
-        // 1. Fetch Branding from Server (Default to "horizon" for demo)
-        fetchTenantBranding("horizon")
+        // 1. First capture security cookie for InfinityFree
+        NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
+            // Save these for all subsequent API calls
+            runOnUiThread {
+                handleIntent(intent, cookie, userAgent)
+            }
+        }
 
         // Navigation to Login
         findViewById<MaterialButton>(R.id.btnGetStarted).setOnClickListener {
@@ -40,11 +48,34 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchTenantBranding(slug: String) {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Refresh with bypass if needed, but for simplicity we'll just handle intent
+        handleIntent(intent, "", "") 
+    }
+
+    private fun handleIntent(intent: Intent?, cookie: String, userAgent: String) {
+        val appLinkData: Uri? = intent?.data
+        var slug = GymManager.getGymSlug(this)
+        
+        if (appLinkData != null) {
+            val deepSlug = appLinkData.getQueryParameter("gym")
+            if (deepSlug != null) {
+                slug = deepSlug
+                GymManager.saveGymSlug(this, slug)
+            }
+        }
+        
+        fetchTenantBranding(slug, cookie, userAgent)
+    }
+
+    private fun fetchTenantBranding(slug: String, cookie: String, userAgent: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = RetrofitClient.getApi("", "") 
+                // Use captured security credentials
+                val api = RetrofitClient.getApi(cookie, userAgent) 
                 val response = api.getTenantInfo(slug)
+
                 if (response.isSuccessful) {
                     val tenant = response.body()
                     withContext(Dispatchers.Main) {
