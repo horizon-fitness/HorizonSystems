@@ -40,11 +40,17 @@ class RegisterActivity : AppCompatActivity() {
         val addressEdit = findViewById<TextInputEditText>(R.id.addressEdit)
         val phoneEdit = findViewById<TextInputEditText>(R.id.phoneNumberEdit)
         val medicalEdit = findViewById<TextInputEditText>(R.id.medicalHistoryEdit)
+
         val emergencyNameEdit = findViewById<TextInputEditText>(R.id.emergencyNameEdit)
         val emergencyPhoneEdit = findViewById<TextInputEditText>(R.id.emergencyPhoneEdit)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
+        // Pre-fill gym ID from the current tenant
+        val currentGymId = com.example.horizonsystems.utils.GymManager.getGymId(this)
+        gymIdEdit.setText(currentGymId.toString())
+
         btnRegister.setOnClickListener {
+
             val first = firstNameEdit.text.toString()
             val last = lastNameEdit.text.toString()
             val middle = middleNameEdit.text.toString()

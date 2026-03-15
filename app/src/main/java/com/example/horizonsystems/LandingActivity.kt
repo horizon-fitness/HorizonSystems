@@ -23,6 +23,10 @@ import com.example.horizonsystems.utils.GymManager
 
 class LandingActivity : AppCompatActivity() {
 
+    private var cachedCookie: String = ""
+    private var cachedUserAgent: String = ""
+    private var isBypassed = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,9 +34,11 @@ class LandingActivity : AppCompatActivity() {
 
         // 1. First capture security cookie for InfinityFree
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
-            // Save these for all subsequent API calls
+            cachedCookie = cookie
+            cachedUserAgent = userAgent
+            isBypassed = true
             runOnUiThread {
-                handleIntent(intent, cookie, userAgent)
+                handleIntent(intent)
             }
         }
 
@@ -48,13 +54,24 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        // Refresh with bypass if needed, but for simplicity we'll just handle intent
-        handleIntent(intent, "", "") 
+    override fun onResume() {
+        super.onResume()
+        // Refresh branding if we're already bypassed to show changes from Owner dashboard
+        if (isBypassed) {
+            val slug = GymManager.getGymSlug(this)
+            fetchTenantBranding(slug)
+        }
     }
 
-    private fun handleIntent(intent: Intent?, cookie: String, userAgent: String) {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (isBypassed) {
+            handleIntent(intent)
+        }
+    }
+
+    private fun handleIntent(intent: Intent?) {
         val appLinkData: Uri? = intent?.data
         var slug = GymManager.getGymSlug(this)
         
@@ -62,24 +79,28 @@ class LandingActivity : AppCompatActivity() {
             val deepSlug = appLinkData.getQueryParameter("gym")
             if (deepSlug != null) {
                 slug = deepSlug
-                GymManager.saveGymSlug(this, slug)
             }
         }
         
-        fetchTenantBranding(slug, cookie, userAgent)
+        fetchTenantBranding(slug)
     }
 
-    private fun fetchTenantBranding(slug: String, cookie: String, userAgent: String) {
+    private fun fetchTenantBranding(slug: String) {
+        if (!isBypassed) return
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Use captured security credentials
-                val api = RetrofitClient.getApi(cookie, userAgent) 
+                val api = RetrofitClient.getApi(cachedCookie, cachedUserAgent) 
                 val response = api.getTenantInfo(slug)
 
                 if (response.isSuccessful) {
                     val tenant = response.body()
                     withContext(Dispatchers.Main) {
-                        tenant?.let { updateUIWithBranding(it) }
+                        tenant?.let { 
+                            // Persist all data
+                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.gymName)
+                            updateUIWithBranding(it) 
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -99,7 +120,7 @@ class LandingActivity : AppCompatActivity() {
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
 
-        // Launch Portal Button
+        // Launch Portal Button - Opens specific web portal for this tenant
         findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
             val portalUrl = "https://horizonfitnesscorp.gt.tc/portal.php?gym=${tenant.pageSlug}&preview=1"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(portalUrl))
@@ -114,8 +135,8 @@ class LandingActivity : AppCompatActivity() {
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             findViewById<MaterialButton>(R.id.btnRegisterMember)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-        } catch (e: Exception) {
-            Log.e("BrandingError", "Invalid color formart", e)
+        } catch (e) {
+            Log.e("BrandingError", "Invalid color format", e)
         }
             
         tenant.aboutText?.let {
@@ -123,3 +144,4 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 }
+
