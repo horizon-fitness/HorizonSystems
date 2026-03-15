@@ -9,12 +9,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var userAdapter: UserAdapter
+    private lateinit var recyclerView: RecyclerView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,6 +30,12 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.userRecyclerView)
+        userAdapter = UserAdapter(emptyList())
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = userAdapter
 
         // InfinityFree Security Bypass
         bypassSecurityShieldAndFetchData()
@@ -79,12 +91,12 @@ class MainActivity : AppCompatActivity() {
                 val response = api.getUsers()
 
                 if (response.isSuccessful) {
-                    val users = response.body()
-                    Log.d("DatabaseResponse", "5. SUCCESS! Retrieved ${users?.size} users.")
+                    val users = response.body() ?: emptyList()
+                    Log.d("DatabaseResponse", "5. SUCCESS! Retrieved ${users.size} users.")
                     
-                    users?.forEach { user ->
-                        Log.d("DatabaseResponse", "User: ${user.firstName} ${user.lastName} (${user.username})")
-                        Log.d("DatabaseResponse", "Email: ${user.email}")
+                    // Switch to MAIN thread to update UI
+                    withContext(Dispatchers.Main) {
+                        userAdapter.updateUsers(users)
                     }
                 } else {
                     Log.e("DatabaseResponse", "API ERROR: ${response.code()} - ${response.errorBody()?.string()}")
