@@ -33,11 +33,18 @@ class LandingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_landing)
 
         // 1. First capture security cookie for InfinityFree
+        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
+        
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
             cachedCookie = cookie
             cachedUserAgent = userAgent
             isBypassed = true
+            
+            // Persist for other activities (LoginActivity, RegisterActivity)
+            GymManager.saveBypassCredentials(this, cookie, userAgent)
+            
             runOnUiThread {
+                loadingOverlay.visibility = android.view.View.GONE
                 handleIntent(intent)
             }
         }
@@ -166,13 +173,11 @@ class LandingActivity : AppCompatActivity() {
                 .setCardBackgroundColor(color)
             findViewById<MaterialButton>(R.id.btnGetStarted)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-            findViewById<MaterialButton>(R.id.btnRegisterMember)
-                .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
                 
             // Apply Background Color if provided
             tenant.bgColor?.let {
                 val bg = android.graphics.Color.parseColor(it)
-                findViewById<android.widget.ScrollView>(R.id.rootLayout).setBackgroundColor(bg)
+                findViewById<androidx.coordinatorlayout.widget.CoordinatorLayout>(R.id.rootLayout).setBackgroundColor(bg)
             }
         } catch (e: Exception) {
             Log.e("BrandingError", "Invalid color format", e)

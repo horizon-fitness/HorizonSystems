@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.horizonsystems.models.LoginResponse
 import com.example.horizonsystems.network.RetrofitClient
 import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.button.MaterialButton

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.horizonsystems.models.RegisterRequest
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -119,8 +120,13 @@ class RegisterActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Log.e("RegisterError", "Error", e)
-                    Toast.makeText(this@RegisterActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
+                    if (cookie.isEmpty()) {
+                        Toast.makeText(this@RegisterActivity, "Security check not ready. Please return to Landing and wait a moment.", Toast.LENGTH_LONG).show()
+                    } else {
+                        Log.e("RegisterError", "Error", e)
+                        Toast.makeText(this@RegisterActivity, "Connection Error: Check internet or try again.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
