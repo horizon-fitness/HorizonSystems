@@ -75,35 +75,10 @@ class LandingActivity : AppCompatActivity() {
             Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
         }
 
-        // Switch Gym Button
-        findViewById<TextView>(R.id.btnSwitchGym).setOnClickListener {
-            showGymSwitchDialog()
-        }
+
     }
 
-    private fun showGymSwitchDialog() {
-        val input = android.widget.EditText(this)
-        input.hint = "e.g. corsanofitness"
-        val padding = (24 * resources.displayMetrics.density).toInt()
-        val container = android.widget.FrameLayout(this)
-        container.addView(input)
-        input.setPadding(padding, padding / 2, padding, padding / 2)
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Switch Tenant Database")
-            .setMessage("Enter the Tenant Slug (e.g. corsanofitness) to connect:")
-            .setView(container)
-            .setPositiveButton("Switch") { _, _ ->
-                val newSlug = input.text.toString().trim().lowercase()
-                if (newSlug.isNotEmpty()) {
-                    GymManager.saveGymSlug(this, newSlug)
-                    Toast.makeText(this, "Connecting to $newSlug...", Toast.LENGTH_SHORT).show()
-                    fetchTenantBranding(newSlug)
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
 
 
     override fun onResume() {
@@ -173,12 +148,9 @@ class LandingActivity : AppCompatActivity() {
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
 
-        // Launch Portal Button - Opens specific web portal for this tenant
+        // Register Button - Opens RegisterActivity
         findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
-            val portalUrl = "https://horizonfitnesscorp.gt.tc/portal.php?gym=${tenant.pageSlug}&preview=1"
-            Log.d("PortalLink", "Launching: $portalUrl")
-            Toast.makeText(this, "Opening Portal for ${tenant.gymName}...", Toast.LENGTH_SHORT).show()
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(portalUrl))
+            val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 

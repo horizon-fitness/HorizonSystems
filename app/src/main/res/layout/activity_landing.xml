@@ -50,16 +50,7 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
 
-            <TextView
-                android:id="@+id/btnSwitchGym"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Switch Tenant"
-                android:textColor="@color/landing_primary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:padding="10dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
+
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -148,7 +139,7 @@
                 android:layout_height="60dp"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="14dp"
-                android:text="Launch Portal"
+                android:text="Register"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
