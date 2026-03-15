@@ -1,203 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/landing_background"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="40dp">
-
-        <View
-            android:layout_width="400dp"
-            android:layout_height="400dp"
-            android:alpha="0.3"
-            android:background="@drawable/ambient_glow"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="-100dp"
-            android:layout_marginTop="-100dp" />
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
         <LinearLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="72dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="24dp"
-            app:layout_constraintTop_toTopOf="parent">
+            android:paddingHorizontal="24dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/headerLogoCard"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:cardBackgroundColor="@color/landing_primary"
-                app:cardCornerRadius="8dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp">
                 <ImageView
                     android:id="@+id/imgLogo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerInside"
-                    android:padding="4dp"
+                    android:padding="6dp"
                     android:src="@android:drawable/ic_menu_send"
                     app:tint="@color/white" />
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/headerTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
                 android:text="HORIZON"
                 android:textColor="@color/white"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/btnSwitchGym"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Switch Tenant"
+                android:textColor="@color/landing_primary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless" />
         </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/heroSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/item_user_ripple"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:text="OPEN FOR MEMBERSHIP"
-            android:textColor="@color/landing_primary"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
 
-
-        <TextView
-            android:id="@+id/heroTitle"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:paddingHorizontal="24dp"
-            android:text="Elevate Your\nFitness Journey"
-            android:textColor="@color/white"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:lineSpacingExtra="4dp"
-            app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
+            android:paddingBottom="48dp">
 
-        <TextView
-            android:id="@+id/heroDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:paddingHorizontal="40dp"
-            android:text="Discover a premium workout experience powered by Horizon's elite technology."
-            android:textColor="@color/text_secondary"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/heroTitle" />
+            <View
+                android:layout_width="450dp"
+                android:layout_height="450dp"
+                android:alpha="0.25"
+                android:background="@drawable/ambient_glow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="-120dp"
+                android:layout_marginTop="-120dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGetStarted"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="32dp"
-            android:text="Sign In"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            app:backgroundTint="@color/landing_primary"
-            app:cornerRadius="16dp"
-            app:layout_constraintTop_toBottomOf="@id/heroDescription" />
+            <TextView
+                android:id="@+id/heroSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/item_user_ripple"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="8dp"
+                android:text="● OPEN FOR REGISTRATION"
+                android:textColor="@color/landing_primary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDownload"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="12dp"
-            android:text="Download Official App"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            app:cornerRadius="16dp"
-            app:strokeColor="@color/border_light"
-            app:layout_constraintTop_toBottomOf="@id/btnGetStarted" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardJoin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="48dp"
-            app:cardBackgroundColor="@color/surface_dark"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/border_light"
-            app:strokeWidth="1dp"
-            app:layout_constraintTop_toBottomOf="@id/btnDownload">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/heroTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:text="Your Vision,\nOur Platform."
+                android:textColor="@color/white"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="2dp"
+                app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
 
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:padding="10dp"
-                    android:background="@drawable/item_user_ripple"
-                    android:src="@android:drawable/ic_input_add"
-                    app:tint="@color/landing_primary" />
+            <TextView
+                android:id="@+id/heroDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:paddingHorizontal="44dp"
+                android:text="Empowering fitness owners with Horizon's industry-leading technology and seamless tenant management."
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp"
+                android:lineSpacingMultiplier="1.2"
+                app:layout_constraintTop_toBottomOf="@id/heroTitle" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Join the Community"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGetStarted"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="36dp"
+                android:text="Sign In"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/landing_primary"
+                app:cornerRadius="18dp"
+                app:layout_constraintTop_toBottomOf="@id/heroDescription" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Become a member today and unlock exclusive access to workout plans."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDownload"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="14dp"
+                android:text="Get Member APK"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/border_light"
+                app:layout_constraintTop_toBottomOf="@id/btnGetStarted" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRegisterMember"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardJoin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="56dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_light"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/btnDownload">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="24dp"
-                    android:text="Register as Member"
-                    android:textAllCaps="false"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/landing_primary"
-                    app:cornerRadius="12dp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="28dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLaunchPortal"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Launch Web Portal"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="12dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="14dp"
+                            android:src="@android:drawable/ic_input_add"
+                            app:tint="@color/landing_primary" />
+                    </com.google.android.material.card.MaterialCardView>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Join our Network"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Become a verified tenant today and unlock your facility's full digital potential."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:lineSpacingMultiplier="1.3" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRegisterMember"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="28dp"
+                        android:text="Register Tenant Account"
+                        android:textAllCaps="false"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/landing_primary"
+                        app:cornerRadius="14dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLaunchPortal"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="10dp"
+                        android:text="Open Web Dashboard"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        app:cornerRadius="14dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

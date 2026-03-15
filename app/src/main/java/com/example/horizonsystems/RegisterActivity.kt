@@ -1,5 +1,6 @@
 package com.example.horizonsystems
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -45,9 +46,9 @@ class RegisterActivity : AppCompatActivity() {
         val emergencyPhoneEdit = findViewById<TextInputEditText>(R.id.emergencyPhoneEdit)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
-        // Pre-fill gym ID from the current tenant
-        val currentGymId = com.example.horizonsystems.utils.GymManager.getGymId(this)
-        gymIdEdit.setText(currentGymId.toString())
+        // Pre-fill tenant code from the current tenant
+        val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
+        gymIdEdit.setText(currentTenantCode)
 
         btnRegister.setOnClickListener {
 
@@ -72,36 +73,42 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val gymId = gymIdStr.toIntOrNull() ?: 1
-            performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymId)
+            performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
         }
     }
 
     private fun performRegistration(
         user: String, email: String, pass: String, first: String, middle: String, last: String,
-        phone: String, birth: String, sex: String, occupation: String, address: String, 
-        medical: String, eName: String, ePhone: String, gymId: Int
+        phone: String, birth: String, sex: String, occupation: String, address: String,
+        medical: String, eName: String, ePhone: String, gymId: String
     ) {
-        val registrationData = com.example.horizonsystems.models.RegisterRequest(
+        val registrationData = RegisterRequest(
             firstName = first,
             lastName = last,
             email = email,
             username = user,
             password = pass,
             phoneNumber = phone,
-            gymId = gymId
+            tenantId = gymId
         )
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = RetrofitClient.getApi("", "")
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(this@RegisterActivity)
+
+                val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.register(registrationData)
+
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val regResponse = response.body()
                         if (regResponse?.success == true) {
-                            Toast.makeText(this@RegisterActivity, "Registration Successful! PIN sent to email.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@RegisterActivity, regResponse.message, Toast.LENGTH_LONG).show()
+                            val intent = Intent(this@RegisterActivity, VerifyActivity::class.java)
+                            intent.putExtra("user_id", regResponse.userId)
+                            startActivity(intent)
                             finish()
                         } else {
                             Toast.makeText(this@RegisterActivity, regResponse?.message ?: "Registration Failed", Toast.LENGTH_LONG).show()

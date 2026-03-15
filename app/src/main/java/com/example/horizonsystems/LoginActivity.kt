@@ -58,9 +58,14 @@ class LoginActivity : AppCompatActivity() {
                 // we'll try to use the stored cookie if available or fetch one.
                 
                 // For Monday Activity, we will assume the RetrofitClient manages the bypass
-                val api = RetrofitClient.getApi("", "") 
-                val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password)
-                val response = api.login(loginRequest)
+                // Fetch persisted security credentials for InfinityFree
+                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@LoginActivity)
+                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(this@LoginActivity)
+                 
+                 val api = RetrofitClient.getApi(cookie, ua) 
+                 val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password)
+                 val response = api.login(loginRequest)
+
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
@@ -70,8 +75,10 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
                             
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                            intent.putExtra("user_name", "${user?.firstName} ${user?.lastName}")
+                            intent.putExtra("user_name", user?.username ?: "Guest")
+                            intent.putExtra("user_email", user?.email ?: "")
                             intent.putExtra("gym_name", user?.gymName ?: "No Tenant")
+                            intent.putExtra("tenant_id", user?.tenantId ?: "000")
                             startActivity(intent)
                             finish()
                         } else {

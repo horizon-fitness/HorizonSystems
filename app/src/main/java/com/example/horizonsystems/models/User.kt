@@ -16,6 +16,6 @@ data class User(
     @SerializedName("is_active") val isActive: Int,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String,
-    @SerializedName("gym_id") val gymId: Int?,
+    @SerializedName("tenant_id") val tenantId: String?,
     @SerializedName("gym_name") val gymName: String?
 )

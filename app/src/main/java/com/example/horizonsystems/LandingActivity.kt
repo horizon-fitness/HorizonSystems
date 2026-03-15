@@ -52,7 +52,37 @@ class LandingActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
             Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
         }
+
+        // Switch Gym Button
+        findViewById<TextView>(R.id.btnSwitchGym).setOnClickListener {
+            showGymSwitchDialog()
+        }
     }
+
+    private fun showGymSwitchDialog() {
+        val input = android.widget.EditText(this)
+        input.hint = "e.g. corsanofitness"
+        val padding = (24 * resources.displayMetrics.density).toInt()
+        val container = android.widget.FrameLayout(this)
+        container.addView(input)
+        input.setPadding(padding, padding / 2, padding, padding / 2)
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Switch Tenant Database")
+            .setMessage("Enter the Tenant Slug (e.g. corsanofitness) to connect:")
+            .setView(container)
+            .setPositiveButton("Switch") { _, _ ->
+                val newSlug = input.text.toString().trim().lowercase()
+                if (newSlug.isNotEmpty()) {
+                    GymManager.saveGymSlug(this, newSlug)
+                    Toast.makeText(this, "Connecting to $newSlug...", Toast.LENGTH_SHORT).show()
+                    fetchTenantBranding(newSlug)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -98,7 +128,7 @@ class LandingActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         tenant?.let { 
                             // Persist all data
-                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.gymName)
+                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
                             updateUIWithBranding(it) 
                         }
                     }
@@ -110,7 +140,7 @@ class LandingActivity : AppCompatActivity() {
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
-        findViewById<TextView>(R.id.headerTitle).text = tenant.gymName.uppercase()
+        findViewById<TextView>(R.id.heroSubtitle).text = "● OPEN FOR MEMBERSHIP"
         findViewById<TextView>(R.id.heroTitle).text = "Elevate Your\nFitness at ${tenant.gymName}"
         
         // Load Logo using Glide
@@ -138,6 +168,12 @@ class LandingActivity : AppCompatActivity() {
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             findViewById<MaterialButton>(R.id.btnRegisterMember)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+                
+            // Apply Background Color if provided
+            tenant.bgColor?.let {
+                val bg = android.graphics.Color.parseColor(it)
+                findViewById<android.widget.ScrollView>(R.id.rootLayout).setBackgroundColor(bg)
+            }
         } catch (e: Exception) {
             Log.e("BrandingError", "Invalid color format", e)
         }
