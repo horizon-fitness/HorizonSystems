@@ -35,32 +35,40 @@ class MainActivity : AppCompatActivity() {
             try {
                 Log.d("DatabaseResponse", "2. Background thread launched, connecting to InfinityFree...")
                 
-                // Point to the InfinityFree PHP API URL
                 val url = URL("https://horizonfitnesscorp.gt.tc/get_data.php")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-                connection.connectTimeout = 15000 // 15 seconds
+                connection.connectTimeout = 15000
                 connection.readTimeout = 15000
-
-                // Read the JSON Response
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-                Log.d("DatabaseResponse", "3. Downloaded Raw Text = $response")
-
-                // Parse JSON Array
-                val jsonArray = JSONArray(response)
-                Log.d("DatabaseResponse", "4. Successfully parsed JSON Array containing ${jsonArray.length()} rows")
                 
-                // Log all rows natively mapped to JSON objects
-                for (i in 0 until jsonArray.length()) {
-                    val row = jsonArray.getJSONObject(i)
-                    Log.d("DatabaseResponse", "5. Row Data: $row")
+                // Set a User-Agent to look like a browser (InfinityFree often blocks apps)
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+
+                val responseCode = connection.responseCode
+                Log.d("DatabaseResponse", "3. HTTP Response Code: $responseCode")
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    Log.d("DatabaseResponse", "4. Downloaded Raw Text = $response")
+
+                    val jsonArray = JSONArray(response)
+                    Log.d("DatabaseResponse", "5. Successfully parsed ${jsonArray.length()} rows")
+                    
+                    for (i in 0 until jsonArray.length()) {
+                        val row = jsonArray.getJSONObject(i)
+                        Log.d("DatabaseResponse", "6. Row Data: $row")
+                    }
+                } else {
+                    val errorResponse = connection.errorStream?.bufferedReader()?.use { it.readText() }
+                    Log.e("DatabaseResponse", "CRITICAL ERROR: Server returned $responseCode")
+                    Log.e("DatabaseResponse", "Error Response: $errorResponse")
                 }
 
                 connection.disconnect()
 
             } catch (e: Exception) {
-                // Log the exception under the same tag so the user sees the error
-                Log.e("DatabaseResponse", "CRITICAL ERROR: ${e.message}")
+                Log.e("DatabaseResponse", "CRITICAL ERROR: ${e.javaClass.simpleName} - ${e.message}")
+                e.printStackTrace()
             }
         }
     }
