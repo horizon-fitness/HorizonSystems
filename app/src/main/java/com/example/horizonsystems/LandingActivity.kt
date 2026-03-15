@@ -15,9 +15,9 @@ class LandingActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
 
-        // Navigation to User Directory
+        // Navigation to Login
         findViewById<MaterialButton>(R.id.btnGetStarted).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
