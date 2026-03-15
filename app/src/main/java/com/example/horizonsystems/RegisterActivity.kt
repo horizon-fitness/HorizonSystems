@@ -1,5 +1,7 @@
 package com.example.horizonsystems
 
+import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
