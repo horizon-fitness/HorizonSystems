@@ -81,6 +81,11 @@ class LoginActivity : AppCompatActivity() {
                             intent.putExtra("tenant_id", user?.tenantId ?: "000")
                             startActivity(intent)
                             finish()
+                        } else if (loginResponse?.unverified == true) {
+                            Toast.makeText(this@LoginActivity, "Please verify your account", Toast.LENGTH_LONG).show()
+                            val intent = Intent(this@LoginActivity, VerifyActivity::class.java)
+                            intent.putExtra("user_id", loginResponse.userId ?: -1)
+                            startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginActivity, loginResponse?.message ?: "Login Failed", Toast.LENGTH_LONG).show()
                         }
