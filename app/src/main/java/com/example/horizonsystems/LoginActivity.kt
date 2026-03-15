@@ -28,6 +28,11 @@ class LoginActivity : AppCompatActivity() {
         val passwordEdit = findViewById<TextInputEditText>(R.id.passwordEdit)
         val btnLogin = findViewById<MaterialButton>(R.id.btnLogin)
         val textRegister = findViewById<TextView>(R.id.textRegister)
+        val btnBack = findViewById<android.widget.ImageButton>(R.id.btnBack)
+
+        btnBack.setOnClickListener {
+            onBackPressed()
+        }
 
         btnLogin.setOnClickListener {
             val username = usernameEdit.text.toString()

@@ -24,6 +24,10 @@ class RegisterActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
 
+        findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener {
+            onBackPressed()
+        }
+
         // Setup Sex Dropdown
         val sexOptions = arrayOf("Male", "Female", "Other")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sexOptions)

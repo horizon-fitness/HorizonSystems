@@ -76,6 +76,11 @@ class LandingActivity : AppCompatActivity() {
         }
 
 
+        // Register Button - Opens RegisterActivity
+        findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
@@ -148,11 +153,6 @@ class LandingActivity : AppCompatActivity() {
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
 
-        // Register Button - Opens RegisterActivity
-        findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
 
         // Download Button - Opens specific download link for this tenant
         findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {

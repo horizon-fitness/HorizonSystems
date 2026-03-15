@@ -106,16 +106,15 @@
                         android:gravity="center">
                         
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
                                 android:id="@+id/tenantLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="TENANT"
+                                android:text="ASSIGNED TENANT"
                                 android:textColor="@color/landing_primary"
                                 android:textSize="10sp"
                                 android:textStyle="bold" />
@@ -129,100 +128,11 @@
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="30dp"
-                            android:background="#1AFFFFFF" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-                            <TextView
-                                android:id="@+id/statusLabel"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="STATUS"
-                                android:textColor="@color/landing_primary"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/dashStatus"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Active"
-                                android:textColor="#4CAF50"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Today's Attendance Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/attendanceCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/border_light"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TODAY'S STATUS"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.1" />
-
-                    <TextView
-                        android:id="@+id/attendanceStatusText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Not Checked In"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/attendanceTimeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Ready for your session?"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAttendanceAction"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="20dp"
-                        android:text="Check In Now"
-                        android:textAllCaps="true"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        app:cornerRadius="16dp"
-                        app:backgroundTint="@color/landing_primary" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            <!-- Status and Attendance removed to meet "Blanko" requirement -->
 
             <!-- Quick Actions -->
             <TextView

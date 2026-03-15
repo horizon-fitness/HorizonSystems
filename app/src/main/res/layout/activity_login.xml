@@ -28,6 +28,17 @@
             android:layout_height="wrap_content"
             android:padding="32dp">
 
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Go Back" />
+
             <!-- Minimalist Brand Header -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/logoCard"
