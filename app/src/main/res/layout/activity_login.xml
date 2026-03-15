@@ -92,8 +92,7 @@
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
-                    app:startIconTint="#40FFFFFF"
-                    app:startIconSize="20dp">
+                    app:startIconTint="#40FFFFFF">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/usernameEdit"
@@ -119,8 +118,7 @@
                     app:endIconTint="#40FFFFFF"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                    app:startIconTint="#40FFFFFF"
-                    app:startIconSize="20dp">
+                    app:startIconTint="#40FFFFFF">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/passwordEdit"

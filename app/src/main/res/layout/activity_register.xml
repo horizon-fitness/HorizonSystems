@@ -83,8 +83,7 @@
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces"
-                    app:startIconTint="#40FFFFFF"
-                    app:startIconSize="18dp">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/gymIdEdit"
                         android:layout_width="match_parent"
@@ -105,8 +104,7 @@
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
-                    app:startIconTint="#40FFFFFF"
-                    app:startIconSize="18dp">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userRegEdit"
                         android:layout_width="match_parent"
@@ -128,8 +126,7 @@
                     app:endIconTint="#40FFFFFF"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                    app:startIconTint="#40FFFFFF"
-                    app:startIconSize="18dp">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/passRegEdit"
                         android:layout_width="match_parent"
