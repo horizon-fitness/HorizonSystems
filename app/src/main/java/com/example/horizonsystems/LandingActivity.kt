@@ -123,9 +123,12 @@ class LandingActivity : AppCompatActivity() {
         // Launch Portal Button - Opens specific web portal for this tenant
         findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
             val portalUrl = "https://horizonfitnesscorp.gt.tc/portal.php?gym=${tenant.pageSlug}&preview=1"
+            Log.d("PortalLink", "Launching: $portalUrl")
+            Toast.makeText(this, "Opening Portal for ${tenant.gymName}...", Toast.LENGTH_SHORT).show()
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(portalUrl))
             startActivity(intent)
         }
+
         
         try {
             val color = android.graphics.Color.parseColor(tenant.themeColor)

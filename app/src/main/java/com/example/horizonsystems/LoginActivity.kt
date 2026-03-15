@@ -58,13 +58,14 @@ class LoginActivity : AppCompatActivity() {
                 // we'll try to use the stored cookie if available or fetch one.
                 
                 // For Monday Activity, we will assume the RetrofitClient manages the bypass
-                val api = RetrofitClient.getApi("", "") // We should ideally pass the cookie
-                val response = api.login(username, password)
+                val api = RetrofitClient.getApi("", "") 
+                val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password)
+                val response = api.login(loginRequest)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
-                        if (loginResponse?.status == "success") {
+                        if (loginResponse?.success == true) {
                             val user = loginResponse.user
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
                             
@@ -80,6 +81,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this@LoginActivity, "Server Error: ${response.code()}", Toast.LENGTH_LONG).show()
                     }
                 }
+
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e("AuthError", "Login Error", e)

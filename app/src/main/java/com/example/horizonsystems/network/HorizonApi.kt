@@ -8,7 +8,9 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Body
 import retrofit2.http.Query
+
 
 interface HorizonApi {
     /**
@@ -19,37 +21,22 @@ interface HorizonApi {
     @GET("get_data.php")
     suspend fun getUsers(@Query("i") bypass: Int = 1): Response<List<User>>
 
-    @FormUrlEncoded
-    @POST("login.php")
+    @POST("api/login.php")
     suspend fun login(
-        @Field("username") username: String,
-        @Field("password") password: String,
+        @Body request: com.example.horizonsystems.models.LoginRequest,
         @Query("i") bypass: Int = 1
     ): Response<LoginResponse>
 
-    @FormUrlEncoded
-    @POST("register.php")
+    @POST("api/register.php")
     suspend fun register(
-        @Field("username") username: String,
-        @Field("email") email: String,
-        @Field("password") password: String,
-        @Field("first_name") firstName: String,
-        @Field("middle_name") middleName: String,
-        @Field("last_name") lastName: String,
-        @Field("phone_number") phoneNumber: String,
-        @Field("birth_date") birthDate: String,
-        @Field("sex") sex: String,
-        @Field("occupation") occupation: String,
-        @Field("address") address: String,
-        @Field("medical_history") medicalHistory: String,
-        @Field("emergency_contact_name") emergencyName: String,
-        @Field("emergency_contact_number") emergencyPhone: String,
-        @Field("gym_id") gymId: Int,
+        @Body request: com.example.horizonsystems.models.RegisterRequest,
         @Query("i") bypass: Int = 1
     ): Response<LoginResponse>
+
     @GET("get_tenant.php")
     suspend fun getTenantInfo(
         @Query("gym") slug: String,
         @Query("i") bypass: Int = 1
     ): Response<TenantPage>
+
 }

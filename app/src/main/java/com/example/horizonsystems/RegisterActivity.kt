@@ -82,16 +82,26 @@ class RegisterActivity : AppCompatActivity() {
         phone: String, birth: String, sex: String, occupation: String, address: String, 
         medical: String, eName: String, ePhone: String, gymId: Int
     ) {
+        val registrationData = com.example.horizonsystems.models.RegisterRequest(
+            firstName = first,
+            lastName = last,
+            email = email,
+            username = user,
+            password = pass,
+            phoneNumber = phone,
+            gymId = gymId
+        )
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val api = RetrofitClient.getApi("", "")
-                val response = api.register(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymId)
+                val response = api.register(registrationData)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val regResponse = response.body()
-                        if (regResponse?.status == "success") {
-                            Toast.makeText(this@RegisterActivity, "Registration Successful! Credentials sent to email.", Toast.LENGTH_LONG).show()
+                        if (regResponse?.success == true) {
+                            Toast.makeText(this@RegisterActivity, "Registration Successful! PIN sent to email.", Toast.LENGTH_LONG).show()
                             finish()
                         } else {
                             Toast.makeText(this@RegisterActivity, regResponse?.message ?: "Registration Failed", Toast.LENGTH_LONG).show()
@@ -102,10 +112,11 @@ class RegisterActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Log.e("AuthError", "Register Error", e)
+                    Log.e("RegisterError", "Error", e)
                     Toast.makeText(this@RegisterActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
+
 }
