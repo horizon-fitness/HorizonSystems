@@ -34,7 +34,16 @@ interface HorizonApi {
         @Field("email") email: String,
         @Field("password") password: String,
         @Field("first_name") firstName: String,
+        @Field("middle_name") middleName: String,
         @Field("last_name") lastName: String,
+        @Field("phone_number") phoneNumber: String,
+        @Field("birth_date") birthDate: String,
+        @Field("sex") sex: String,
+        @Field("occupation") occupation: String,
+        @Field("address") address: String,
+        @Field("medical_history") medicalHistory: String,
+        @Field("emergency_contact_name") emergencyName: String,
+        @Field("emergency_contact_number") emergencyPhone: String,
         @Field("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<LoginResponse>
