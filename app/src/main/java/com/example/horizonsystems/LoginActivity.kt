@@ -72,8 +72,9 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
-                            val user = loginResponse.user
-                            val branding = loginResponse.branding
+                        if (loginResponse?.success == true) {
+                            val user = loginResponse?.user
+                            val branding = loginResponse?.branding
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
                             
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
