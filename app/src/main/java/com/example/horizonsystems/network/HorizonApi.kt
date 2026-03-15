@@ -42,4 +42,10 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<TenantPage>
 
+    @POST("api/attendance.php")
+    suspend fun handleAttendance(
+        @Body request: com.example.horizonsystems.models.AttendanceRequest,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.AttendanceResponse>
+
 }

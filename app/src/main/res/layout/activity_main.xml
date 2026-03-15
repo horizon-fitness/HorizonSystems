@@ -162,6 +162,67 @@
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+41: 
+42:             <!-- Today's Attendance Card -->
+43:             <com.google.android.material.card.MaterialCardView
+44:                 android:id="@+id/attendanceCard"
+45:                 android:layout_width="match_parent"
+46:                 android:layout_height="wrap_content"
+47:                 android:layout_marginTop="24dp"
+48:                 app:cardBackgroundColor="@color/surface_dark"
+49:                 app:cardCornerRadius="24dp"
+50:                 app:cardElevation="0dp"
+51:                 app:strokeColor="@color/border_light"
+52:                 app:strokeWidth="1dp">
+53: 
+54:                 <LinearLayout
+55:                     android:layout_width="match_parent"
+56:                     android:layout_height="wrap_content"
+57:                     android:orientation="vertical"
+58:                     android:padding="24dp">
+59: 
+60:                     <TextView
+61:                         android:layout_width="wrap_content"
+62:                         android:layout_height="wrap_content"
+63:                         android:text="TODAY'S STATUS"
+64:                         android:textColor="@color/text_secondary"
+65:                         android:textSize="10sp"
+66:                         android:textStyle="bold"
+67:                         android:letterSpacing="0.1" />
+68: 
+69:                     <TextView
+70:                         android:id="@+id/attendanceStatusText"
+71:                         android:layout_width="wrap_content"
+72:                         android:layout_height="wrap_content"
+73:                         android:layout_marginTop="8dp"
+74:                         android:text="Not Checked In"
+75:                         android:textColor="@color/white"
+76:                         android:textSize="18sp"
+77:                         android:textStyle="bold" />
+78: 
+79:                     <TextView
+80:                         android:id="@+id/attendanceTimeText"
+81:                         android:layout_width="wrap_content"
+82:                         android:layout_height="wrap_content"
+83:                         android:layout_marginTop="4dp"
+84:                         android:text="Ready for your session?"
+85:                         android:textColor="@color/text_secondary"
+86:                         android:textSize="12sp" />
+87: 
+88:                     <com.google.android.material.button.MaterialButton
+89:                         android:id="@+id/btnAttendanceAction"
+90:                         android:layout_width="match_parent"
+91:                         android:layout_height="56dp"
+92:                         android:layout_marginTop="20dp"
+93:                         android:text="Check In Now"
+94:                         android:textAllCaps="true"
+95:                         android:textColor="@color/white"
+96:                         android:textStyle="bold"
+97:                         app:cornerRadius="16dp"
+98:                         app:backgroundTint="@color/landing_primary" />
+99: 
+100:                 </LinearLayout>
+101:             </com.google.android.material.card.MaterialCardView>
 
             <!-- Quick Actions -->
             <TextView

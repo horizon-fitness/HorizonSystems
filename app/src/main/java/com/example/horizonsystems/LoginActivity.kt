@@ -78,12 +78,15 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
                             
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            intent.putExtra("user_id", user?.userId ?: -1)
+                            intent.putExtra("gym_id", user?.gymId ?: -1)
                             intent.putExtra("user_name", user?.username ?: "Guest")
                             intent.putExtra("user_email", user?.email ?: "")
                             intent.putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
                             intent.putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
                             intent.putExtra("logo_url", branding?.logoPath ?: "")
                             intent.putExtra("theme_color", branding?.themeColor ?: "")
+                            intent.putExtra("bg_color", branding?.bgColor ?: "")
                             startActivity(intent)
                             finish()
                         } else if (loginResponse?.unverified == true) {
