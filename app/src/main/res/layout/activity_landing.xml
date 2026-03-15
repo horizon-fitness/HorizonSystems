@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/landing_background"
@@ -12,7 +11,6 @@
         android:layout_height="wrap_content"
         android:paddingBottom="40dp">
 
-        <!-- Ambient Glow Wrappers -->
         <View
             android:layout_width="400dp"
             android:layout_height="400dp"
@@ -23,7 +21,6 @@
             android:layout_marginEnd="-100dp"
             android:layout_marginTop="-100dp" />
 
-        <!-- Header -->
         <LinearLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
@@ -60,12 +57,11 @@
                 android:letterSpacing="0.1" />
         </LinearLayout>
 
-        <!-- Hero Section -->
         <TextView
             android:id="@+id/heroSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:background="@drawable/item_user_ripple"
             android:paddingHorizontal="16dp"
             android:paddingVertical="6dp"
@@ -87,7 +83,7 @@
             android:paddingHorizontal="24dp"
             android:text="Elevate Your\nFitness Journey"
             android:textColor="@color/white"
-            android:textSize="42sp"
+            android:textSize="40sp"
             android:textStyle="bold"
             android:lineSpacingExtra="4dp"
             app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
@@ -104,14 +100,13 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@id/heroTitle" />
 
-        <!-- Hero Buttons -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGetStarted"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="32dp"
-            android:text="Get Started"
+            android:text="Sign In"
             android:textAllCaps="false"
             android:textStyle="bold"
             app:backgroundTint="@color/landing_primary"
@@ -125,20 +120,19 @@
             android:layout_height="56dp"
             android:layout_marginHorizontal="40dp"
             android:layout_marginTop="12dp"
-            android:text="Download App"
+            android:text="Download Official App"
             android:textAllCaps="false"
             android:textColor="@color/white"
             app:cornerRadius="16dp"
             app:strokeColor="@color/border_light"
             app:layout_constraintTop_toBottomOf="@id/btnGetStarted" />
 
-        <!-- Registration Cards -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardJoin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="48dp"
             app:cardBackgroundColor="@color/surface_dark"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
@@ -178,6 +172,7 @@
                     android:textSize="14sp" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegisterMember"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="24dp"
@@ -188,34 +183,6 @@
                     app:cornerRadius="12dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- About Section -->
-        <TextView
-            android:id="@+id/aboutLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
-            android:text="THE PHILOSOPHY"
-            android:textColor="@color/landing_primary"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardJoin" />
-
-        <TextView
-            android:id="@+id/aboutText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:paddingHorizontal="40dp"
-            android:text="&quot;Modern technology meets\nunwavering dedication.&quot;"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/aboutLabel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

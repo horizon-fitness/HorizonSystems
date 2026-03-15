@@ -69,7 +69,7 @@ class LandingActivity : AppCompatActivity() {
         }
             
         tenant.aboutText?.let {
-            findViewById<TextView>(R.id.aboutText).text = it
+            findViewById<TextView>(R.id.heroDescription).text = it
         }
     }
 }
