@@ -38,9 +38,11 @@
                 app:cardCornerRadius="8dp"
                 app:cardElevation="0dp">
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
+                    android:id="@+id/imgLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    android:padding="4dp"
                     android:src="@android:drawable/ic_menu_send"
                     app:tint="@color/white" />
             </com.google.android.material.card.MaterialCardView>
@@ -73,6 +75,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header" />
+
 
         <TextView
             android:id="@+id/heroTitle"
@@ -181,8 +184,20 @@
                     android:textStyle="bold"
                     app:backgroundTint="@color/landing_primary"
                     app:cornerRadius="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLaunchPortal"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Launch Web Portal"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

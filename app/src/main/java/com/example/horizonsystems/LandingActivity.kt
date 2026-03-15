@@ -8,9 +8,12 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import android.net.Uri
+import com.bumptech.glide.Glide
 import com.example.horizonsystems.models.TenantPage
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
+import android.widget.ImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,11 +61,27 @@ class LandingActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.headerTitle).text = tenant.gymName.uppercase()
         findViewById<TextView>(R.id.heroTitle).text = "Elevate Your\nFitness at ${tenant.gymName}"
         
+        // Load Logo using Glide
+        val imgLogo = findViewById<ImageView>(R.id.imgLogo)
+        tenant.logoPath?.let {
+            val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
+            Glide.with(this).load(fullLogoUrl).into(imgLogo)
+        }
+
+        // Launch Portal Button
+        findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
+            val portalUrl = "https://horizonfitnesscorp.gt.tc/portal.php?gym=${tenant.pageSlug}&preview=1"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(portalUrl))
+            startActivity(intent)
+        }
+        
         try {
             val color = android.graphics.Color.parseColor(tenant.themeColor)
             findViewById<com.google.android.material.card.MaterialCardView>(R.id.headerLogoCard)
                 .setCardBackgroundColor(color)
             findViewById<MaterialButton>(R.id.btnGetStarted)
+                .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            findViewById<MaterialButton>(R.id.btnRegisterMember)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
         } catch (e: Exception) {
             Log.e("BrandingError", "Invalid color formart", e)
