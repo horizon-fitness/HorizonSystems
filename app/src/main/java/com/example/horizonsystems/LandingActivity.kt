@@ -135,7 +135,7 @@ class LandingActivity : AppCompatActivity() {
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             findViewById<MaterialButton>(R.id.btnRegisterMember)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-        } catch (e) {
+        } catch (e: Exception) {
             Log.e("BrandingError", "Invalid color format", e)
         }
             
@@ -144,4 +144,3 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 }
-
