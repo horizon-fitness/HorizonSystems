@@ -34,6 +34,20 @@ class LandingActivity : AppCompatActivity() {
 
         // 1. First capture security cookie for InfinityFree
         val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
+        val btnManualBypass = findViewById<MaterialButton>(R.id.btnManualBypass)
+        
+        // Timer for manual bypass (5 seconds)
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        val showManualBypassRunnable = Runnable {
+            btnManualBypass.visibility = android.view.View.VISIBLE
+        }
+        handler.postDelayed(showManualBypassRunnable, 5000)
+        
+        btnManualBypass.setOnClickListener {
+            handler.removeCallbacks(showManualBypassRunnable)
+            loadingOverlay.visibility = android.view.View.GONE
+            handleIntent(intent) // Try to fetch branding anyway
+        }
         
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
             cachedCookie = cookie
@@ -44,6 +58,7 @@ class LandingActivity : AppCompatActivity() {
             GymManager.saveBypassCredentials(this, cookie, userAgent)
             
             runOnUiThread {
+                handler.removeCallbacks(showManualBypassRunnable)
                 loadingOverlay.visibility = android.view.View.GONE
                 handleIntent(intent)
             }
@@ -137,6 +152,7 @@ class LandingActivity : AppCompatActivity() {
                             // Persist all data
                             GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
                             updateUIWithBranding(it) 
+                            applyDynamicColors(it)
                         }
                     }
                 }
@@ -166,12 +182,24 @@ class LandingActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        
+        // Download Button - Opens specific download link for this tenant
+        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
+            val downloadUrl = tenant.appDownloadLink ?: "https://horizonfitnesscorp.gt.tc/download.php"
+            Log.d("DownloadLink", "Launching: $downloadUrl")
+            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+            startActivity(intent)
+        }
+    }
+
+    private fun applyDynamicColors(tenant: TenantPage) {
         try {
             val color = android.graphics.Color.parseColor(tenant.themeColor)
             findViewById<com.google.android.material.card.MaterialCardView>(R.id.headerLogoCard)
                 .setCardBackgroundColor(color)
             findViewById<MaterialButton>(R.id.btnGetStarted)
+                .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            findViewById<MaterialButton>(R.id.btnLaunchPortal)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
                 
             // Apply Background Color if provided

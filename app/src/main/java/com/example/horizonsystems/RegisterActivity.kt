@@ -85,11 +85,19 @@ class RegisterActivity : AppCompatActivity() {
     ) {
         val registrationData = RegisterRequest(
             firstName = first,
+            middleName = if (middle.isEmpty()) null else middle,
             lastName = last,
             email = email,
             username = user,
             password = pass,
             phoneNumber = phone,
+            birthDate = birth,
+            sex = sex,
+            occupation = if (occupation.isEmpty()) null else occupation,
+            address = address,
+            medicalHistory = if (medical.isEmpty()) null else medical,
+            emergencyContactName = eName,
+            emergencyContactNumber = ePhone,
             tenantId = gymId
         )
 
