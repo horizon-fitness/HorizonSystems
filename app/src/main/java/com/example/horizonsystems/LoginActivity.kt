@@ -64,22 +64,25 @@ class LoginActivity : AppCompatActivity() {
                  val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(this@LoginActivity)
                  
                  val api = RetrofitClient.getApi(cookie, ua) 
-                 val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password)
+                 val currentTenant = com.example.horizonsystems.utils.GymManager.getTenantCode(this@LoginActivity)
+                 val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password, currentTenant)
                  val response = api.login(loginRequest)
 
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
-                        if (loginResponse?.success == true) {
                             val user = loginResponse.user
+                            val branding = loginResponse.branding
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
                             
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             intent.putExtra("user_name", user?.username ?: "Guest")
                             intent.putExtra("user_email", user?.email ?: "")
-                            intent.putExtra("gym_name", user?.gymName ?: "No Tenant")
-                            intent.putExtra("tenant_id", user?.tenantId ?: "000")
+                            intent.putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
+                            intent.putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
+                            intent.putExtra("logo_url", branding?.logoPath ?: "")
+                            intent.putExtra("theme_color", branding?.themeColor ?: "")
                             startActivity(intent)
                             finish()
                         } else if (loginResponse?.unverified == true) {

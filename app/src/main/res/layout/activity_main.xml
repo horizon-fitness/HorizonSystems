@@ -30,6 +30,7 @@
 
             <!-- Profile Header Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profileCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/surface_dark"
@@ -51,15 +52,26 @@
                         app:cardCornerRadius="40dp"
                         app:cardBackgroundColor="@color/landing_primary"
                         app:cardElevation="4dp">
-                        <TextView
-                            android:id="@+id/profileInitial"
+                        <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="U"
-                            android:textColor="@color/white"
-                            android:textSize="32sp"
-                            android:textStyle="bold" />
+                            android:layout_height="match_parent">
+                            <TextView
+                                android:id="@+id/profileInitial"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="U"
+                                android:textColor="@color/white"
+                                android:textSize="32sp"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:id="@+id/gymLogo"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerInside"
+                                android:background="@color/white"
+                                android:visibility="gone" />
+                        </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
@@ -100,6 +112,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/tenantLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="TENANT"
@@ -129,6 +142,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/statusLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="STATUS"
