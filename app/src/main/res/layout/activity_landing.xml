@@ -65,21 +65,34 @@
             android:layout_height="wrap_content"
             android:paddingBottom="48dp">
 
-            <View
-                android:layout_width="450dp"
-                android:layout_height="450dp"
-                android:alpha="0.25"
-                android:background="@drawable/ambient_glow"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginEnd="-120dp"
-                android:layout_marginTop="-120dp" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/bannerCard"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toTopOf="parent">
+                
+                <ImageView
+                    android:id="@+id/bannerImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ambient_glow" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/item_user_ripple"
+                    android:alpha="0.4" />
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/heroSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:background="@drawable/item_user_ripple"
                 android:paddingHorizontal="18dp"
                 android:paddingVertical="8dp"
@@ -90,18 +103,18 @@
                 android:letterSpacing="0.15"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/bannerCard" />
 
             <TextView
                 android:id="@+id/heroTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:paddingHorizontal="24dp"
                 android:text="Your Vision,\nOur Platform."
                 android:textColor="@color/white"
-                android:textSize="44sp"
+                android:textSize="36sp"
                 android:textStyle="bold"
                 android:lineSpacingExtra="2dp"
                 app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
@@ -110,12 +123,12 @@
                 android:id="@+id/heroDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:paddingHorizontal="44dp"
                 android:text="Empowering fitness owners with Horizon's industry-leading technology and seamless tenant management."
                 android:textColor="@color/text_secondary"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:lineSpacingMultiplier="1.2"
                 app:layout_constraintTop_toBottomOf="@id/heroTitle" />
 
@@ -124,7 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="32dp"
                 android:text="Sign In"
                 android:textAllCaps="false"
                 android:textSize="16sp"
@@ -160,6 +173,20 @@
                 app:cornerRadius="18dp"
                 app:strokeColor="@color/border_light"
                 app:layout_constraintTop_toBottomOf="@id/btnLaunchPortal" />
+
+            <TextView
+                android:id="@+id/contactText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:gravity="center"
+                android:paddingHorizontal="32dp"
+                android:text=""
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                app:layout_constraintTop_toBottomOf="@id/btnDownload" />
 
 
 

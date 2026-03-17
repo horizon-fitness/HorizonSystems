@@ -89,9 +89,13 @@ class LandingActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // Refresh branding if we're already bypassed to show changes from Owner dashboard
+        // Only refresh branding if we don't have a valid one yet OR if we want a manual refresh
         if (isBypassed) {
-            val slug = GymManager.getGymSlug(this)
-            fetchTenantBranding(slug)
+            val currentName = findViewById<TextView>(R.id.heroTitle).text.toString()
+            if (currentName.contains("Horizon Systems") || currentName.isEmpty()) {
+                val slug = GymManager.getGymSlug(this)
+                fetchTenantBranding(slug)
+            }
         }
     }
 
@@ -129,8 +133,10 @@ class LandingActivity : AppCompatActivity() {
                     val tenant = response.body()
                     withContext(Dispatchers.Main) {
                         tenant?.let { 
-                            // Persist all data
-                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
+                            // Only save if it's NOT the hardcoded default "Horizon Systems"
+                            if (it.pageTitle != "Horizon Systems") {
+                                GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
+                            }
                             updateUIWithBranding(it) 
                             applyDynamicColors(it)
                         }
@@ -147,8 +153,9 @@ class LandingActivity : AppCompatActivity() {
                         pageSlug = "horizon",
                         pageTitle = "Horizon Systems",
                         logoPath = "assets/default_logo.png",
+                        bannerImage = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop",
                         themeColor = "#1a73e8",
-                        bgColor = "#ffffff",
+                        bgColor = "#0a090d",
                         fontFamily = "Inter",
                         aboutText = "Welcome to Horizon Systems. Your fitness journey starts here.",
                         contactText = null,
@@ -174,6 +181,22 @@ class LandingActivity : AppCompatActivity() {
             val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
+        
+        // Load Banner using Glide
+        val imgBanner = findViewById<ImageView>(R.id.bannerImage)
+        tenant.bannerImage?.let {
+            val fullBannerUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
+            Glide.with(this).load(fullBannerUrl).into(imgBanner)
+        }
+
+        // Apply Contact Text
+        val txtContact = findViewById<TextView>(R.id.contactText)
+        if (!tenant.contactText.isNullOrEmpty()) {
+            txtContact.text = tenant.contactText
+            txtContact.visibility = android.view.View.VISIBLE
+        } else {
+            txtContact.visibility = android.view.View.GONE
+        }
 
 
         // Download Button - Opens specific download link for this tenant
@@ -195,6 +218,9 @@ class LandingActivity : AppCompatActivity() {
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             findViewById<MaterialButton>(R.id.btnLaunchPortal)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            
+            // Apply color to Hero Subtitle tint
+            findViewById<TextView>(R.id.heroSubtitle).setTextColor(color)
                 
             // Apply Background Color if provided
             tenant.bgColor?.let {
