@@ -138,6 +138,28 @@ class LandingActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("BrandingError", "Failed to fetch branding", e)
+                withContext(Dispatchers.Main) {
+                    // Local Fallback if API or Network fails
+                    val defaultTenant = TenantPage(
+                        pageId = 1,
+                        gymId = 1,
+                        tenantCode = "000",
+                        pageSlug = "horizon",
+                        pageTitle = "Horizon Systems",
+                        logoPath = "assets/default_logo.png",
+                        themeColor = "#1a73e8",
+                        bgColor = "#ffffff",
+                        fontFamily = "Inter",
+                        aboutText = "Welcome to Horizon Systems. Your fitness journey starts here.",
+                        contactText = null,
+                        appDownloadLink = "https://horizonfitnesscorp.gt.tc/download.php",
+                        gymName = "Horizon Systems",
+                        gymEmail = null,
+                        gymContact = null
+                    )
+                    updateUIWithBranding(defaultTenant)
+                    applyDynamicColors(defaultTenant)
+                }
             }
         }
     }
