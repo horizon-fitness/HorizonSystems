@@ -88,14 +88,10 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh branding if we're already bypassed to show changes from Owner dashboard
-        // Only refresh branding if we don't have a valid one yet OR if we want a manual refresh
+        // Refresh branding whenever app is resumed to sync with Web Dashboard
         if (isBypassed) {
-            val currentName = findViewById<TextView>(R.id.heroTitle).text.toString()
-            if (currentName.contains("Horizon Systems") || currentName.isEmpty()) {
-                val slug = GymManager.getGymSlug(this)
-                fetchTenantBranding(slug)
-            }
+            val slug = GymManager.getGymSlug(this)
+            fetchTenantBranding(slug)
         }
     }
 
@@ -173,7 +169,14 @@ class LandingActivity : AppCompatActivity() {
 
     private fun updateUIWithBranding(tenant: TenantPage) {
         findViewById<TextView>(R.id.heroSubtitle).text = "● OPEN FOR MEMBERSHIP"
-        findViewById<TextView>(R.id.heroTitle).text = "Elevate Your\nFitness at ${tenant.gymName}"
+        
+        // Match the Web Dashboard's default mixed-case title if no custom title is set
+        val displayTitle = if (tenant.pageTitle.isNullOrEmpty() || tenant.pageTitle == "Horizon Systems") {
+            "Elevate Your Fitness at ${tenant.gymName ?: "Horizon Systems"}"
+        } else {
+            tenant.pageTitle
+        }
+        findViewById<TextView>(R.id.heroTitle).text = displayTitle
         
         // Load Logo using Glide
         val imgLogo = findViewById<ImageView>(R.id.imgLogo)
