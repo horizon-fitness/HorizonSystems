@@ -70,12 +70,6 @@ class LandingActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Mock download button
-        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
-            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
-        }
-
-
         // Register Button - Opens RegisterActivity
         findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
@@ -202,14 +196,6 @@ class LandingActivity : AppCompatActivity() {
         }
 
 
-        // Download Button - Opens specific download link for this tenant
-        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
-            val downloadUrl = tenant.appDownloadLink ?: "https://horizonfitnesscorp.gt.tc/download.php"
-            Log.d("DownloadLink", "Launching: $downloadUrl")
-            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
-            startActivity(intent)
-        }
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {

@@ -68,10 +68,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/bannerCard"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="240dp"
                 android:layout_margin="16dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="2dp"
                 app:layout_constraintTop_toTopOf="parent">
                 
                 <ImageView
@@ -85,20 +85,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/item_user_ripple"
-                    android:alpha="0.4" />
+                    android:alpha="0.2" />
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/heroSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:background="@drawable/item_user_ripple"
-                android:paddingHorizontal="18dp"
-                android:paddingVertical="8dp"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
                 android:text="● OPEN FOR REGISTRATION"
                 android:textColor="@color/landing_primary"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.15"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -109,14 +109,14 @@
                 android:id="@+id/heroTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:paddingHorizontal="24dp"
                 android:text="Your Vision,\nOur Platform."
                 android:textColor="@color/white"
-                android:textSize="36sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
-                android:lineSpacingExtra="2dp"
+                android:lineSpacingExtra="4dp"
                 app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
 
             <TextView
@@ -125,68 +125,61 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:paddingHorizontal="44dp"
+                android:paddingHorizontal="48dp"
                 android:text="Empowering fitness owners with Horizon's industry-leading technology and seamless tenant management."
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:lineSpacingMultiplier="1.2"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.3"
                 app:layout_constraintTop_toBottomOf="@id/heroTitle" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGetStarted"
+            <LinearLayout
+                android:id="@+id/buttonContainer"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="32dp"
-                android:text="Sign In"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/landing_primary"
-                app:cornerRadius="18dp"
-                app:layout_constraintTop_toBottomOf="@id/heroDescription" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="32dp"
+                app:layout_constraintTop_toBottomOf="@id/heroDescription">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLaunchPortal"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="14dp"
-                android:text="Register"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/landing_primary"
-                app:cornerRadius="18dp"
-                app:layout_constraintTop_toBottomOf="@id/btnGetStarted" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGetStarted"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:text="Sign In"
+                    android:textAllCaps="false"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/landing_primary"
+                    app:cornerRadius="20dp"
+                    app:elevation="4dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDownload"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="14dp"
-                android:text="Get Member APK"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                app:cornerRadius="18dp"
-                app:strokeColor="@color/border_light"
-                app:layout_constraintTop_toBottomOf="@id/btnLaunchPortal" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLaunchPortal"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Create an Account"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:cornerRadius="20dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/contactText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="56dp"
                 android:gravity="center"
                 android:paddingHorizontal="32dp"
                 android:text=""
-                android:textColor="@color/text_secondary"
-                android:textSize="10sp"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.1"
-                app:layout_constraintTop_toBottomOf="@id/btnDownload" />
+                app:layout_constraintTop_toBottomOf="@id/buttonContainer" />
 
 
 
