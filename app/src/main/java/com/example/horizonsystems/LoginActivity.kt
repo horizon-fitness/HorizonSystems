@@ -17,6 +17,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import com.example.horizonsystems.utils.GymManager
+import com.bumptech.glide.Glide
+
 class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +48,8 @@ class LoginActivity : AppCompatActivity() {
 
             performLogin(username, password)
         }
+
+        applyBranding()
 
         textRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
@@ -113,6 +118,54 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+
+    private fun applyBranding() {
+        val themeColorStr = GymManager.getThemeColor(this)
+        val bgColorStr = GymManager.getBgColor(this)
+        val logoPath = GymManager.getLogoPath(this)
+
+        try {
+            val themeColor = android.graphics.Color.parseColor(themeColorStr)
+            val bgColor = android.graphics.Color.parseColor(bgColorStr)
+            val colorStateList = android.content.res.ColorStateList.valueOf(themeColor)
+
+            findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.rootLayout)
+                .setBackgroundColor(bgColor)
+            
+            findViewById<com.google.android.material.card.MaterialCardView>(R.id.logoCard)
+                .setCardBackgroundColor(themeColor)
+
+            findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLogin)
+                .backgroundTintList = colorStateList
+
+            findViewById<TextView>(R.id.textForgotPassword).setTextColor(themeColor)
+            findViewById<TextView>(R.id.textRegister).setTextColor(themeColor)
+
+            // Input layouts
+            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.usernameInputLayout).apply {
+                boxStrokeColor = themeColor
+                hintTextColor = colorStateList
+            }
+            findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.passwordInputLayout).apply {
+                boxStrokeColor = themeColor
+                hintTextColor = colorStateList
+            }
+
+            // Logo
+            logoPath?.let {
+                val imgLogo = findViewById<android.widget.ImageView>(R.id.imgLogo) ?: return@let
+                
+                val fullLogoUrl = when {
+                    it.startsWith("http") -> it
+                    it.startsWith("data:image") -> it
+                    else -> "https://horizonfitnesscorp.gt.tc/$it"
+                }
+                Glide.with(this).load(fullLogoUrl).into(imgLogo)
+            }
+        } catch (e: Exception) {
+            Log.e("BrandingError", "Failed to apply branding", e)
         }
     }
 }

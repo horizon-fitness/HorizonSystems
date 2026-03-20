@@ -125,7 +125,17 @@ class LandingActivity : AppCompatActivity() {
                         tenant?.let { 
                             // Only save if it's NOT the hardcoded default "Horizon Systems"
                             if (it.pageTitle != "Horizon Systems") {
-                                GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
+                                GymManager.saveGymData(
+                                    this@LandingActivity, 
+                                    it.pageSlug, 
+                                    it.gymId, 
+                                    it.tenantCode ?: "000", 
+                                    it.gymName ?: "Unknown",
+                                    it.themeColor,
+                                    it.bgColor,
+                                    it.logoPath,
+                                    it.aboutText
+                                )
                             }
                             updateUIWithBranding(it) 
                             applyDynamicColors(it)
@@ -166,7 +176,7 @@ class LandingActivity : AppCompatActivity() {
         
         // Match the Web Dashboard's default mixed-case title if no custom title is set
         val displayTitle = if (tenant.pageTitle.isNullOrEmpty() || tenant.pageTitle == "Horizon Systems") {
-            "Elevate Your Fitness at ${tenant.gymName ?: "Horizon Systems"}"
+            "Elevate Your Fitness at \n${tenant.gymName ?: "Horizon Systems"}"
         } else {
             tenant.pageTitle
         }
@@ -175,14 +185,22 @@ class LandingActivity : AppCompatActivity() {
         // Load Logo using Glide
         val imgLogo = findViewById<ImageView>(R.id.imgLogo)
         tenant.logoPath?.let {
-            val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
+            val fullLogoUrl = when {
+                it.startsWith("http") -> it
+                it.startsWith("data:image") -> it
+                else -> "https://horizonfitnesscorp.gt.tc/$it"
+            }
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
         
         // Load Banner using Glide
         val imgBanner = findViewById<ImageView>(R.id.bannerImage)
         tenant.bannerImage?.let {
-            val fullBannerUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
+            val fullBannerUrl = when {
+                it.startsWith("http") -> it
+                it.startsWith("data:image") -> it
+                else -> "https://horizonfitnesscorp.gt.tc/$it"
+            }
             Glide.with(this).load(fullBannerUrl).into(imgBanner)
         }
 
@@ -210,6 +228,10 @@ class LandingActivity : AppCompatActivity() {
             
             // Apply color to Hero Subtitle tint
             findViewById<TextView>(R.id.heroSubtitle).setTextColor(color)
+            findViewById<TextView>(R.id.heroSubtitle).backgroundTintList = android.content.res.ColorStateList.valueOf(color).withAlpha(30)
+            
+            // Tint Ambient Glow
+            findViewById<ImageView>(R.id.ambientGlow).imageTintList = android.content.res.ColorStateList.valueOf(color)
                 
             // Apply Background Color if provided
             tenant.bgColor?.let {

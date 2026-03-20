@@ -17,6 +17,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import android.widget.TextView
+import com.example.horizonsystems.utils.GymManager
+import android.content.res.ColorStateList
+import android.graphics.Color
+import com.google.android.material.textfield.TextInputLayout
+
 class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +104,8 @@ class RegisterActivity : AppCompatActivity() {
 
             performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
         }
+
+        applyBranding()
     }
 
     private fun performRegistration(
@@ -162,4 +170,43 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    private fun applyBranding() {
+        val themeColorStr = GymManager.getThemeColor(this)
+        val bgColorStr = GymManager.getBgColor(this)
+
+        try {
+            val themeColor = Color.parseColor(themeColorStr)
+            val bgColor = Color.parseColor(bgColorStr)
+            val colorStateList = ColorStateList.valueOf(themeColor)
+
+            findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.rootLayout)
+                .setBackgroundColor(bgColor)
+
+            findViewById<MaterialButton>(R.id.btnRegister)
+                .backgroundTintList = colorStateList
+
+            // Style sections
+            findViewById<TextView>(R.id.sectionAccount).setTextColor(themeColor)
+            findViewById<TextView>(R.id.sectionPersonal).setTextColor(themeColor)
+            findViewById<TextView>(R.id.sectionEmergency).setTextColor(themeColor)
+
+            // Style all TextInputLayouts
+            val root = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.rootLayout)
+            styleInputLayouts(root, themeColor, colorStateList)
+
+        } catch (e: Exception) {
+            Log.e("BrandingError", "Failed to apply branding", e)
+        }
+    }
+
+    private fun styleInputLayouts(view: android.view.View, themeColor: Int, colorStateList: ColorStateList) {
+        if (view is TextInputLayout) {
+            view.boxStrokeColor = themeColor
+            view.hintTextColor = colorStateList
+        } else if (view is android.view.ViewGroup) {
+            for (i in 0 until view.childCount) {
+                styleInputLayouts(view.getChildAt(i), themeColor, colorStateList)
+            }
+        }
+    }
 }

@@ -13,14 +13,6 @@ import retrofit2.http.Query
 
 
 interface HorizonApi {
-    /**
-     * Fetches the list of users from get_data.php.
-     * The 'i=1' query parameter is often required by InfinityFree 
-     * after the security cookie is set.
-     */
-    @GET("get_data.php")
-    suspend fun getUsers(@Query("i") bypass: Int = 1): Response<List<User>>
-
     @POST("api/login.php")
     suspend fun login(
         @Body request: com.example.horizonsystems.models.LoginRequest,
@@ -41,11 +33,5 @@ interface HorizonApi {
         @Query("gym") slug: String,
         @Query("i") bypass: Int = 1
     ): Response<TenantPage>
-
-    @POST("api/attendance.php")
-    suspend fun handleAttendance(
-        @Body request: com.example.horizonsystems.models.AttendanceRequest,
-        @Query("i") bypass: Int = 1
-    ): Response<com.example.horizonsystems.models.AttendanceResponse>
 
 }
