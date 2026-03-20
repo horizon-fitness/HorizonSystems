@@ -9,13 +9,9 @@ object GymManager {
     private const val KEY_GYM_ID = "selected_gym_id" // numeric
     private const val KEY_TENANT_CODE = "selected_tenant_code" // alphanumeric
     private const val KEY_GYM_NAME = "selected_gym_name"
-    private const val KEY_THEME_COLOR = "theme_color"
-    private const val KEY_BG_COLOR = "bg_color"
-    private const val KEY_LOGO_PATH = "logo_path"
-    private const val KEY_ABOUT_TEXT = "about_text"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
-    private const val DEFAULT_SLUG = "horizon"
+    private const val DEFAULT_SLUG = "corsanofitness"
 
 
     private fun getPrefs(context: Context): SharedPreferences {
@@ -26,16 +22,12 @@ object GymManager {
         getPrefs(context).edit().putString(KEY_GYM_SLUG, slug).apply()
     }
 
-    fun saveGymData(context: Context, slug: String, id: Int, code: String, name: String, theme: String? = null, bg: String? = null, logo: String? = null, about: String? = null) {
+    fun saveGymData(context: Context, slug: String, id: Int, code: String, name: String) {
         getPrefs(context).edit().apply {
             putString(KEY_GYM_SLUG, slug)
             putInt(KEY_GYM_ID, id)
             putString(KEY_TENANT_CODE, code)
             putString(KEY_GYM_NAME, name)
-            theme?.let { putString(KEY_THEME_COLOR, it) }
-            bg?.let { putString(KEY_BG_COLOR, it) }
-            logo?.let { putString(KEY_LOGO_PATH, it) }
-            about?.let { putString(KEY_ABOUT_TEXT, it) }
         }.apply()
     }
 
@@ -69,21 +61,5 @@ object GymManager {
 
     fun getGymName(context: Context): String {
         return getPrefs(context).getString(KEY_GYM_NAME, "Horizon Fitness") ?: "Horizon Fitness"
-    }
-
-    fun getThemeColor(context: Context): String {
-        return getPrefs(context).getString(KEY_THEME_COLOR, "#8c2bee") ?: "#8c2bee"
-    }
-
-    fun getBgColor(context: Context): String {
-        return getPrefs(context).getString(KEY_BG_COLOR, "#0a090d") ?: "#0a090d"
-    }
-
-    fun getLogoPath(context: Context): String? {
-        return getPrefs(context).getString(KEY_LOGO_PATH, null)
-    }
-
-    fun getAboutText(context: Context): String? {
-        return getPrefs(context).getString(KEY_ABOUT_TEXT, null)
     }
 }

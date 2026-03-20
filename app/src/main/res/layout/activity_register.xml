@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/landing_background"
@@ -31,13 +30,10 @@
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="-10dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back_arrow"
-                android:scaleType="centerInside"
-                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_revert"
                 app:tint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -47,14 +43,14 @@
                 android:id="@+id/registerTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:text="Create Profile"
                 android:textColor="@color/white"
                 android:textSize="32sp"
                 android:textStyle="bold"
                 android:letterSpacing="-0.02"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnBack" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/registerSubtitle"
@@ -94,15 +90,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tenant Code"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_menu_myplaces"
-                    app:startIconTint="#B0FFFFFF">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/gymIdEdit"
                         android:layout_width="match_parent"
@@ -119,15 +111,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Username"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
-                    app:startIconTint="#B0FFFFFF">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/userRegEdit"
                         android:layout_width="match_parent"
@@ -143,17 +131,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Initial Password"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:endIconMode="password_toggle"
-                    app:endIconTint="#B0FFFFFF"
+                    app:endIconTint="#40FFFFFF"
                     app:hintTextColor="@color/landing_primary"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                    app:startIconTint="#B0FFFFFF">
+                    app:startIconTint="#40FFFFFF">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/passRegEdit"
                         android:layout_width="match_parent"
@@ -197,11 +181,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="First Name"
-                        android:textColorHint="#B0FFFFFF"
-                        app:boxCornerRadiusTopStart="16dp"
-                        app:boxCornerRadiusTopEnd="16dp"
-                        app:boxCornerRadiusBottomStart="16dp"
-                        app:boxCornerRadiusBottomEnd="16dp"
+                        android:textColorHint="#40FFFFFF"
                         app:boxStrokeColor="@color/landing_primary"
                         app:hintTextColor="@color/landing_primary">
                         <com.google.android.material.textfield.TextInputEditText
@@ -221,11 +201,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Last Name"
-                        android:textColorHint="#B0FFFFFF"
-                        app:boxCornerRadiusTopStart="16dp"
-                        app:boxCornerRadiusTopEnd="16dp"
-                        app:boxCornerRadiusBottomStart="16dp"
-                        app:boxCornerRadiusBottomEnd="16dp"
+                        android:textColorHint="#40FFFFFF"
                         app:boxStrokeColor="@color/landing_primary"
                         app:hintTextColor="@color/landing_primary">
                         <com.google.android.material.textfield.TextInputEditText
@@ -244,11 +220,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Middle Name"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -266,19 +238,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Birth Date"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/birthDateEdit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:clickable="true"
                         android:inputType="date"
                         android:text="2000-01-01"
                         android:textColor="@color/white"
@@ -292,11 +258,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Sex"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <AutoCompleteTextView
@@ -315,11 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Occupation"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -337,11 +295,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Full Address"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -359,11 +313,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Email Address"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -382,11 +332,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Phone Number"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -427,11 +373,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Medical History / Allergies"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -449,11 +391,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Emergency Contact Name"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText
@@ -471,11 +409,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="Emergency Contact Phone"
-                    android:textColorHint="#B0FFFFFF"
-                    app:boxCornerRadiusTopStart="16dp"
-                    app:boxCornerRadiusTopEnd="16dp"
-                    app:boxCornerRadiusBottomStart="16dp"
-                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:textColorHint="#40FFFFFF"
                     app:boxStrokeColor="@color/landing_primary"
                     app:hintTextColor="@color/landing_primary">
                     <com.google.android.material.textfield.TextInputEditText

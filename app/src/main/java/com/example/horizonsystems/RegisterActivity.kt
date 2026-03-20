@@ -17,12 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-import android.widget.TextView
-import com.example.horizonsystems.utils.GymManager
-import android.content.res.ColorStateList
-import android.graphics.Color
-import com.google.android.material.textfield.TextInputLayout
-
 class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,24 +51,6 @@ class RegisterActivity : AppCompatActivity() {
         val emergencyPhoneEdit = findViewById<TextInputEditText>(R.id.emergencyPhoneEdit)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
-        // Setup Date Picker
-        birthDateEdit.setOnClickListener {
-            val calendar = java.util.Calendar.getInstance()
-            val year = calendar.get(java.util.Calendar.YEAR)
-            val month = calendar.get(java.util.Calendar.MONTH)
-            val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-
-            val datePickerDialog = android.app.DatePickerDialog(
-                this,
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
-                    birthDateEdit.setText(formattedDate)
-                },
-                year, month, day
-            )
-            datePickerDialog.show()
-        }
-
         // Pre-fill tenant code from the current tenant
         val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
         gymIdEdit.setText(currentTenantCode)
@@ -104,8 +80,6 @@ class RegisterActivity : AppCompatActivity() {
 
             performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
         }
-
-        applyBranding()
     }
 
     private fun performRegistration(
@@ -170,43 +144,4 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyBranding() {
-        val themeColorStr = GymManager.getThemeColor(this)
-        val bgColorStr = GymManager.getBgColor(this)
-
-        try {
-            val themeColor = Color.parseColor(themeColorStr)
-            val bgColor = Color.parseColor(bgColorStr)
-            val colorStateList = ColorStateList.valueOf(themeColor)
-
-            findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.rootLayout)
-                .setBackgroundColor(bgColor)
-
-            findViewById<MaterialButton>(R.id.btnRegister)
-                .backgroundTintList = colorStateList
-
-            // Style sections
-            findViewById<TextView>(R.id.sectionAccount).setTextColor(themeColor)
-            findViewById<TextView>(R.id.sectionPersonal).setTextColor(themeColor)
-            findViewById<TextView>(R.id.sectionEmergency).setTextColor(themeColor)
-
-            // Style all TextInputLayouts
-            val root = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.rootLayout)
-            styleInputLayouts(root, themeColor, colorStateList)
-
-        } catch (e: Exception) {
-            Log.e("BrandingError", "Failed to apply branding", e)
-        }
-    }
-
-    private fun styleInputLayouts(view: android.view.View, themeColor: Int, colorStateList: ColorStateList) {
-        if (view is TextInputLayout) {
-            view.boxStrokeColor = themeColor
-            view.hintTextColor = colorStateList
-        } else if (view is android.view.ViewGroup) {
-            for (i in 0 until view.childCount) {
-                styleInputLayouts(view.getChildAt(i), themeColor, colorStateList)
-            }
-        }
-    }
 }

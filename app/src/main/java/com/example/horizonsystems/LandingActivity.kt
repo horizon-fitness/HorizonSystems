@@ -70,6 +70,12 @@ class LandingActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Mock download button
+        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
+            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
+        }
+
+
         // Register Button - Opens RegisterActivity
         findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
@@ -82,7 +88,7 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh branding whenever app is resumed to sync with Web Dashboard
+        // Refresh branding if we're already bypassed to show changes from Owner dashboard
         if (isBypassed) {
             val slug = GymManager.getGymSlug(this)
             fetchTenantBranding(slug)
@@ -123,20 +129,8 @@ class LandingActivity : AppCompatActivity() {
                     val tenant = response.body()
                     withContext(Dispatchers.Main) {
                         tenant?.let { 
-                            // Only save if it's NOT the hardcoded default "Horizon Systems"
-                            if (it.pageTitle != "Horizon Systems") {
-                                GymManager.saveGymData(
-                                    this@LandingActivity, 
-                                    it.pageSlug, 
-                                    it.gymId, 
-                                    it.tenantCode ?: "000", 
-                                    it.gymName ?: "Unknown",
-                                    it.themeColor,
-                                    it.bgColor,
-                                    it.logoPath,
-                                    it.aboutText
-                                )
-                            }
+                            // Persist all data
+                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
                             updateUIWithBranding(it) 
                             applyDynamicColors(it)
                         }
@@ -144,76 +138,30 @@ class LandingActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("BrandingError", "Failed to fetch branding", e)
-                withContext(Dispatchers.Main) {
-                    // Local Fallback if API or Network fails
-                    val defaultTenant = TenantPage(
-                        pageId = 1,
-                        gymId = 1,
-                        tenantCode = "000",
-                        pageSlug = "horizon",
-                        pageTitle = "Horizon Systems",
-                        logoPath = "assets/default_logo.png",
-                        bannerImage = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop",
-                        themeColor = "#1a73e8",
-                        bgColor = "#0a090d",
-                        fontFamily = "Inter",
-                        aboutText = "Welcome to Horizon Systems. Your fitness journey starts here.",
-                        contactText = null,
-                        appDownloadLink = "https://horizonfitnesscorp.gt.tc/download.php",
-                        gymName = "Horizon Systems",
-                        gymEmail = null,
-                        gymContact = null
-                    )
-                    updateUIWithBranding(defaultTenant)
-                    applyDynamicColors(defaultTenant)
-                }
             }
         }
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
         findViewById<TextView>(R.id.heroSubtitle).text = "● OPEN FOR MEMBERSHIP"
-        
-        // Match the Web Dashboard's default mixed-case title if no custom title is set
-        val displayTitle = if (tenant.pageTitle.isNullOrEmpty() || tenant.pageTitle == "Horizon Systems") {
-            "Elevate Your Fitness at \n${tenant.gymName ?: "Horizon Systems"}"
-        } else {
-            tenant.pageTitle
-        }
-        findViewById<TextView>(R.id.heroTitle).text = displayTitle
+        findViewById<TextView>(R.id.heroTitle).text = "Elevate Your\nFitness at ${tenant.gymName}"
         
         // Load Logo using Glide
         val imgLogo = findViewById<ImageView>(R.id.imgLogo)
         tenant.logoPath?.let {
-            val fullLogoUrl = when {
-                it.startsWith("http") -> it
-                it.startsWith("data:image") -> it
-                else -> "https://horizonfitnesscorp.gt.tc/$it"
-            }
+            val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
-        
-        // Load Banner using Glide
-        val imgBanner = findViewById<ImageView>(R.id.bannerImage)
-        tenant.bannerImage?.let {
-            val fullBannerUrl = when {
-                it.startsWith("http") -> it
-                it.startsWith("data:image") -> it
-                else -> "https://horizonfitnesscorp.gt.tc/$it"
-            }
-            Glide.with(this).load(fullBannerUrl).into(imgBanner)
+
+
+        // Download Button - Opens specific download link for this tenant
+        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
+            val downloadUrl = tenant.appDownloadLink ?: "https://horizonfitnesscorp.gt.tc/download.php"
+            Log.d("DownloadLink", "Launching: $downloadUrl")
+            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
+            startActivity(intent)
         }
-
-        // Apply Contact Text
-        val txtContact = findViewById<TextView>(R.id.contactText)
-        if (!tenant.contactText.isNullOrEmpty()) {
-            txtContact.text = tenant.contactText
-            txtContact.visibility = android.view.View.VISIBLE
-        } else {
-            txtContact.visibility = android.view.View.GONE
-        }
-
-
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {
@@ -225,13 +173,6 @@ class LandingActivity : AppCompatActivity() {
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             findViewById<MaterialButton>(R.id.btnLaunchPortal)
                 .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-            
-            // Apply color to Hero Subtitle tint
-            findViewById<TextView>(R.id.heroSubtitle).setTextColor(color)
-            findViewById<TextView>(R.id.heroSubtitle).backgroundTintList = android.content.res.ColorStateList.valueOf(color).withAlpha(30)
-            
-            // Tint Ambient Glow
-            findViewById<ImageView>(R.id.ambientGlow).imageTintList = android.content.res.ColorStateList.valueOf(color)
                 
             // Apply Background Color if provided
             tenant.bgColor?.let {
