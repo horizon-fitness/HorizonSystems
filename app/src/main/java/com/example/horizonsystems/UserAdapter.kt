@@ -23,10 +23,10 @@ class UserAdapter(private var users: List<User>) : RecyclerView.Adapter<UserAdap
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val user = users[position]
-        holder.nameText.text = "${user.firstName} ${user.lastName}"
-        holder.handleText.text = "@${user.username}"
-        holder.emailText.text = user.email
-        holder.initialText.text = user.firstName.take(1).uppercase()
+        holder.nameText.text = "${user.firstName ?: "Unknown"} ${user.lastName ?: ""}"
+        holder.handleText.text = "@${user.username ?: "user"}"
+        holder.emailText.text = user.email ?: ""
+        holder.initialText.text = (user.firstName ?: "U").take(1).uppercase()
     }
 
     override fun getItemCount() = users.size
