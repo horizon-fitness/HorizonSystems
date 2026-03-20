@@ -51,6 +51,24 @@ class RegisterActivity : AppCompatActivity() {
         val emergencyPhoneEdit = findViewById<TextInputEditText>(R.id.emergencyPhoneEdit)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
+        // Setup Date Picker
+        birthDateEdit.setOnClickListener {
+            val calendar = java.util.Calendar.getInstance()
+            val year = calendar.get(java.util.Calendar.YEAR)
+            val month = calendar.get(java.util.Calendar.MONTH)
+            val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = android.app.DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
+                    birthDateEdit.setText(formattedDate)
+                },
+                year, month, day
+            )
+            datePickerDialog.show()
+        }
+
         // Pre-fill tenant code from the current tenant
         val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
         gymIdEdit.setText(currentTenantCode)
