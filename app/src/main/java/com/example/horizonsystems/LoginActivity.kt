@@ -52,27 +52,19 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun performLogin(username: String, password: String) {
-        // Need cookie for InfinityFree bypass
-        // For simplicity in the demo, we'll use the same bypass logic as MainActivity 
-        // OR we can assume bypass is working if they came from LandingActivity
-        
+    private fun performLogin(username: String, password: String, isRetry: Boolean = false, forcedCookie: String? = null, forcedUA: String? = null) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // In a real app, you'd get the cookie first. 
-                // Let's reuse the bypass if needed, but for the demo 
-                // we'll try to use the stored cookie if available or fetch one.
-                
-                // For Monday Activity, we will assume the RetrofitClient manages the bypass
-                // Fetch persisted security credentials for InfinityFree
-                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@LoginActivity)
-                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(this@LoginActivity)
+                // Use forced credentials if provided, otherwise fetch from manager
+                 val cookie = forcedCookie ?: com.example.horizonsystems.utils.GymManager.getBypassCookie(this@LoginActivity)
+                 val ua = forcedUA ?: com.example.horizonsystems.utils.GymManager.getBypassUA(this@LoginActivity)
                  
-                 val api = RetrofitClient.getApi(cookie, ua) 
+                 Log.d("AuthAuth", "Performing login (retry=$isRetry). Cookie present: ${cookie.isNotEmpty()}")
+                 
+                 val api = RetrofitClient.getApi(cookie.ifEmpty { null }, ua.ifEmpty { null }) 
                  val currentTenant = com.example.horizonsystems.utils.GymManager.getTenantCode(this@LoginActivity)
                  val loginRequest = com.example.horizonsystems.models.LoginRequest(username, password, currentTenant)
                  val response = api.login(loginRequest)
-
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
@@ -82,16 +74,17 @@ class LoginActivity : AppCompatActivity() {
                             val branding = loginResponse?.branding
                             Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
                             
-                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                            intent.putExtra("user_id", user?.userId ?: -1)
-                            intent.putExtra("gym_id", user?.gymId ?: -1)
-                            intent.putExtra("user_name", user?.username ?: "Guest")
-                            intent.putExtra("user_email", user?.email ?: "")
-                            intent.putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
-                            intent.putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
-                            intent.putExtra("logo_url", branding?.logoPath ?: "")
-                            intent.putExtra("theme_color", branding?.themeColor ?: "")
-                            intent.putExtra("bg_color", branding?.bgColor ?: "")
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+                                putExtra("user_id", user?.userId ?: -1)
+                                putExtra("gym_id", user?.gymId ?: -1)
+                                putExtra("user_name", user?.username ?: "Guest")
+                                putExtra("user_email", user?.email ?: "")
+                                putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
+                                putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
+                                putExtra("logo_url", branding?.logoPath ?: "")
+                                putExtra("theme_color", branding?.themeColor ?: "")
+                                putExtra("bg_color", branding?.bgColor ?: "")
+                            }
                             startActivity(intent)
                             finish()
                         } else if (loginResponse?.unverified == true) {
@@ -103,14 +96,34 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity, loginResponse?.message ?: "Login Failed", Toast.LENGTH_LONG).show()
                         }
                     } else {
+                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                        Log.e("AuthError", "Server Error Body: $errorBody")
                         Toast.makeText(this@LoginActivity, "Server Error: ${response.code()}", Toast.LENGTH_LONG).show()
                     }
                 }
 
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("AuthError", "Login Error", e)
-                    Toast.makeText(this@LoginActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
+                // Specifically catch parsing errors which indicate InfinityFree "Checking your browser" page
+                val isParsingError = e is IllegalStateException || e is com.google.gson.JsonSyntaxException || e.message?.contains("Expected BEGIN_OBJECT") == true
+                
+                Log.e("AuthError", "Exception in performLogin: ${e.message}", e)
+
+                if (isParsingError && !isRetry) {
+                    withContext(Dispatchers.Main) {
+                        Log.w("AuthAuth", "Bypass might have expired, refreshing...")
+                        Toast.makeText(this@LoginActivity, "Refreshing security... Please wait", Toast.LENGTH_SHORT).show()
+                    }
+                    
+                    // Force refresh security cookie
+                    com.example.horizonsystems.utils.NetworkBypass.getSecurityCookie(this@LoginActivity, forceRefresh = true) { newCookie, newUA ->
+                        // Retry login with fresh credentials
+                        performLogin(username, password, isRetry = true, forcedCookie = newCookie, forcedUA = newUA)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        val errorMsg = if (isParsingError) "Security check failed. Please restart the app." else "Connection Error: ${e.message}"
+                        Toast.makeText(this@LoginActivity, errorMsg, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }

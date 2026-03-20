@@ -85,7 +85,8 @@ class RegisterActivity : AppCompatActivity() {
     private fun performRegistration(
         user: String, email: String, pass: String, first: String, middle: String, last: String,
         phone: String, birth: String, sex: String, occupation: String, address: String,
-        medical: String, eName: String, ePhone: String, gymId: String
+        medical: String, eName: String, ePhone: String, gymId: String, isRetry: Boolean = false,
+        forcedCookie: String? = null, forcedUA: String? = null
     ) {
         val registrationData = RegisterRequest(
             firstName = first,
@@ -107,10 +108,13 @@ class RegisterActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
-                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(this@RegisterActivity)
+                // Use forced credentials if provided
+                val cookie = forcedCookie ?: com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
+                val ua = forcedUA ?: com.example.horizonsystems.utils.GymManager.getBypassUA(this@RegisterActivity)
 
-                val api = RetrofitClient.getApi(cookie, ua)
+                Log.d("RegisterAuth", "Performing registration (retry=$isRetry). Cookie present: ${cookie.isNotEmpty()}")
+                
+                val api = RetrofitClient.getApi(cookie.ifEmpty { null }, ua.ifEmpty { null })
                 val response = api.register(registrationData)
 
 
@@ -119,25 +123,41 @@ class RegisterActivity : AppCompatActivity() {
                         val regResponse = response.body()
                         if (regResponse?.success == true) {
                             Toast.makeText(this@RegisterActivity, regResponse.message ?: "Registration Successful!", Toast.LENGTH_LONG).show()
-                            val intent = Intent(this@RegisterActivity, VerifyActivity::class.java)
-                            intent.putExtra("user_id", regResponse.userId ?: -1)
+                            val intent = Intent(this@RegisterActivity, VerifyActivity::class.java).apply {
+                                putExtra("user_id", regResponse.userId ?: -1)
+                            }
                             startActivity(intent)
                             finish()
                         } else {
                             Toast.makeText(this@RegisterActivity, regResponse?.message ?: "Registration Failed", Toast.LENGTH_LONG).show()
                         }
                     } else {
+                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                        Log.e("RegisterError", "Server Error Body: $errorBody")
                         Toast.makeText(this@RegisterActivity, "Server Error: ${response.code()}", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
-                    if (cookie.isEmpty()) {
-                        Toast.makeText(this@RegisterActivity, "Security check not ready. Please return to Landing and wait a moment.", Toast.LENGTH_LONG).show()
-                    } else {
-                        Log.e("RegisterError", "Error", e)
-                        Toast.makeText(this@RegisterActivity, "Connection Error: Check internet or try again.", Toast.LENGTH_LONG).show()
+                // Specifically catch parsing errors which indicate InfinityFree "Checking your browser" page
+                val isParsingError = e is IllegalStateException || e is com.google.gson.JsonSyntaxException || e.message?.contains("Expected BEGIN_OBJECT") == true
+                
+                Log.e("RegisterError", "Exception in performRegistration: ${e.message}", e)
+
+                if (isParsingError && !isRetry) {
+                    withContext(Dispatchers.Main) {
+                        Log.w("RegisterAuth", "Bypass might have expired, refreshing...")
+                        Toast.makeText(this@RegisterActivity, "Refreshing security... Please wait", Toast.LENGTH_SHORT).show()
+                    }
+                    
+                    // Force refresh security cookie
+                    com.example.horizonsystems.utils.NetworkBypass.getSecurityCookie(this@RegisterActivity, forceRefresh = true) { newCookie, newUA ->
+                        // Retry registration with fresh credentials
+                        performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymId, isRetry = true, forcedCookie = newCookie, forcedUA = newUA)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        val errorMsg = if (isParsingError) "Security check failed. Please restart the app." else "Connection Error: Check internet or try again."
+                        Toast.makeText(this@RegisterActivity, errorMsg, Toast.LENGTH_LONG).show()
                     }
                 }
             }
