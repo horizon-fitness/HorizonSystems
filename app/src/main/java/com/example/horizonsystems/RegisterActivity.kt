@@ -118,7 +118,7 @@ class RegisterActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val regResponse = response.body()
                         if (regResponse?.success == true) {
-                            Toast.makeText(this@RegisterActivity, regResponse.message, Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@RegisterActivity, regResponse.message ?: "Registration Successful!", Toast.LENGTH_LONG).show()
                             val intent = Intent(this@RegisterActivity, VerifyActivity::class.java)
                             intent.putExtra("user_id", regResponse.userId)
                             startActivity(intent)
@@ -144,4 +144,4 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-}
+}   

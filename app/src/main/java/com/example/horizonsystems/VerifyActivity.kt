@@ -59,7 +59,7 @@ class VerifyActivity : AppCompatActivity() {
                 
                 val response = api.verifyUser(payload)
                 withContext(Dispatchers.Main) {
-                    if (response.success) {
+                    if (response.success == true) {
                         Toast.makeText(this@VerifyActivity, "Verified Successfully!", Toast.LENGTH_LONG).show()
                         startActivity(Intent(this@VerifyActivity, LoginActivity::class.java))
                         finish()

@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
                         if (loginResponse?.success == true) {
                             val user = loginResponse?.user
                             val branding = loginResponse?.branding
-                            Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
                             
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             intent.putExtra("user_id", user?.userId ?: -1)
@@ -97,7 +97,7 @@ class LoginActivity : AppCompatActivity() {
                         } else if (loginResponse?.unverified == true) {
                             Toast.makeText(this@LoginActivity, "Please verify your account", Toast.LENGTH_LONG).show()
                             val intent = Intent(this@LoginActivity, VerifyActivity::class.java)
-                            intent.putExtra("user_id", loginResponse.userId ?: -1)
+                            intent.putExtra("user_id", loginResponse?.userId ?: (loginResponse?.user?.userId ?: -1))
                             startActivity(intent)
                         } else {
                             Toast.makeText(this@LoginActivity, loginResponse?.message ?: "Login Failed", Toast.LENGTH_LONG).show()

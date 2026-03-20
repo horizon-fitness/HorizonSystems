@@ -130,7 +130,7 @@ class LandingActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         tenant?.let { 
                             // Persist all data
-                            GymManager.saveGymData(this@LandingActivity, it.pageSlug, it.gymId, it.tenantCode ?: "000", it.gymName ?: "Unknown")
+                            GymManager.saveGymData(this@LandingActivity, it.pageSlug ?: "default", it.gymId ?: 0, it.tenantCode ?: "000", it.gymName ?: "Unknown")
                             updateUIWithBranding(it) 
                             applyDynamicColors(it)
                         }
@@ -166,7 +166,7 @@ class LandingActivity : AppCompatActivity() {
 
     private fun applyDynamicColors(tenant: TenantPage) {
         try {
-            val color = android.graphics.Color.parseColor(tenant.themeColor)
+            val color = android.graphics.Color.parseColor(tenant.themeColor ?: "#7f13ec")
             findViewById<com.google.android.material.card.MaterialCardView>(R.id.headerLogoCard)
                 .setCardBackgroundColor(color)
             findViewById<MaterialButton>(R.id.btnGetStarted)
