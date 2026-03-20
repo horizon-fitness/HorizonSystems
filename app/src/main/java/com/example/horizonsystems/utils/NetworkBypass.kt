@@ -7,7 +7,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 
 object NetworkBypass {
-    private const val BYPASS_URL = "https://horizonfitnesscorp.gt.tc/get_data.php"
+    private const val BYPASS_URL = "https://horizonfitnesscorp.gt.tc/"
 
     fun getSecurityCookie(context: Context, onCaptured: (String, String) -> Unit) {
         // 1. Skip if we already have valid bypass credentials

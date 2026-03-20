@@ -2,6 +2,7 @@ package com.example.horizonsystems.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -36,10 +37,14 @@ object RetrofitClient {
      * @param userAgent The User-Agent string from the WebView to ensure consistency.
      */
     fun getApi(cookie: String? = null, userAgent: String? = null): HorizonApi {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(getOkHttpClient(cookie, userAgent))
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(HorizonApi::class.java)
     }
