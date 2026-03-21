@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Strength"
-            android:textColor="@color/landing_primary"
+            android:textColor="@color/nav_active_color"
             android:textSize="28sp"
             android:textStyle="bold|italic"
             android:fontFamily="sans-serif-black"
@@ -109,7 +109,7 @@
                             android:text="AVAIL NOW"
                             android:textColor="@color/white"
                             android:textStyle="bold"
-                            app:backgroundTint="@color/landing_primary"
+                            app:backgroundTint="@color/nav_active_color"
                             app:cornerRadius="16dp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -136,7 +136,7 @@
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"
                             android:text="BEST VALUE"
-                            android:textColor="@color/landing_primary"
+                            android:textColor="@color/nav_active_color"
                             android:textSize="8sp"
                             android:textStyle="bold" />
                         <TextView
@@ -176,7 +176,7 @@
                             android:text="AVAIL NOW"
                             android:textColor="@color/white"
                             android:textStyle="bold"
-                            app:backgroundTint="@color/landing_primary"
+                            app:backgroundTint="@color/nav_active_color"
                             app:cornerRadius="16dp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

@@ -21,7 +21,6 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="80dp" />
 
-    <!-- Clean Bottom Navigation (Icon Focused) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         style="@style/Widget.App.BottomNavigationView"
         android:id="@+id/bottomNavigationView"
@@ -37,5 +36,6 @@
         app:itemRippleColor="@android:color/transparent"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

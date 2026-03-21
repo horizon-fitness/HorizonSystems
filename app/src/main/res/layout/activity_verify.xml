@@ -72,7 +72,7 @@
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:backgroundTint="@color/landing_primary"
+            app:backgroundTint="@color/nav_active_color"
             android:background="@drawable/button_premium"
             app:cornerRadius="18dp"
             android:fontFamily="sans-serif-black" />
@@ -84,7 +84,7 @@
             android:layout_marginTop="24dp"
             android:layout_gravity="center_horizontal"
             android:text="Didn't receive the PIN? Resend"
-            android:textColor="@color/landing_primary"
+            android:textColor="@color/nav_active_color"
             android:textSize="14sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium" />

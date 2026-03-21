@@ -29,10 +29,11 @@
                 android:textAllCaps="true" />
 
             <TextView
+                android:id="@+id/dashBookingTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Session"
-                android:textColor="@color/landing_primary"
+                android:textColor="@color/nav_active_color"
                 android:textSize="28sp"
                 android:textStyle="bold|italic"
                 android:fontFamily="sans-serif-black"
@@ -128,7 +129,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="32dp"
         android:src="@drawable/ic_booking"
-        app:backgroundTint="@color/landing_primary"
+        app:backgroundTint="@color/nav_active_color"
         app:tint="@color/white"
         app:elevation="8dp" />
 

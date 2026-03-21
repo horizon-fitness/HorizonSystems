@@ -144,7 +144,7 @@
                         android:text="Remember Me"
                         android:textColor="#80FFFFFF"
                         android:textSize="13sp"
-                        android:buttonTint="@color/landing_primary"
+                        android:buttonTint="@color/nav_active_color"
                         android:fontFamily="sans-serif-medium" />
                     <TextView
                         android:id="@+id/btnForgotPassword"
@@ -196,7 +196,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sign Up"
-                        android:textColor="@color/landing_primary"
+                        android:textColor="@color/nav_active_color"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-black"
@@ -241,7 +241,7 @@
             <ProgressBar
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:indeterminateTint="@color/landing_primary" />
+                android:indeterminateTint="@color/nav_active_color" />
 
             <TextView
                 android:layout_width="wrap_content"

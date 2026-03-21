@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ravee"
-            android:textColor="@color/landing_primary"
+            android:textColor="@color/nav_active_color"
             android:textSize="28sp"
             android:textStyle="bold|italic"
             android:fontFamily="sans-serif-black"
@@ -206,7 +206,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_booking"
-                        app:tint="@color/landing_primary" />
+                        app:tint="@color/nav_active_color" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
