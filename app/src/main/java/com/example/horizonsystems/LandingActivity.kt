@@ -152,16 +152,10 @@ class LandingActivity : AppCompatActivity() {
         val heroTitle = findViewById<TextView>(R.id.heroTitle)
         val heroDescription = findViewById<TextView>(R.id.heroDescription)
         val contactFooter = findViewById<TextView>(R.id.contactTextFooter)
-        val imgLogo = findViewById<ImageView>(R.id.imgLogo)
 
-        heroTitle.text = "WELCOME BACK"
-        heroDescription.text = "AUTHORIZED PERSONNEL ONLY"
+        heroTitle.text = tenant.pageTitle ?: "WELCOME BACK"
+        heroDescription.text = tenant.aboutText ?: "AUTHORIZED PERSONNEL ONLY"
         contactFooter.text = tenant.contactText ?: ""
-
-        tenant.logoPath?.let {
-            val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
-            Glide.with(this).load(fullLogoUrl).into(imgLogo)
-        }
 
         tenant.contactText?.let {
             contactFooter.text = it
