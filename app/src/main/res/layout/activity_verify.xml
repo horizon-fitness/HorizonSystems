@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingHorizontal="32dp"
-        android:paddingTop="80dp"
+        android:paddingTop="40dp"
         android:paddingBottom="40dp"
         android:gravity="center_horizontal"
         app:layout_constraintTop_toTopOf="parent">

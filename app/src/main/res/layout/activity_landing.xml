@@ -14,7 +14,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <!-- Premium Ambient Background Glow -->
             <View
@@ -33,9 +33,9 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingHorizontal="32dp"
-                android:paddingTop="80dp"
+                android:paddingTop="40dp"
                 android:paddingBottom="40dp"
-                android:gravity="center_horizontal">
+                android:gravity="center">
 
                 <!-- Header Section -->
                 <LinearLayout
