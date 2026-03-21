@@ -19,65 +19,51 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bottomNavigationView: com.google.android.material.bottomnavigation.BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
         
-        val userName = intent.getStringExtra("user_name") ?: "Unknown User"
-        val userEmail = intent.getStringExtra("user_email") ?: "No Email"
-        val gymName = intent.getStringExtra("gym_name") ?: "No Tenant"
-        val logoUrl = intent.getStringExtra("logo_url") ?: ""
-        val themeColorStr = intent.getStringExtra("theme_color") ?: ""
-        val bgColorStr = intent.getStringExtra("bg_color") ?: ""
-
-        val dashGymName = findViewById<TextView>(R.id.dashGymName)
-        val gymLogo = findViewById<ImageView>(R.id.gymLogo)
-        val profileInitial = findViewById<TextView>(R.id.profileInitial)
-        
-        profileInitial.text = userName.firstOrNull()?.toString()?.uppercase() ?: "U"
-
-        findViewById<TextView>(R.id.dashUserName).text = userName
-        findViewById<TextView>(R.id.dashUserEmail).text = userEmail
-        dashGymName.text = gymName
-        profileInitial.text = userName.firstOrNull()?.toString()?.uppercase() ?: "U"
-
-        // Apply Dynamic Branding
-        if (themeColorStr.isNotEmpty()) {
-            try {
-                val color = android.graphics.Color.parseColor(themeColorStr)
-                findViewById<com.google.android.material.card.MaterialCardView>(R.id.profileCard)?.setCardBackgroundColor(android.content.res.ColorStateList.valueOf(color))
-                findViewById<TextView>(R.id.tenantLabel)?.setTextColor(color)
-            } catch (e: Exception) {
-               Log.e("Branding", "Invalid theme color: $themeColorStr")
-            }
+        // Load default fragment
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
         }
 
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            val (fragment, title) = when (item.itemId) {
+                R.id.nav_home -> HomeFragment() to "Member Dashboard"
+                R.id.nav_booking -> BookingFragment() to "Booking Session"
+                R.id.nav_payment -> PaymentFragment() to "Payment History"
+                R.id.nav_membership -> MembershipFragment() to "My Membership"
+                R.id.nav_appointment -> AppointmentFragment() to "My Appointments"
+                else -> HomeFragment() to "Member Dashboard"
+            }
+            findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)?.let {
+                it.title = title
+            }
+            loadFragment(fragment)
+            true
+        }
+
+        // Apply Global Background Branding if provided
+        val bgColorStr = intent.getStringExtra("bg_color") ?: ""
         if (bgColorStr.isNotEmpty()) {
             try {
                 val bgColor = android.graphics.Color.parseColor(bgColorStr)
-                findViewById<CoordinatorLayout>(android.R.id.content).rootView.setBackgroundColor(bgColor)
+                findViewById<android.view.View>(android.R.id.content).setBackgroundColor(bgColor)
             } catch (e: Exception) {
                 Log.e("Branding", "Invalid bg color: $bgColorStr")
             }
         }
-
-        // Match the database branding like what a gym owner sees (Logo parity)
-        if (logoUrl.isNotEmpty()) {
-            val fullLogoUrl = if (logoUrl.startsWith("http")) logoUrl else "https://horizonfitnesscorp.gt.tc/$logoUrl"
-            Glide.with(this)
-                .load(fullLogoUrl)
-                .into(gymLogo)
-            gymLogo.visibility = android.view.View.VISIBLE
-            profileInitial.visibility = android.view.View.GONE
-        }
-
-        // Logout Logic
-        findViewById<MaterialButton>(R.id.btnLogout).setOnClickListener {
-            val intent = Intent(this, LandingActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
     }
-}
+
+    private fun loadFragment(fragment: androidx.fragment.app.Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+    }
+}
