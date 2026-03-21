@@ -19,13 +19,20 @@ import kotlinx.coroutines.withContext
 
 class RegisterActivity : AppCompatActivity() {
 
+    private var currentStep = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
 
         findViewById<android.widget.ImageButton>(R.id.btnBack).setOnClickListener {
-            onBackPressed()
+            if (currentStep > 1) {
+                currentStep--
+                updateWizardUI()
+            } else {
+                onBackPressed()
+            }
         }
 
         // Setup Sex Dropdown
@@ -34,29 +41,76 @@ class RegisterActivity : AppCompatActivity() {
         val sexSpinner = findViewById<AutoCompleteTextView>(R.id.sexSpinner)
         sexSpinner.setAdapter(adapter)
 
+        // Fields
+        val gymIdEdit = findViewById<TextInputEditText>(R.id.gymIdEdit)
+        val userRegEdit = findViewById<TextInputEditText>(R.id.userRegEdit)
+        val passRegEdit = findViewById<TextInputEditText>(R.id.passRegEdit)
+        
         val firstNameEdit = findViewById<TextInputEditText>(R.id.firstNameEdit)
         val lastNameEdit = findViewById<TextInputEditText>(R.id.lastNameEdit)
         val middleNameEdit = findViewById<TextInputEditText>(R.id.middleNameEdit)
-        val emailEdit = findViewById<TextInputEditText>(R.id.emailEdit)
-        val userRegEdit = findViewById<TextInputEditText>(R.id.userRegEdit)
-        val passRegEdit = findViewById<TextInputEditText>(R.id.passRegEdit)
-        val gymIdEdit = findViewById<TextInputEditText>(R.id.gymIdEdit)
         val birthDateEdit = findViewById<TextInputEditText>(R.id.birthDateEdit)
+
+        val emailEdit = findViewById<TextInputEditText>(R.id.emailEdit)
+        val phoneEdit = findViewById<TextInputEditText>(R.id.phoneNumberEdit)
         val occupationEdit = findViewById<TextInputEditText>(R.id.occupationEdit)
         val addressEdit = findViewById<TextInputEditText>(R.id.addressEdit)
-        val phoneEdit = findViewById<TextInputEditText>(R.id.phoneNumberEdit)
-        val medicalEdit = findViewById<TextInputEditText>(R.id.medicalHistoryEdit)
 
+        val medicalEdit = findViewById<TextInputEditText>(R.id.medicalHistoryEdit)
         val emergencyNameEdit = findViewById<TextInputEditText>(R.id.emergencyNameEdit)
         val emergencyPhoneEdit = findViewById<TextInputEditText>(R.id.emergencyPhoneEdit)
+
+        // Navigation Controls
+        val btnPrev = findViewById<MaterialButton>(R.id.btnPrev)
+        val btnNext = findViewById<MaterialButton>(R.id.btnNext)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
-        // Pre-fill tenant code from the current tenant
+        // Pre-fill tenant code
         val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
         gymIdEdit.setText(currentTenantCode)
 
-        btnRegister.setOnClickListener {
+        // Wizard Logic
+        fun validateStep(step: Int): Boolean {
+            return when (step) {
+                1 -> {
+                    if (gymIdEdit.text.isNullOrEmpty() || userRegEdit.text.isNullOrEmpty() || passRegEdit.text.isNullOrEmpty()) {
+                        Toast.makeText(this, "Please complete account details", Toast.LENGTH_SHORT).show()
+                        false
+                    } else true
+                }
+                2 -> {
+                    if (firstNameEdit.text.isNullOrEmpty() || lastNameEdit.text.isNullOrEmpty()) {
+                        Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show()
+                        false
+                    } else true
+                }
+                3 -> {
+                    if (emailEdit.text.isNullOrEmpty() || phoneEdit.text.isNullOrEmpty()) {
+                        Toast.makeText(this, "Please enter contact info", Toast.LENGTH_SHORT).show()
+                        false
+                    } else true
+                }
+                else -> true
+            }
+        }
 
+        btnNext.setOnClickListener {
+            if (validateStep(currentStep)) {
+                if (currentStep < 4) {
+                    currentStep++
+                    updateWizardUI()
+                }
+            }
+        }
+
+        btnPrev.setOnClickListener {
+            if (currentStep > 1) {
+                currentStep--
+                updateWizardUI()
+            }
+        }
+
+        btnRegister.setOnClickListener {
             val first = firstNameEdit.text.toString()
             val last = lastNameEdit.text.toString()
             val middle = middleNameEdit.text.toString()
@@ -73,13 +127,59 @@ class RegisterActivity : AppCompatActivity() {
             val eName = emergencyNameEdit.text.toString()
             val ePhone = emergencyPhoneEdit.text.toString()
 
-            if (first.isEmpty() || last.isEmpty() || email.isEmpty() || user.isEmpty() || pass.isEmpty() || gymIdStr.isEmpty() || eName.isEmpty() || ePhone.isEmpty()) {
-                Toast.makeText(this, "Please fill required fields (Name, Email, Account, Emergency)", Toast.LENGTH_SHORT).show()
+            if (eName.isEmpty() || ePhone.isEmpty()) {
+                Toast.makeText(this, "Please enter emergency contact info", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
         }
+
+        // Footer navigation
+        findViewById<android.view.View>(R.id.btnSignBack).setOnClickListener {
+            onBackPressed()
+        }
+
+        updateWizardUI()
+    }
+
+    private fun updateWizardUI() {
+        val layoutStepAccount = findViewById<android.widget.LinearLayout>(R.id.layoutStepAccount)
+        val layoutStepPersonal = findViewById<android.widget.LinearLayout>(R.id.layoutStepPersonal)
+        val layoutStepContact = findViewById<android.widget.LinearLayout>(R.id.layoutStepContact)
+        val layoutStepHealth = findViewById<android.widget.LinearLayout>(R.id.layoutStepHealth)
+
+        val btnPrev = findViewById<MaterialButton>(R.id.btnPrev)
+        val btnNext = findViewById<MaterialButton>(R.id.btnNext)
+        val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
+        val btnSpace = findViewById<android.view.View>(R.id.btnSpace)
+        val registerFooter = findViewById<android.view.View>(R.id.registerFooter)
+        val indicator = findViewById<android.widget.TextView>(R.id.registerStepIndicator)
+
+        // Toggle layouts
+        layoutStepAccount.visibility = if (currentStep == 1) android.view.View.VISIBLE else android.view.View.GONE
+        layoutStepPersonal.visibility = if (currentStep == 2) android.view.View.VISIBLE else android.view.View.GONE
+        layoutStepContact.visibility = if (currentStep == 3) android.view.View.VISIBLE else android.view.View.GONE
+        layoutStepHealth.visibility = if (currentStep == 4) android.view.View.VISIBLE else android.view.View.GONE
+
+        // Toggle buttons
+        btnPrev.visibility = if (currentStep > 1) android.view.View.VISIBLE else android.view.View.GONE
+        btnSpace.visibility = if (currentStep > 1) android.view.View.VISIBLE else android.view.View.GONE
+        btnNext.visibility = if (currentStep < 4) android.view.View.VISIBLE else android.view.View.GONE
+        btnRegister.visibility = if (currentStep == 4) android.view.View.VISIBLE else android.view.View.GONE
+        
+        // Only show "Already part of family? Sign In" on the first step
+        registerFooter.visibility = if (currentStep == 1) android.view.View.VISIBLE else android.view.View.GONE
+
+        // Update indicator
+        val stepTitle = when(currentStep) {
+            1 -> "Account Access"
+            2 -> "Personal Information"
+            3 -> "Contact Details"
+            4 -> "Health & Emergency"
+            else -> ""
+        }
+        indicator.text = "Step $currentStep of 4: $stepTitle"
     }
 
     private fun performRegistration(
