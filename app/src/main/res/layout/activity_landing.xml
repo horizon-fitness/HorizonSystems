@@ -144,6 +144,7 @@
                         android:buttonTint="@color/landing_primary"
                         android:fontFamily="sans-serif-medium" />
                     <TextView
+                        android:id="@+id/btnForgotPassword"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -152,7 +153,9 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium" />
+                        android:fontFamily="sans-serif-medium"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </RelativeLayout>
 
                 <!-- Login Button -->

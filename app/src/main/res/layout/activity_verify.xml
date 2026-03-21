@@ -42,30 +42,20 @@
             android:textSize="16sp"
             android:lineSpacingMultiplier="1.2" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:hint="6-Digit PIN"
-            android:textColorHint="#40FFFFFF"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            app:startIconDrawable="@android:drawable/ic_dialog_info"
-            app:startIconTint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/pinEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="6"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.5"
-                android:gravity="center_horizontal"
-                android:paddingVertical="18dp" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="48dp">
+
+            <EditText android:id="@+id/otp1" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <EditText android:id="@+id/otp2" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <EditText android:id="@+id/otp3" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <EditText android:id="@+id/otp4" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <EditText android:id="@+id/otp5" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <EditText android:id="@+id/otp6" android:layout_width="48dp" android:layout_height="56dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVerify"
@@ -77,6 +67,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/landing_primary"
+            android:background="@drawable/button_premium"
             app:cornerRadius="18dp" />
 
         <TextView
@@ -88,7 +79,8 @@
             android:text="Didn't receive the PIN? Resend"
             android:textColor="@color/landing_primary"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium" />
 
     </LinearLayout>
 

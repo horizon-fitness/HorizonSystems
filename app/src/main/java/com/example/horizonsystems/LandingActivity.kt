@@ -87,6 +87,11 @@ class LandingActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+
+        findViewById<android.widget.TextView>(R.id.btnForgotPassword).setOnClickListener {
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
