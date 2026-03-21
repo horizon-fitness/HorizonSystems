@@ -154,11 +154,12 @@
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp"
                         android:layout_marginBottom="12dp">
-                        <ImageView android:id="@+id/btnTogglePassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/passRegEdit"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
                             android:background="@null"
                             android:hint="Secure Password"
@@ -166,6 +167,7 @@
                             android:textColor="@color/white"
                             android:textColorHint="#40FFFFFF"
                             android:textSize="14sp" />
+                        <ImageView android:id="@+id/btnTogglePassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -174,11 +176,12 @@
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp">
-                        <ImageView android:id="@+id/btnToggleConfirmPassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/confirmPassRegEdit"
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
                             android:background="@null"
                             android:hint="Confirm Password"
@@ -186,6 +189,7 @@
                             android:textColor="@color/white"
                             android:textColorHint="#40FFFFFF"
                             android:textSize="14sp" />
+                        <ImageView android:id="@+id/btnToggleConfirmPassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
