@@ -2,9 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="landing_primary">#8C2BEE</color>
-    <color name="landing_background">#0A090D</color>
-    <color name="surface_dark">#08FFFFFF</color>
+    <color name="landing_primary">#7f13ec</color>
+    <color name="landing_background">#050505</color>
+    <color name="surface_dark">#1AFFFFFF</color>
     <color name="border_light">#14FFFFFF</color>
-    <color name="text_secondary">#A1A1AA</color>
+    <color name="text_secondary">#ab9db9</color>
+    <color name="primary_dark">#5e0eb3</color>
+    <color name="input_background">#1AFFFFFF</color>
+
+    <!-- Legacy / Global Color Aliases (Synced with Horizon Theme) -->
+    <color name="midnight_primary">@color/landing_primary</color>
+    <color name="nav_item_color">@color/text_secondary</color>
+    <color name="primary">@color/landing_primary</color>
+    <color name="primary_light">@color/landing_primary</color>
+    <color name="accent">@color/landing_primary</color>
+    <color name="primary_text">@color/white</color>
+    <color name="secondary_text">@color/text_secondary</color>
+    <color name="icons">@color/white</color>
+    <color name="divider">@color/border_light</color>
 </resources>
