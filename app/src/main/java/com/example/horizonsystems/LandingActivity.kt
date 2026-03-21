@@ -82,6 +82,11 @@ class LandingActivity : AppCompatActivity() {
             // Trigger unified login logic
             performLogin(username, password)
         }
+
+        findViewById<android.widget.TextView>(R.id.btnCreateAccount).setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
@@ -229,9 +234,27 @@ class LandingActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
+                // Specifically catch parsing errors which indicate InfinityFree "Checking your browser" page
+                val isParsingError = e is IllegalStateException || e is com.google.gson.JsonSyntaxException || e.message?.contains("Expected BEGIN_OBJECT") == true
+                
                 Log.e("AuthError", "Exception in performLogin: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@LandingActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
+
+                if (isParsingError && !isRetry) {
+                    withContext(Dispatchers.Main) {
+                        Log.w("AuthError", "Bypass might have expired, refreshing...")
+                        Toast.makeText(this@LandingActivity, "Refreshing security... Please wait", Toast.LENGTH_SHORT).show()
+                    }
+                    
+                    // Force refresh security cookie
+                    NetworkBypass.getSecurityCookie(this@LandingActivity, forceRefresh = true) { newCookie, newUA ->
+                        // Retry login with fresh credentials
+                        performLogin(username, password, isRetry = true, forcedCookie = newCookie, forcedUA = newUA)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        val errorMsg = if (isParsingError) "Security check failed. Please restart the app." else "Connection Error: ${e.message}"
+                        Toast.makeText(this@LandingActivity, errorMsg, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
