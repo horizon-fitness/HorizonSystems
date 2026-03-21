@@ -29,7 +29,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingHorizontal="32dp"
-                android:paddingTop="80dp"
+                android:paddingTop="48dp"
                 android:paddingBottom="40dp"
                 android:gravity="center_horizontal">
 
@@ -50,7 +50,7 @@
                 android:id="@+id/registerTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:text="Join the Family"
                 android:textColor="@color/white"
                 android:textSize="32sp"
@@ -152,7 +152,8 @@
                         android:layout_height="62dp"
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="20dp">
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="12dp">
                         <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/passRegEdit"
@@ -161,6 +162,26 @@
                             android:layout_marginStart="16dp"
                             android:background="@null"
                             android:hint="Secure Password"
+                            android:inputType="textPassword"
+                            android:textColor="@color/white"
+                            android:textColorHint="#40FFFFFF"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:background="@drawable/input_field_bg"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp">
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/confirmPassRegEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="16dp"
+                            android:background="@null"
+                            android:hint="Confirm Password"
                             android:inputType="textPassword"
                             android:textColor="@color/white"
                             android:textColorHint="#40FFFFFF"
@@ -206,14 +227,12 @@
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/middleNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Middle Name (Optional)" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="62dp" android:layout_weight="1.2" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp">
-                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/birthDateEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Birth Date" android:text="2000-01-01" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="13sp" />
-                        </LinearLayout>
-                        <View android:layout_width="12dp" android:layout_height="0dp" />
-                        <LinearLayout android:layout_width="0dp" android:layout_height="62dp" android:layout_weight="0.8" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp">
-                            <AutoCompleteTextView android:id="@+id/sexSpinner" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Sex" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="13sp" android:inputType="none" />
-                        </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/birthDateEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Birth Date" android:text="2000-01-01" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:focusable="false" android:clickable="true" android:inputType="none" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                        <AutoCompleteTextView android:id="@+id/sexSpinner" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Sex" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:inputType="none" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -251,9 +270,6 @@
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/phoneNumberEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Phone Number" android:inputType="phone" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/occupationEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Occupation" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
-                    </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="100dp" android:background="@drawable/input_field_bg" android:gravity="top|start" android:padding="16dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/addressEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Full Residential Address" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:gravity="top" android:inputType="textMultiLine" />
@@ -261,7 +277,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Step 4: Health & Emergency -->
+            <!-- Step 4: Health & Background -->
             <LinearLayout
                 android:id="@+id/layoutStepHealth"
                 android:layout_width="match_parent"
@@ -274,7 +290,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:layout_gravity="center_horizontal"
-                    android:text="HEALTH &amp; EMERGENCY"
+                    android:text="HEALTH &amp; BACKGROUND"
                     android:textColor="#80FFFFFF"
                     android:textSize="11sp"
                     android:textStyle="bold"
@@ -286,16 +302,31 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp">
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="100dp" android:background="@drawable/input_field_bg" android:gravity="top|start" android:padding="16dp" android:layout_marginBottom="12dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/medicalHistoryEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Medical History / Allergies" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:gravity="top" android:inputType="textMultiLine" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/occupationEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Your current job" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="100dp" android:background="@drawable/input_field_bg" android:gravity="top|start" android:padding="16dp" android:layout_marginBottom="24dp">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/medicalHistoryEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Please specify any medical conditions or allergies..." android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:gravity="top" android:inputType="textMultiLine" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="EMERGENCY CONTACT"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Name of person to contact" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Emergency Contact Name" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyPhoneEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Emergency Phone Number" android:inputType="phone" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyPhoneEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Emergency contact number" android:inputType="phone" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

@@ -36,15 +36,19 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         // Setup Sex Dropdown
-        val sexOptions = arrayOf("Male", "Female", "Other")
+        val sexOptions = arrayOf("Male", "Female")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sexOptions)
         val sexSpinner = findViewById<AutoCompleteTextView>(R.id.sexSpinner)
         sexSpinner.setAdapter(adapter)
+        sexSpinner.setOnClickListener {
+            sexSpinner.showDropDown()
+        }
 
         // Fields
         val gymIdEdit = findViewById<TextInputEditText>(R.id.gymIdEdit)
         val userRegEdit = findViewById<TextInputEditText>(R.id.userRegEdit)
         val passRegEdit = findViewById<TextInputEditText>(R.id.passRegEdit)
+        val confirmPassRegEdit = findViewById<TextInputEditText>(R.id.confirmPassRegEdit)
         
         val firstNameEdit = findViewById<TextInputEditText>(R.id.firstNameEdit)
         val lastNameEdit = findViewById<TextInputEditText>(R.id.lastNameEdit)
@@ -75,8 +79,13 @@ class RegisterActivity : AppCompatActivity() {
                 1 -> {
                     if (gymIdEdit.text.isNullOrEmpty() || userRegEdit.text.isNullOrEmpty() || passRegEdit.text.isNullOrEmpty()) {
                         Toast.makeText(this, "Please complete account details", Toast.LENGTH_SHORT).show()
-                        false
-                    } else true
+                        return false
+                    }
+                    if (passRegEdit.text.toString() != confirmPassRegEdit.text.toString()) {
+                        Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        return false
+                    }
+                    true
                 }
                 2 -> {
                     if (firstNameEdit.text.isNullOrEmpty() || lastNameEdit.text.isNullOrEmpty()) {
@@ -133,6 +142,23 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
+        }
+
+
+        // Date Picker
+        birthDateEdit.setOnClickListener {
+            val datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Birth Date")
+                .setSelection(com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+                calendar.timeInMillis = selection
+                val format = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                birthDateEdit.setText(format.format(calendar.time))
+            }
+            datePicker.show(supportFragmentManager, "DATE_PICKER")
         }
 
         // Footer navigation
