@@ -20,42 +20,26 @@ class HomeFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val userName = activity?.intent?.getStringExtra("user_name") ?: "Unknown User"
-        val userEmail = activity?.intent?.getStringExtra("user_email") ?: "No Email"
-        val gymName = activity?.intent?.getStringExtra("gym_name") ?: "No Tenant"
-        val logoUrl = activity?.intent?.getStringExtra("logo_url") ?: ""
-        val themeColorStr = activity?.intent?.getStringExtra("theme_color") ?: ""
-
-        view.findViewById<TextView>(R.id.dashUserName).text = userName
-        view.findViewById<TextView>(R.id.dashUserEmail).text = userEmail
-        view.findViewById<TextView>(R.id.dashGymName).text = gymName
+        val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
         
-        val profileInitial = view.findViewById<TextView>(R.id.profileInitial)
-        profileInitial.text = userName.firstOrNull()?.toString()?.uppercase() ?: "U"
+        view.findViewById<TextView>(R.id.dashUserName).text = userName
 
-        val gymLogo = view.findViewById<ImageView>(R.id.gymLogo)
-        if (logoUrl.isNotEmpty()) {
-            val fullLogoUrl = if (logoUrl.startsWith("http")) logoUrl else "https://horizonfitnesscorp.gt.tc/$logoUrl"
-            Glide.with(this).load(fullLogoUrl).into(gymLogo)
-            gymLogo.visibility = View.VISIBLE
-            profileInitial.visibility = View.GONE
+        // Handle Logout from Quick Actions
+        view.findViewById<View>(R.id.btnNavLogout).setOnClickListener {
+            logout()
         }
 
-        if (themeColorStr.isNotEmpty()) {
-            try {
-                val color = android.graphics.Color.parseColor(themeColorStr)
-                view.findViewById<MaterialCardView>(R.id.profileCard).setCardBackgroundColor(android.content.res.ColorStateList.valueOf(color))
-                view.findViewById<TextView>(R.id.tenantLabel).setTextColor(color)
-            } catch (e: Exception) {}
-        }
-
-        view.findViewById<MaterialButton>(R.id.btnLogout).setOnClickListener {
-            val intent = Intent(requireContext(), LandingActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            activity?.finish()
-        }
-
+        // Placeholder logic for status cards
+        // In a real app, these would be populated from an API
+        view.findViewById<TextView>(R.id.membershipPlan).text = "Plan: Standard Access"
+        
         return view
+    }
+
+    private fun logout() {
+        val intent = Intent(requireContext(), LandingActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity?.finish()
     }
 }

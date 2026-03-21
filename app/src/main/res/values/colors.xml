@@ -4,12 +4,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="landing_primary">#7f13ec</color>
     <color name="nav_active_blue">#1E88E5</color>
-    <color name="landing_background">#050505</color>
-    <color name="surface_dark">#1AFFFFFF</color>
+    <color name="landing_background">#0a090d</color>
+    <color name="background_dark">#0a090d</color>
+    <color name="surface_dark">#14121a</color>
     <color name="border_light">#14FFFFFF</color>
     <color name="text_secondary">#ab9db9</color>
     <color name="primary_dark">#5e0eb3</color>
     <color name="input_background">#1AFFFFFF</color>
+
+    <color name="emerald_500">#10B981</color>
+    <color name="emerald_400">#34D399</color>
+    <color name="amber_500">#F59E0B</color>
 
     <!-- Legacy / Global Color Aliases (Synced with Horizon Theme) -->
     <color name="midnight_primary">@color/landing_primary</color>
