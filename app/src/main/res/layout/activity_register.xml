@@ -29,7 +29,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingHorizontal="32dp"
-                android:paddingTop="48dp"
+                android:paddingTop="80dp"
                 android:paddingBottom="40dp"
                 android:gravity="center_horizontal">
 
@@ -53,7 +53,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Join the Family"
                 android:textColor="@color/white"
-                android:textSize="32sp"
+                android:textSize="36sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="-0.02" />
@@ -109,7 +109,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="62dp"
+                        android:layout_height="64dp"
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp"
@@ -129,7 +129,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="62dp"
+                        android:layout_height="64dp"
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp"
@@ -149,12 +149,12 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="62dp"
+                        android:layout_height="64dp"
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp"
                         android:layout_marginBottom="12dp">
-                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
+                        <ImageView android:id="@+id/btnTogglePassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/passRegEdit"
                             android:layout_width="match_parent"
@@ -170,11 +170,11 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="62dp"
+                        android:layout_height="64dp"
                         android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="20dp">
-                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_lock_idle_lock" app:tint="#80FFFFFF" />
+                        <ImageView android:id="@+id/btnToggleConfirmPassword" android:layout_width="18dp" android:layout_height="18dp" android:src="@android:drawable/ic_menu_view" app:tint="#80FFFFFF" android:clickable="true" android:focusable="true" />
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/confirmPassRegEdit"
                             android:layout_width="match_parent"
@@ -215,23 +215,23 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp">
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/firstNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="First Name" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/lastNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Last Name" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/middleNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Middle Name (Optional)" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/birthDateEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Birth Date" android:text="2000-01-01" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:focusable="false" android:clickable="true" android:inputType="none" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <AutoCompleteTextView android:id="@+id/sexSpinner" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Sex" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" android:inputType="none" />
                     </LinearLayout>
                 </LinearLayout>
@@ -262,11 +262,11 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp">
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/emailEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Email Address" android:inputType="textEmailAddress" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/phoneNumberEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Phone Number" android:inputType="phone" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
@@ -302,7 +302,7 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp">
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/occupationEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Your current job" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
@@ -321,11 +321,11 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.1" />
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyNameEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Name of person to contact" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="62dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="64dp" android:background="@drawable/input_field_bg" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:layout_marginBottom="12dp">
                         <com.google.android.material.textfield.TextInputEditText android:id="@+id/emergencyPhoneEdit" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@null" android:hint="Emergency contact number" android:inputType="phone" android:textColor="@color/white" android:textColorHint="#40FFFFFF" android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>

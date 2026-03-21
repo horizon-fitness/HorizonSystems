@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import android.widget.ImageView
 import com.example.horizonsystems.models.RegisterRequest
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
@@ -164,6 +165,31 @@ class RegisterActivity : AppCompatActivity() {
         // Footer navigation
         findViewById<android.view.View>(R.id.btnSignBack).setOnClickListener {
             onBackPressed()
+        }
+
+        val btnTogglePassword = findViewById<ImageView>(R.id.btnTogglePassword)
+        val btnToggleConfirmPassword = findViewById<ImageView>(R.id.btnToggleConfirmPassword)
+
+        btnTogglePassword.setOnClickListener {
+            if (passRegEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
+                passRegEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                btnTogglePassword.alpha = 1.0f
+            } else {
+                passRegEdit.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                btnTogglePassword.alpha = 0.5f
+            }
+            passRegEdit.setSelection(passRegEdit.text?.length ?: 0)
+        }
+
+        btnToggleConfirmPassword.setOnClickListener {
+            if (confirmPassRegEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
+                confirmPassRegEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                btnToggleConfirmPassword.alpha = 1.0f
+            } else {
+                confirmPassRegEdit.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                btnToggleConfirmPassword.alpha = 0.5f
+            }
+            confirmPassRegEdit.setSelection(confirmPassRegEdit.text?.length ?: 0)
         }
 
         updateWizardUI()

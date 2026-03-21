@@ -122,11 +122,14 @@
                         android:textSize="15sp"
                         android:fontFamily="sans-serif-medium" />
                     <ImageView
+                        android:id="@+id/btnTogglePassword"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_view"
                         android:alpha="0.5"
-                        app:tint="#80FFFFFF" />
+                        app:tint="#80FFFFFF"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
 
                 <!-- Options Row -->

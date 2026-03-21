@@ -66,6 +66,34 @@ class ForgotPasswordActivity : AppCompatActivity() {
         btnResetPass.setOnClickListener {
             handlePasswordReset()
         }
+
+        // Toggles for Step 3
+        val btnToggleNewPassword = findViewById<ImageView>(R.id.btnToggleNewPassword)
+        val btnToggleConfirmNewPassword = findViewById<ImageView>(R.id.btnToggleConfirmNewPassword)
+        val newPassEdit = findViewById<TextInputEditText>(R.id.newPassEdit)
+        val confirmNewPassEdit = findViewById<TextInputEditText>(R.id.confirmNewPassEdit)
+
+        btnToggleNewPassword.setOnClickListener {
+            if (newPassEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
+                newPassEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                btnToggleNewPassword.alpha = 1.0f
+            } else {
+                newPassEdit.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                btnToggleNewPassword.alpha = 0.5f
+            }
+            newPassEdit.setSelection(newPassEdit.text?.length ?: 0)
+        }
+
+        btnToggleConfirmNewPassword.setOnClickListener {
+            if (confirmNewPassEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
+                confirmNewPassEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                btnToggleConfirmNewPassword.alpha = 1.0f
+            } else {
+                confirmNewPassEdit.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                btnToggleConfirmNewPassword.alpha = 0.5f
+            }
+            confirmNewPassEdit.setSelection(confirmNewPassEdit.text?.length ?: 0)
+        }
     }
 
     private fun setupOtpInputs() {

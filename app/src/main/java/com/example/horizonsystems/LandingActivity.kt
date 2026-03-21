@@ -92,6 +92,18 @@ class LandingActivity : AppCompatActivity() {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
+
+        val btnTogglePassword = findViewById<ImageView>(R.id.btnTogglePassword)
+        btnTogglePassword.setOnClickListener {
+            if (passwordEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
+                passwordEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                btnTogglePassword.alpha = 1.0f
+            } else {
+                passwordEdit.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                btnTogglePassword.alpha = 0.5f
+            }
+            passwordEdit.setSelection(passwordEdit.text?.length ?: 0)
+        }
     }
 
 
