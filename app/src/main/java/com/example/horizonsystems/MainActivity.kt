@@ -34,16 +34,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
-            val (fragment, title) = when (item.itemId) {
-                R.id.nav_home -> HomeFragment() to "Member Dashboard"
-                R.id.nav_payment -> PaymentFragment() to "Payment History"
-                R.id.nav_booking -> BookingFragment() to "Booking Session"
-                R.id.nav_membership -> MembershipFragment() to "My Membership"
-                R.id.nav_appointment -> AppointmentFragment() to "My Appointments"
-                else -> HomeFragment() to "Member Dashboard"
-            }
-            findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)?.let {
-                it.title = title
+            val fragment = when (item.itemId) {
+                R.id.nav_home -> HomeFragment()
+                R.id.nav_payment -> PaymentFragment()
+                R.id.nav_booking -> BookingFragment()
+                R.id.nav_membership -> MembershipFragment()
+                R.id.nav_appointment -> AppointmentFragment()
+                else -> HomeFragment()
             }
             loadFragment(fragment)
             true

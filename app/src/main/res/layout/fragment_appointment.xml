@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingTop="64dp"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
 
         <!-- Header -->
         <TextView
@@ -50,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             app:cardBackgroundColor="@color/surface_dark"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="32dp"
             app:cardElevation="0dp"
             app:strokeColor="@color/border_light"
             app:strokeWidth="1dp">
@@ -174,7 +176,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="100dp"
             app:cardBackgroundColor="@color/surface_dark"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="32dp"
             app:cardElevation="0dp"
             app:strokeColor="@color/border_light"
             app:strokeWidth="1dp">

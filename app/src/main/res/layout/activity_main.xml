@@ -2,21 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/landing_background"
-    android:fitsSystemWindows="true">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0DFFFFFF"
-        app:elevation="0dp">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Member Dashboard"
-            app:titleTextColor="@color/white" />
-    </com.google.android.material.appbar.AppBarLayout>
+    android:background="@color/landing_background">
 
     <!-- Premium Ambient Background Glow -->
     <View
@@ -33,10 +19,9 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="80dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_marginBottom="80dp" />
 
-    <!-- Full-Width Bottom Navigation (Instagram Style) -->
+    <!-- Clean Bottom Navigation (Icon Focused) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         style="@style/Widget.App.BottomNavigationView"
         android:id="@+id/bottomNavigationView"
@@ -45,15 +30,12 @@
         android:layout_gravity="bottom"
         android:background="@color/landing_background"
         app:elevation="8dp"
-        app:itemIconSize="24dp"
+        app:itemIconSize="26dp"
         app:itemIconTint="@color/nav_item_selector"
-        app:itemPaddingBottom="20dp"
+        app:itemPaddingBottom="12dp"
         app:itemPaddingTop="12dp"
         app:itemRippleColor="@android:color/transparent"
-        app:itemTextAppearanceActive="@style/BottomNavText"
-        app:itemTextAppearanceInactive="@style/BottomNavText"
-        app:itemTextColor="@color/nav_item_selector"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
