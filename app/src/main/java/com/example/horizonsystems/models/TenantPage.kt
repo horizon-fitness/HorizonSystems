@@ -16,6 +16,7 @@ data class TenantPage(
 
     @SerializedName("contact_text") val contactText: String?,
     @SerializedName("app_download_link") val appDownloadLink: String?,
+    @SerializedName("banner_image") val bannerImage: String?,
     @SerializedName("gym_name") val gymName: String?,
     @SerializedName("gym_email") val gymEmail: String?,
     @SerializedName("gym_contact") val gymContact: String?

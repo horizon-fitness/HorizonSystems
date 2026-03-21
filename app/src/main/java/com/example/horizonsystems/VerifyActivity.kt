@@ -61,7 +61,7 @@ class VerifyActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.success == true) {
                         Toast.makeText(this@VerifyActivity, "Verified Successfully!", Toast.LENGTH_LONG).show()
-                        startActivity(Intent(this@VerifyActivity, LoginActivity::class.java))
+                        startActivity(Intent(this@VerifyActivity, LandingActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this@VerifyActivity, response.message ?: "Verification Failed", Toast.LENGTH_SHORT).show()

@@ -11,7 +11,7 @@ object GymManager {
     private const val KEY_GYM_NAME = "selected_gym_name"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
-    private const val DEFAULT_SLUG = "corsanofitness"
+    private const val DEFAULT_SLUG = "horizon"
 
 
     private fun getPrefs(context: Context): SharedPreferences {

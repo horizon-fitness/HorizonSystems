@@ -36,7 +36,7 @@ interface HorizonApi {
     @POST("api/register.php")
     suspend fun verifyUser(@Body body: Map<String, @JvmSuppressWildcards Any>): LoginResponse
 
-    @GET("api/tenant.php")
+    @GET("get_tenant.php")
     suspend fun getTenantInfo(
         @Query("gym") slug: String,
         @Query("i") bypass: Int = 1

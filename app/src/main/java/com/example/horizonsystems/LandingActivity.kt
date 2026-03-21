@@ -9,11 +9,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import android.net.Uri
+import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.example.horizonsystems.models.LoginRequest
+import com.example.horizonsystems.models.LoginResponse
 import com.example.horizonsystems.models.TenantPage
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
-import android.widget.ImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,7 +56,7 @@ class LandingActivity : AppCompatActivity() {
             cachedUserAgent = userAgent
             isBypassed = true
             
-            // Persist for other activities (LoginActivity, RegisterActivity)
+            // Persist for other activities (RegisterActivity)
             GymManager.saveBypassCredentials(this, cookie, userAgent)
             
             runOnUiThread {
@@ -64,22 +66,21 @@ class LandingActivity : AppCompatActivity() {
             }
         }
 
-        // Navigation to Login
-        findViewById<MaterialButton>(R.id.btnGetStarted).setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
+        // Navigation / Login
+        val usernameEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.usernameEdit)
+        val passwordEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)
+        
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn).setOnClickListener {
+            val username = usernameEdit.text.toString()
+            val password = passwordEdit.text.toString()
 
-        // Mock download button
-        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
-            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
-        }
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-
-        // Register Button - Opens RegisterActivity
-        findViewById<MaterialButton>(R.id.btnLaunchPortal).setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            // Trigger unified login logic
+            performLogin(username, password)
         }
     }
 
@@ -119,6 +120,8 @@ class LandingActivity : AppCompatActivity() {
 
     private fun fetchTenantBranding(slug: String) {
         if (!isBypassed) return
+        
+        Log.d("LandingActivity", "Fetching branding for slug: $slug")
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -127,64 +130,116 @@ class LandingActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val tenant = response.body()
+                    Log.d("LandingActivity", "Branding Fetch Success: ${tenant?.pageTitle}")
                     withContext(Dispatchers.Main) {
-                        tenant?.let { 
+                        tenant?.let {
                             // Persist all data
                             GymManager.saveGymData(this@LandingActivity, it.pageSlug ?: "default", it.gymId ?: 0, it.tenantCode ?: "000", it.gymName ?: "Unknown")
-                            updateUIWithBranding(it) 
+                            updateUIWithBranding(it)
                             applyDynamicColors(it)
                         }
                     }
+                } else {
+                    Log.e("LandingActivity", "Branding Fetch Error: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("BrandingError", "Failed to fetch branding", e)
+                Log.e("LandingActivity", "Error fetching branding: ${e.message}")
             }
         }
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
-        findViewById<TextView>(R.id.heroSubtitle).text = "● OPEN FOR MEMBERSHIP"
-        findViewById<TextView>(R.id.heroTitle).text = "Elevate Your\nFitness at ${tenant.gymName}"
-        
-        // Load Logo using Glide
+        val heroTitle = findViewById<TextView>(R.id.heroTitle)
+        val heroDescription = findViewById<TextView>(R.id.heroDescription)
+        val contactFooter = findViewById<TextView>(R.id.contactTextFooter)
         val imgLogo = findViewById<ImageView>(R.id.imgLogo)
+
+        heroTitle.text = "WELCOME BACK"
+        heroDescription.text = "AUTHORIZED PERSONNEL ONLY"
+        contactFooter.text = tenant.contactText ?: ""
+
         tenant.logoPath?.let {
             val fullLogoUrl = if (it.startsWith("http")) it else "https://horizonfitnesscorp.gt.tc/$it"
             Glide.with(this).load(fullLogoUrl).into(imgLogo)
         }
 
-
-        // Download Button - Opens specific download link for this tenant
-        findViewById<MaterialButton>(R.id.btnDownload).setOnClickListener {
-            val downloadUrl = tenant.appDownloadLink ?: "https://horizonfitnesscorp.gt.tc/download.php"
-            Log.d("DownloadLink", "Launching: $downloadUrl")
-            Toast.makeText(this, "Downloading Horizon Official App...", Toast.LENGTH_SHORT).show()
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl))
-            startActivity(intent)
+        tenant.contactText?.let {
+            contactFooter.text = it
         }
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {
-        try {
-            val color = android.graphics.Color.parseColor(tenant.themeColor ?: "#7f13ec")
-            findViewById<com.google.android.material.card.MaterialCardView>(R.id.headerLogoCard)
-                .setCardBackgroundColor(color)
-            findViewById<MaterialButton>(R.id.btnGetStarted)
-                .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-            findViewById<MaterialButton>(R.id.btnLaunchPortal)
-                .backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-                
-            // Apply Background Color if provided
-            tenant.bgColor?.let {
-                val bg = android.graphics.Color.parseColor(it)
-                findViewById<androidx.coordinatorlayout.widget.CoordinatorLayout>(R.id.rootLayout).setBackgroundColor(bg)
+        tenant.themeColor?.let {
+            try {
+                val color = android.graphics.Color.parseColor(it)
+                val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
+                btnSignIn.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            } catch (e: Exception) {
+                Log.e("LandingActivity", "Invalid theme color: $it")
             }
-        } catch (e: Exception) {
-            Log.e("BrandingError", "Invalid color format", e)
         }
-            
-        tenant.aboutText?.let {
-            findViewById<TextView>(R.id.heroDescription).text = it
+
+        tenant.bgColor?.let {
+            try {
+                val bg = android.graphics.Color.parseColor(it)
+                findViewById<android.view.View>(R.id.rootLayout).setBackgroundColor(bg)
+                findViewById<android.view.View>(R.id.innerLayout).setBackgroundColor(bg)
+                findViewById<android.view.View>(android.R.id.content).rootView.setBackgroundColor(bg)
+            } catch (e: Exception) {
+                Log.e("LandingActivity", "Invalid bg color: $it")
+            }
+        }
+    }
+
+    private fun performLogin(username: String, password: String, isRetry: Boolean = false, forcedCookie: String? = null, forcedUA: String? = null) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                 val cookie = forcedCookie ?: GymManager.getBypassCookie(this@LandingActivity)
+                 val ua = forcedUA ?: GymManager.getBypassUA(this@LandingActivity)
+                 
+                 val api = RetrofitClient.getApi(cookie.ifEmpty { null }, ua.ifEmpty { null }) 
+                 val currentTenant = GymManager.getTenantCode(this@LandingActivity)
+                 val loginRequest = LoginRequest(username, password, currentTenant)
+                 val response = api.login(loginRequest)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val loginResponse = response.body()
+                        if (loginResponse?.success == true) {
+                            val user = loginResponse?.user
+                            val branding = loginResponse?.branding
+                            Toast.makeText(this@LandingActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
+                            
+                            val intent = Intent(this@LandingActivity, MainActivity::class.java).apply {
+                                putExtra("user_id", user?.userId ?: -1)
+                                putExtra("gym_id", user?.gymId ?: -1)
+                                putExtra("user_name", user?.username ?: "Guest")
+                                putExtra("user_email", user?.email ?: "")
+                                putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
+                                putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
+                                putExtra("logo_url", branding?.logoPath ?: "")
+                            }
+                            startActivity(intent)
+                            finish()
+                        } else if (loginResponse?.unverified == true) {
+                            Toast.makeText(this@LandingActivity, "Please verify your account", Toast.LENGTH_LONG).show()
+                            val intent = Intent(this@LandingActivity, VerifyActivity::class.java)
+                            intent.putExtra("user_id", loginResponse?.userId ?: (loginResponse?.user?.userId ?: -1))
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(this@LandingActivity, loginResponse?.message ?: "Login Failed", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(this@LandingActivity, "Server Error: ${response.code()}", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("AuthError", "Exception in performLogin: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@LandingActivity, "Connection Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 }

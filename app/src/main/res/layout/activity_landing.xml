@@ -7,162 +7,240 @@
     android:background="@color/landing_background"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
-
-        <LinearLayout
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="24dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/headerLogoCard"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:cardBackgroundColor="@color/landing_primary"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="0dp">
-                <ImageView
-                    android:id="@+id/imgLogo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerInside"
-                    android:padding="6dp"
-                    android:src="@android:drawable/ic_menu_send"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:id="@+id/headerTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:text="HORIZON"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1" />
-
-
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/innerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#16131C"
             android:paddingBottom="48dp">
 
+            <!-- Background Ambient Glows (Subtle but visible) -->
             <View
+                android:id="@+id/ambientGlowTop"
                 android:layout_width="450dp"
                 android:layout_height="450dp"
-                android:alpha="0.25"
+                android:alpha="0.2"
                 android:background="@drawable/ambient_glow"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginEnd="-120dp"
-                android:layout_marginTop="-120dp" />
+                android:layout_marginTop="-150dp"
+                android:layout_marginEnd="-150dp" />
 
-            <TextView
-                android:id="@+id/heroSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="@drawable/item_user_ripple"
-                android:paddingHorizontal="18dp"
-                android:paddingVertical="8dp"
-                android:text="● OPEN FOR REGISTRATION"
-                android:textColor="@color/landing_primary"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.15"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/heroTitle"
+            <!-- Integrated Content Container -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:gravity="center"
-                android:paddingHorizontal="24dp"
-                android:text="Your Vision,\nOur Platform."
-                android:textColor="@color/white"
-                android:textSize="44sp"
-                android:textStyle="bold"
-                android:lineSpacingExtra="2dp"
-                app:layout_constraintTop_toBottomOf="@id/heroSubtitle" />
+                android:orientation="vertical"
+                android:paddingHorizontal="28dp"
+                android:paddingTop="54dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/heroDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:paddingHorizontal="44dp"
-                android:text="Empowering fitness owners with Horizon's industry-leading technology and seamless tenant management."
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:lineSpacingMultiplier="1.2"
-                app:layout_constraintTop_toBottomOf="@id/heroTitle" />
+                <!-- Logo Header -->
+                <ImageView
+                    android:id="@+id/imgLogo"
+                    android:layout_width="140dp"
+                    android:layout_height="42dp"
+                    android:scaleType="fitStart"
+                    android:src="@android:drawable/ic_menu_send" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGetStarted"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="36dp"
-                android:text="Sign In"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/landing_primary"
-                app:cornerRadius="18dp"
-                app:layout_constraintTop_toBottomOf="@id/heroDescription" />
+                <!-- Welcome Content -->
+                <TextView
+                    android:id="@+id/heroTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="56dp"
+                    android:text="WELCOME BACK"
+                    android:textColor="@color/white"
+                    android:textSize="34sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.02" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLaunchPortal"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="14dp"
-                android:text="Register"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/landing_primary"
-                app:cornerRadius="18dp"
-                app:layout_constraintTop_toBottomOf="@id/btnGetStarted" />
+                <TextView
+                    android:id="@+id/heroDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="AUTHORIZED PERSONNEL ONLY"
+                    android:textColor="#595466"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDownload"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="14dp"
-                android:text="Get Member APK"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                app:cornerRadius="18dp"
-                app:strokeColor="@color/border_light"
-                app:layout_constraintTop_toBottomOf="@id/btnLaunchPortal" />
+                <!-- Form Section (Integrated, not in a floating card) -->
+                <LinearLayout
+                    android:id="@+id/loginForm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="64dp"
+                    android:orientation="vertical">
 
+                    <!-- Secure Access Badge -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/badge_pill_border"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="5dp"
+                        android:text="SECURE ACCESS"
+                        android:textColor="#99FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.18"
+                        android:layout_marginBottom="32dp" />
 
+                    <!-- Identity -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="IDENTITY"
+                        android:textColor="#B0A6C7"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.2" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/input_dark_rounded"
+                        android:backgroundTint="#221E2B"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="18dp">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:alpha="0.6"
+                            app:tint="@color/white" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/usernameEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="14dp"
+                            android:background="@null"
+                            android:hint="Username"
+                            android:textColor="@color/white"
+                            android:textColorHint="#33FFFFFF"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <!-- Security Key -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SECURITY KEY"
+                            android:textColor="#B0A6C7"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="FORGOT?"
+                            android:textColor="@color/landing_primary"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/input_dark_rounded"
+                        android:backgroundTint="#221E2B"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="18dp">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@android:drawable/ic_lock_idle_lock"
+                            android:alpha="0.6"
+                            app:tint="@color/white" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/passwordEdit"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginStart="14dp"
+                            android:background="@null"
+                            android:hint="••••••••"
+                            android:inputType="textPassword"
+                            android:textColor="@color/white"
+                            android:textColorHint="#33FFFFFF"
+                            android:textSize="15sp" />
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@android:drawable/ic_menu_view"
+                            android:alpha="0.6"
+                            app:tint="@color/white" />
+                    </LinearLayout>
+
+                    <!-- Authorize Button (Full Width Native) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSignIn"
+                        android:layout_width="match_parent"
+                        android:layout_height="76dp"
+                        android:layout_marginTop="42dp"
+                        android:text="AUTHORIZE ENTRY    →"
+                        android:textAllCaps="true"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.08"
+                        app:backgroundTint="@color/landing_primary"
+                        app:cornerRadius="18dp"
+                        app:elevation="4dp" />
+
+                    <!-- Footer -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="48dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="NEW TO THE FAMILY? "
+                            android:textColor="#4DFFFFFF"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CREATE ACCOUNT"
+                            android:textColor="@color/landing_primary"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/contactTextFooter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="72dp"
+                    android:gravity="center"
+                    android:text="© 2024 HORIZON SYSTEM. SECURE ENVIRONMENT."
+                    android:textColor="#1AFFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.2" />
+
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
