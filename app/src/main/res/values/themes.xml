@@ -8,6 +8,7 @@
     <style name="Theme.HorizonSystems" parent="Base.Theme.HorizonSystems">
         <item name="colorPrimary">@color/nav_active_color</item>
         <item name="colorSecondary">#8c2bee</item>
+        <item name="colorSecondaryContainer">@android:color/transparent</item>
     </style>
     
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
