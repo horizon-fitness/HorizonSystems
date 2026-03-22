@@ -24,15 +24,24 @@ class HomeFragment : Fragment() {
         
         view.findViewById<TextView>(R.id.dashUserName).text = userName
 
-        // Handle Logout from Quick Actions
-        view.findViewById<View>(R.id.btnNavLogout).setOnClickListener {
-            logout()
+        // Handle Quick Action Navigation
+        view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {
+            (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
         }
 
-        // Placeholder logic for status cards
-        // In a real app, these would be populated from an API
-        view.findViewById<TextView>(R.id.membershipPlan).text = "Plan: Standard Access"
-        
+        view.findViewById<View>(R.id.btnNavPayment).setOnClickListener {
+            (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_payment
+        }
+
+        view.findViewById<View>(R.id.btnNavMembership).setOnClickListener {
+            (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
+        }
+
+        // Today's Status "Book Now" link
+        view.findViewById<View>(R.id.btnBookNow).setOnClickListener {
+            (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
+        }
+
         return view
     }
 
