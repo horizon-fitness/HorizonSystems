@@ -231,6 +231,14 @@ class LandingActivity : AppCompatActivity() {
                         val loginResponse = response.body()
                         if (loginResponse?.success == true) {
                             val user = loginResponse?.user
+                            val role = user?.role ?: "Member"
+                            
+                            // Restrict to Members/Customers only as staff/admin are for Web
+                            if (!role.equals("Member", ignoreCase = true) && !role.equals("Customer", ignoreCase = true)) {
+                                Toast.makeText(this@LandingActivity, "Only members are allowed on Mobile", Toast.LENGTH_LONG).show()
+                                return@withContext
+                            }
+
                             val branding = loginResponse?.branding
                             Toast.makeText(this@LandingActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
                             
@@ -242,7 +250,7 @@ class LandingActivity : AppCompatActivity() {
                                 putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
                                 putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
                                 putExtra("logo_url", branding?.logoPath ?: "")
-                                putExtra("user_role", user?.role ?: "Member")
+                                putExtra("user_role", role)
                             }
 
                             // Handle Remember Me
