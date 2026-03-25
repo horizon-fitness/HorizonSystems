@@ -48,4 +48,10 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AttendanceResponse>
 
+    @POST("api/validate_tenant.php")
+    suspend fun validateTenant(
+        @Body body: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
 }

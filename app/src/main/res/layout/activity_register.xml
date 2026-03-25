@@ -121,7 +121,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="16dp"
                             android:background="@null"
-                            android:hint="Tenant Code"
+                            android:hint="Tenant Code (Ex: COR-1234)"
                             android:textColor="@color/white"
                             android:textColorHint="#40FFFFFF"
                             android:textSize="14sp" />

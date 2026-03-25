@@ -72,7 +72,51 @@ class RegisterActivity : AppCompatActivity() {
 
         // Pre-fill tenant code
         val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
-        gymIdEdit.setText(currentTenantCode)
+        if (currentTenantCode != "000") {
+            gymIdEdit.setText(currentTenantCode)
+        }
+
+        // Automatic Formatting (e.g., COR-2354)
+        gymIdEdit.addTextChangedListener(object : android.text.TextWatcher {
+            private var isInternalTag = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (isInternalTag) return
+                isInternalTag = true
+                
+                val original = s.toString()
+                val upperCase = original.uppercase()
+                
+                // Remove all non-alphanumeric for cleanup, but keep hyphen if in right place
+                val cleaned = upperCase.replace(Regex("[^A-Z0-9]"), "")
+                
+                val formatted = if (cleaned.length > 3) {
+                    cleaned.substring(0, 3) + "-" + cleaned.substring(3)
+                } else {
+                    cleaned
+                }
+
+                if (original != formatted) {
+                    s?.replace(0, s.length, formatted)
+                }
+                
+                isInternalTag = false
+            }
+        })
+
+        // Immediate Tenant Validation on focus lost
+        gymIdEdit.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val code = gymIdEdit.text.toString()
+                if (code.isNotEmpty()) {
+                    validateTenantCode(code) { isValid, _ ->
+                        if (!isValid) gymIdEdit.error = "Invalid Tenant Code"
+                        else gymIdEdit.error = null
+                    }
+                }
+            }
+        }
 
         // Wizard Logic
         fun validateStep(step: Int): Boolean {
@@ -89,14 +133,14 @@ class RegisterActivity : AppCompatActivity() {
                     true
                 }
                 2 -> {
-                    if (firstNameEdit.text.isNullOrEmpty() || lastNameEdit.text.isNullOrEmpty()) {
-                        Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show()
+                    if (firstNameEdit.text.isNullOrEmpty() || lastNameEdit.text.isNullOrEmpty() || birthDateEdit.text.isNullOrEmpty() || sexSpinner.text.isNullOrEmpty()) {
+                        Toast.makeText(this, "Please fill all required personal information", Toast.LENGTH_SHORT).show()
                         false
                     } else true
                 }
                 3 -> {
-                    if (emailEdit.text.isNullOrEmpty() || phoneEdit.text.isNullOrEmpty()) {
-                        Toast.makeText(this, "Please enter contact info", Toast.LENGTH_SHORT).show()
+                    if (emailEdit.text.isNullOrEmpty() || phoneEdit.text.isNullOrEmpty() || addressEdit.text.isNullOrEmpty()) {
+                        Toast.makeText(this, "Please enter all required contact details", Toast.LENGTH_SHORT).show()
                         false
                     } else true
                 }
@@ -106,7 +150,17 @@ class RegisterActivity : AppCompatActivity() {
 
         btnNext.setOnClickListener {
             if (validateStep(currentStep)) {
-                if (currentStep < 4) {
+                if (currentStep == 1) {
+                    val code = gymIdEdit.text.toString()
+                    validateTenantCode(code) { isValid, error ->
+                        if (isValid) {
+                            currentStep++
+                            updateWizardUI()
+                        } else {
+                            Toast.makeText(this, error ?: "Invalid Tenant Code", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else if (currentStep < 4) {
                     currentStep++
                     updateWizardUI()
                 }
@@ -316,4 +370,52 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-}   
+    private fun validateTenantCode(
+        code: String,
+        isRetry: Boolean = false,
+        forcedCookie: String? = null,
+        forcedUA: String? = null,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val cookie = forcedCookie ?: com.example.horizonsystems.utils.GymManager.getBypassCookie(this@RegisterActivity)
+                val ua = forcedUA ?: com.example.horizonsystems.utils.GymManager.getBypassUA(this@RegisterActivity)
+                
+                val api = RetrofitClient.getApi(cookie.ifEmpty { null }, ua.ifEmpty { null })
+                val response = api.validateTenant(mapOf("gym_id" to code))
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body?.success == true) {
+                            onResult(true, null)
+                        } else {
+                            onResult(false, body?.message ?: "Invalid Tenant Code")
+                        }
+                    } else {
+                        onResult(false, "Server Error: ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                val isParsingError = e is IllegalStateException || e is com.google.gson.JsonSyntaxException || e.message?.contains("Expected BEGIN_OBJECT") == true
+                
+                if (isParsingError && !isRetry) {
+                    withContext(Dispatchers.Main) {
+                        Log.w("TenantAuth", "Bypass might have expired, refreshing...")
+                    }
+                    // Force refresh security cookie
+                    com.example.horizonsystems.utils.NetworkBypass.getSecurityCookie(this@RegisterActivity, forceRefresh = true) { newCookie, newUA ->
+                        validateTenantCode(code, isRetry = true, forcedCookie = newCookie, forcedUA = newUA, onResult = onResult)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        val errorMsg = if (isParsingError) "Security check failed. Please restart the app." else "Connection Error: Try again."
+                        onResult(false, errorMsg)
+                    }
+                }
+            }
+        }
+    }
+
+}
