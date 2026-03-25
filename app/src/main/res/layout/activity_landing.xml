@@ -71,17 +71,26 @@
                 </LinearLayout>
 
                 <!-- Input Fields -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username:"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="start"
+                    android:fontFamily="sans-serif-medium" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:background="@drawable/input_field_bg"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="24dp">
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@android:drawable/ic_dialog_email"
+                        android:src="@drawable/ic_profile"
                         app:tint="#80FFFFFF" />
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/usernameEdit"
@@ -89,13 +98,22 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="16dp"
                         android:background="@null"
-                        android:hint="Your Email"
+                        android:hint="Enter username"
                         android:textColor="@color/white"
                         android:textColorHint="#40FFFFFF"
                         android:textSize="15sp"
                         android:fontFamily="sans-serif-medium" />
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Password:"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="start"
+                    android:fontFamily="sans-serif-medium" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
@@ -115,7 +133,7 @@
                         android:layout_weight="1"
                         android:layout_marginStart="16dp"
                         android:background="@null"
-                        android:hint="Your Password"
+                        android:hint="Enter password"
                         android:inputType="textPassword"
                         android:textColor="@color/white"
                         android:textColorHint="#40FFFFFF"
