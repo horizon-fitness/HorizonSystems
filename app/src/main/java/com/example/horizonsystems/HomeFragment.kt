@@ -21,8 +21,12 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
+        val userRole = activity?.intent?.getStringExtra("user_role") ?: "Member"
+        val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         
         view.findViewById<TextView>(R.id.dashUserName).text = userName
+        view.findViewById<TextView>(R.id.roleBadge).text = userRole.uppercase()
+        view.findViewById<TextView>(R.id.gymNameText).text = "GYM: $gymName"
 
         // Handle Quick Action Navigation
         view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {

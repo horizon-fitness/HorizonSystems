@@ -242,6 +242,7 @@ class LandingActivity : AppCompatActivity() {
                                 putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
                                 putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
                                 putExtra("logo_url", branding?.logoPath ?: "")
+                                putExtra("user_role", user?.role ?: "Member")
                             }
 
                             // Handle Remember Me

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Gym" />
+    <item
+        android:id="@+id/nav_members"
+        android:icon="@drawable/ic_membership"
+        android:title="Members" />
+    <item
+        android:id="@+id/nav_coaches"
+        android:icon="@drawable/ic_trainers"
+        android:title="Coaches" />
+    <item
+        android:id="@+id/nav_revenue"
+        android:icon="@drawable/ic_payment"
+        android:title="Revenue" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile" />
+</menu>

@@ -34,8 +34,7 @@
         app:itemPaddingBottom="12dp"
         app:itemPaddingTop="12dp"
         app:itemRippleColor="@android:color/transparent"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:labelVisibilityMode="unlabeled" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
