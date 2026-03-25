@@ -46,6 +46,17 @@ class HomeFragment : Fragment() {
             (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
         }
 
+        view.findViewById<View>(R.id.btnNavAppointments).setOnClickListener {
+            (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_appointment
+        }
+
+        view.findViewById<View>(R.id.btnNavLogout).setOnClickListener {
+            val intent = Intent(requireContext(), LandingActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
         return view
     }
 

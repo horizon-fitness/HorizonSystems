@@ -31,19 +31,19 @@ class MainActivity : AppCompatActivity() {
         
         // Load appropriate menu based on role
         bottomNavigationView.menu.clear() 
-        when (userRole) {
-            "Super Admin" -> bottomNavigationView.inflateMenu(R.menu.menu_superadmin)
-            "Tenant", "Admin" -> bottomNavigationView.inflateMenu(R.menu.menu_tenant)
-            "Coach" -> bottomNavigationView.inflateMenu(R.menu.menu_coach)
+        when {
+            userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_superadmin)
+            userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_tenant)
+            userRole.equals("Coach", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_coach)
             else -> bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu)
         }
         
         // Load default fragment based on role
         if (savedInstanceState == null) {
-            val defaultFragment = when (userRole) {
-                "Super Admin" -> SuperAdminDashboardFragment()
-                "Tenant", "Admin" -> TenantDashboardFragment()
-                "Coach" -> CoachDashboardFragment()
+            val defaultFragment = when {
+                userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> SuperAdminDashboardFragment()
+                userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> TenantDashboardFragment()
+                userRole.equals("Coach", ignoreCase = true) -> CoachDashboardFragment()
                 else -> HomeFragment()
             }
             loadFragment(defaultFragment)
@@ -52,10 +52,10 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
                 R.id.nav_home -> {
-                    when (userRole) {
-                        "Super Admin" -> SuperAdminDashboardFragment()
-                        "Tenant", "Admin" -> TenantDashboardFragment()
-                        "Coach" -> CoachDashboardFragment()
+                    when {
+                        userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> SuperAdminDashboardFragment()
+                        userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> TenantDashboardFragment()
+                        userRole.equals("Coach", ignoreCase = true) -> CoachDashboardFragment()
                         else -> HomeFragment()
                     }
                 }
