@@ -11,6 +11,9 @@ object GymManager {
     private const val KEY_GYM_NAME = "selected_gym_name"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
+    private const val KEY_REMEMBER_ME = "remember_me"
+    private const val KEY_SAVED_USERNAME = "saved_username"
+    private const val KEY_SAVED_PASSWORD = "saved_password"
     private const val DEFAULT_SLUG = "horizon"
 
 
@@ -61,5 +64,33 @@ object GymManager {
 
     fun getGymName(context: Context): String {
         return getPrefs(context).getString(KEY_GYM_NAME, "Horizon Fitness") ?: "Horizon Fitness"
+    }
+
+    fun saveLoginCredentials(context: Context, username: String, password: String) {
+        getPrefs(context).edit().apply {
+            putBoolean(KEY_REMEMBER_ME, true)
+            putString(KEY_SAVED_USERNAME, username)
+            putString(KEY_SAVED_PASSWORD, password)
+        }.apply()
+    }
+
+    fun clearLoginCredentials(context: Context) {
+        getPrefs(context).edit().apply {
+            putBoolean(KEY_REMEMBER_ME, false)
+            remove(KEY_SAVED_USERNAME)
+            remove(KEY_SAVED_PASSWORD)
+        }.apply()
+    }
+
+    fun isRememberMeEnabled(context: Context): Boolean {
+        return getPrefs(context).getBoolean(KEY_REMEMBER_ME, false)
+    }
+
+    fun getSavedUsername(context: Context): String {
+        return getPrefs(context).getString(KEY_SAVED_USERNAME, "") ?: ""
+    }
+
+    fun getSavedPassword(context: Context): String {
+        return getPrefs(context).getString(KEY_SAVED_PASSWORD, "") ?: ""
     }
 }

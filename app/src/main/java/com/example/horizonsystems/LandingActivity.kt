@@ -104,6 +104,14 @@ class LandingActivity : AppCompatActivity() {
             }
             passwordEdit.setSelection(passwordEdit.text?.length ?: 0)
         }
+
+        // Remember Me initialization
+        val rememberMeCheck = findViewById<android.widget.CheckBox>(R.id.rememberMe)
+        if (GymManager.isRememberMeEnabled(this)) {
+            rememberMeCheck.isChecked = true
+            usernameEdit.setText(GymManager.getSavedUsername(this))
+            passwordEdit.setText(GymManager.getSavedPassword(this))
+        }
     }
 
 
@@ -235,6 +243,15 @@ class LandingActivity : AppCompatActivity() {
                                 putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
                                 putExtra("logo_url", branding?.logoPath ?: "")
                             }
+
+                            // Handle Remember Me
+                            val rememberMeCheck = findViewById<android.widget.CheckBox>(R.id.rememberMe)
+                            if (rememberMeCheck.isChecked) {
+                                GymManager.saveLoginCredentials(this@LandingActivity, username, password)
+                            } else {
+                                GymManager.clearLoginCredentials(this@LandingActivity)
+                            }
+
                             startActivity(intent)
                             finish()
                         } else if (loginResponse?.unverified == true) {

@@ -427,7 +427,7 @@
                 android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:text="© 2026 HORIZON SYSTEM"
-                android:textColor="#1AFFFFFF"
+                android:textColor="#66FFFFFF"
                 android:textSize="10sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.1" />
