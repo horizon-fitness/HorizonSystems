@@ -27,44 +27,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        val userRole = intent.getStringExtra("user_role") ?: "Member"
         
-        // Load appropriate menu based on role
+        // Simplified: Always use standardized Member menu
         bottomNavigationView.menu.clear() 
-        when {
-            userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_superadmin)
-            userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_tenant)
-            userRole.equals("Coach", ignoreCase = true) -> bottomNavigationView.inflateMenu(R.menu.menu_coach)
-            else -> bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu)
-        }
+        bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu)
         
-        // Load default fragment based on role
+        // Always load HomeFragment as the default
         if (savedInstanceState == null) {
-            val defaultFragment = when {
-                userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> SuperAdminDashboardFragment()
-                userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> TenantDashboardFragment()
-                userRole.equals("Coach", ignoreCase = true) -> CoachDashboardFragment()
-                else -> HomeFragment()
-            }
-            loadFragment(defaultFragment)
+            loadFragment(HomeFragment())
         }
+        val userRole = intent.getStringExtra("user_role") ?: "Member"
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
-                R.id.nav_home -> {
-                    when {
-                        userRole.equals("Superadmin", ignoreCase = true) || userRole.equals("Super Admin", ignoreCase = true) -> SuperAdminDashboardFragment()
-                        userRole.equals("Tenant", ignoreCase = true) || userRole.equals("Admin", ignoreCase = true) -> TenantDashboardFragment()
-                        userRole.equals("Coach", ignoreCase = true) -> CoachDashboardFragment()
-                        else -> HomeFragment()
-                    }
-                }
-                R.id.nav_payment, R.id.nav_revenue -> PaymentFragment()
+                R.id.nav_home -> HomeFragment()
+                R.id.nav_payment -> PaymentFragment()
                 R.id.nav_booking -> BookingFragment()
-                R.id.nav_membership, R.id.nav_tenants, R.id.nav_members -> MembershipFragment()
+                R.id.nav_membership -> MembershipFragment()
                 R.id.nav_appointment -> AppointmentFragment()
-                R.id.nav_profile -> ProfileFragment()
-                R.id.nav_coaches -> TrainersFragment()
                 else -> HomeFragment()
             }
             loadFragment(fragment)

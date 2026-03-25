@@ -25,7 +25,7 @@ class HomeFragment : Fragment() {
         val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         
         view.findViewById<TextView>(R.id.dashUserName).text = userName
-        view.findViewById<TextView>(R.id.roleBadge).text = userRole.uppercase()
+        view.findViewById<TextView>(R.id.roleBadge).text = "MEMBER"
         view.findViewById<TextView>(R.id.gymNameText).text = "GYM: $gymName"
 
         // Handle Quick Action Navigation
