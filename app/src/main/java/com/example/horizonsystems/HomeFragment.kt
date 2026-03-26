@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
@@ -25,8 +26,9 @@ class HomeFragment : Fragment() {
         val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         
         view.findViewById<TextView>(R.id.dashUserName).text = userName
-        view.findViewById<TextView>(R.id.roleBadge).text = "MEMBER"
-        view.findViewById<TextView>(R.id.gymNameText).text = "GYM: $gymName"
+        view.findViewById<TextView>(R.id.gymNameHeader).text = gymName.uppercase()
+        view.findViewById<TextView>(R.id.roleBadge).text = "GOLD MEMBER"
+        view.findViewById<TextView>(R.id.gymNameText).text = gymName.uppercase()
 
         // Handle Quick Action Navigation
         view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {
@@ -50,11 +52,14 @@ class HomeFragment : Fragment() {
             (activity as? MainActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_appointment
         }
 
-        view.findViewById<View>(R.id.btnNavLogout).setOnClickListener {
-            val intent = Intent(requireContext(), LandingActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            requireActivity().finish()
+
+        // Top Header Actions
+        view.findViewById<View>(R.id.btnTopProfile).setOnClickListener {
+            Toast.makeText(requireContext(), "Profile Access: $userName", Toast.LENGTH_SHORT).show()
+        }
+
+        view.findViewById<View>(R.id.btnTopLogout).setOnClickListener {
+            logout()
         }
 
         return view

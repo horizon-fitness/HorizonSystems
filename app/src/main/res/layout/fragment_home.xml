@@ -11,7 +11,69 @@
         android:orientation="vertical"
         android:paddingTop="64dp"
         android:paddingHorizontal="24dp"
-        android:paddingBottom="24dp">
+        android:paddingBottom="40dp">
+
+        <!-- Top Header Navigation -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp">
+
+            <TextView
+                android:id="@+id/gymNameHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="HORIZON FITNESS"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.05" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnTopProfile"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="12dp"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke_premium"
+                    app:strokeWidth="1dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_profile"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnTopLogout"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/card_stroke_premium"
+                    app:strokeWidth="1dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_logout"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </RelativeLayout>
 
         <!-- Welcome Header -->
         <TextView
@@ -19,31 +81,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome Back,"
-            android:textColor="@color/white"
-            android:textSize="28sp"
-            android:textStyle="bold|italic"
-            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             android:textAllCaps="true"
-            android:letterSpacing="-0.02" />
+            android:letterSpacing="0.1" />
 
         <TextView
             android:id="@+id/dashUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ravee"
-            android:textColor="@color/nav_active_color"
-            android:textSize="28sp"
-            android:textStyle="bold|italic"
+            android:text="Member"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            android:textStyle="bold"
             android:fontFamily="sans-serif-black"
-            android:textAllCaps="true"
             android:letterSpacing="-0.02"
-            android:layout_marginTop="-4dp" />
+            android:layout_marginTop="4dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -51,38 +112,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/badge_pill_border"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="MEMBER"
-                android:textColor="@color/nav_active_color"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="GOLD MEMBER"
+                android:textColor="@color/premium_gold"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.1" />
+                android:letterSpacing="0.15" />
 
             <TextView
                 android:id="@+id/gymNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="GYM: LOADING..."
+                android:text="HORIZON GYM"
                 android:textColor="@color/text_secondary"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"
-                android:letterSpacing="0.05" />
+                android:letterSpacing="0.1" />
 
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Let's crush your goals today."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:letterSpacing="0.1" />
 
         <!-- Status Cards -->
         <LinearLayout
@@ -98,10 +148,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="32dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,48 +162,50 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TODAY'S STATUS"
+                        android:text="CURRENT SESSION"
                         android:textColor="@color/text_secondary"
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:textAllCaps="true"
-                        android:letterSpacing="0.1" />
+                        android:letterSpacing="0.2" />
 
                     <TextView
                         android:id="@+id/sessionStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="No Booking Today"
+                        android:layout_marginTop="12dp"
+                        android:text="No Active Bookings"
                         android:textColor="@color/white"
-                        android:textSize="22sp"
-                        android:textStyle="bold|italic"
-                        android:textAllCaps="true" />
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-condensed-medium" />
 
                     <TextView
                         android:id="@+id/sessionDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Ready for your next workout?"
+                        android:layout_marginTop="6dp"
+                        android:text="Time to hit the weights?"
                         android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textSize="13sp" />
 
-                    <TextView
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnBookNow"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="Book Now"
-                        android:textColor="@color/nav_active_color"
-                        android:textSize="14sp"
+                        android:layout_marginTop="16dp"
+                        android:text="Schedule Now"
+                        android:textColor="@color/accent_glow"
+                        android:textSize="13sp"
                         android:textStyle="bold"
                         android:textAllCaps="true"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
-                        android:padding="8dp"
-                        android:layout_marginStart="-8dp" />
+                        android:paddingHorizontal="0dp"
+                        android:letterSpacing="0.1"
+                        app:icon="@drawable/ic_booking"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/accent_glow"
+                        app:iconPadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -162,10 +214,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="32dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -176,39 +228,46 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MEMBERSHIP STATUS"
+                        android:text="MEMBERSHIP"
                         android:textColor="@color/text_secondary"
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:textAllCaps="true"
-                        android:letterSpacing="0.1" />
+                        android:letterSpacing="0.2" />
 
-                    <TextView
-                        android:id="@+id/membershipStatusText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Active Member"
-                        android:textColor="@color/emerald_400"
-                        android:textSize="22sp"
-                        android:textStyle="bold|italic"
-                        android:textAllCaps="true" />
-
-                    <View
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="20dp"
-                        android:background="#20FFFFFF" />
-
-                    <TextView
-                        android:id="@+id/membershipPlan"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
                         android:layout_marginTop="12dp"
-                        android:text="Current Plan: Standard Access"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/membershipStatusText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Active"
+                            android:textColor="@color/emerald_400"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="4dp"
+                            android:layout_height="4dp"
+                            android:layout_marginHorizontal="12dp"
+                            android:background="@drawable/badge_pill_border"
+                            android:backgroundTint="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/membershipPlan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Standard Tier"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-medium" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -216,18 +275,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="56dp"
-            android:text="QUICK ACTIONS"
+            android:layout_marginTop="48dp"
+            android:text="Member Services"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
-            android:textStyle="bold|italic"
+            android:textStyle="bold"
             android:textAllCaps="true"
-            android:letterSpacing="0.15" />
+            android:letterSpacing="0.2" />
 
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="3"
+            android:columnCount="2"
             android:layout_marginTop="16dp"
             android:alignmentMode="alignMargins"
             android:columnOrderPreserved="false"
@@ -236,160 +295,144 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNavBookSession"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_columnWeight="1"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_booking"
-                        app:tint="@color/nav_active_color" />
+                        app:tint="@color/accent_glow" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="BOOKING SESSION"
+                        android:layout_marginTop="12dp"
+                        android:text="Book Session"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="8sp"
-                        android:textStyle="bold" />
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNavPayment"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_columnWeight="1"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_payment"
-                        app:tint="@color/amber_500" />
+                        app:tint="@color/premium_gold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="PAYMENT HISTORY"
+                        android:layout_marginTop="12dp"
+                        android:text="Payments"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="8sp"
-                        android:textStyle="bold" />
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNavMembership"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_columnWeight="1"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_membership"
                         app:tint="#A855F7" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="MEMBERSHIP"
+                        android:layout_marginTop="12dp"
+                        android:text="Membership"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="8sp"
-                        android:textStyle="bold" />
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnNavAppointments"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_columnWeight="1"
                 app:cardBackgroundColor="@color/surface_dark"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#40FFFFFF"
-                app:strokeWidth="1.5dp">
+                app:strokeColor="@color/card_stroke_premium"
+                app:strokeWidth="1dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_appointment"
-                        app:tint="#10B981" />
+                        app:tint="@color/emerald_400" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="APPOINTMENTS"
+                        android:layout_marginTop="12dp"
+                        android:text="Appointments"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="8sp"
-                        android:textStyle="bold" />
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </GridLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNavLogout"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="SIGN OUT"
-            android:textColor="#F43F5E"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.2"
-            app:icon="@drawable/ic_back_arrow"
-            app:iconTint="#F43F5E"
-            app:iconGravity="textStart"
-            android:paddingHorizontal="24dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="100dp"
-            android:gravity="center"
-            android:text="Horizon System v1.0.0"
-            android:textColor="#33FFFFFF"
-            android:textSize="12sp"
-            android:textAllCaps="true"
-            android:letterSpacing="0.1" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
