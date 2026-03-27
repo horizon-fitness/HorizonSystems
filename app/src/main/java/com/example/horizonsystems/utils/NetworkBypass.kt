@@ -34,7 +34,10 @@ object NetworkBypass {
                 val userAgent = settings.userAgentString
                 
                 val handler = android.os.Handler(android.os.Looper.getMainLooper())
+                var captured = false
                 val timeoutRunnable = Runnable {
+                    if (captured) return@Runnable
+                    captured = true
                     if (webView.url != null) {
                         val cookies = CookieManager.getInstance().getCookie(webView.url)
                         if (cookies != null && cookies.contains("__test")) {
@@ -52,8 +55,10 @@ object NetworkBypass {
 
                 webView.webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
+                        if (captured) return
                         val cookies = CookieManager.getInstance().getCookie(url)
                         if (cookies != null && cookies.contains("__test")) {
+                            captured = true
                             handler.removeCallbacks(timeoutRunnable)
                             GymManager.saveBypassCredentials(context, cookies, userAgent)
                             onCaptured(cookies, userAgent)

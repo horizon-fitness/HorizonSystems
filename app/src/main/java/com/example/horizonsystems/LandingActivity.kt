@@ -206,9 +206,9 @@ class LandingActivity : AppCompatActivity() {
             val portalSuffix = " PORTAL"
             val fullText = if (rawGymName.endsWith("PORTAL")) rawGymName else rawGymName + portalSuffix
             // Set as plain text for now ("default muna")
-            gymNameHeader.text = fullText
+            gymNameHeader?.text = fullText
         } else {
-            gymNameHeader.text = rawGymName
+            gymNameHeader?.text = rawGymName
         }
         
         val logoUrl = branding?.logoPath
@@ -224,17 +224,19 @@ class LandingActivity : AppCompatActivity() {
             
             Log.d("LandingActivity", "Loading Gym Logo from DB Path: $logoUrl -> $fullLogoUrl")
             
-            Glide.with(this)
-                .load(fullLogoUrl)
-                .placeholder(R.drawable.ic_dumbbell)
-                .error(R.drawable.ic_dumbbell)
-                .into(gymLogoHeader)
+            gymLogoHeader?.let {
+                Glide.with(this)
+                    .load(fullLogoUrl)
+                    .placeholder(R.drawable.ic_dumbbell)
+                    .error(R.drawable.ic_dumbbell)
+                    .into(it)
+            }
             
-            gymLogoHeader.imageTintList = null 
+            gymLogoHeader?.imageTintList = null 
         } else if (branding != null) {
             gymLogoContainer?.visibility = android.view.View.VISIBLE
-            gymLogoHeader.setImageResource(R.drawable.ic_dumbbell)
-            gymLogoHeader.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+            gymLogoHeader?.setImageResource(R.drawable.ic_dumbbell)
+            gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
         } else {
             gymLogoContainer?.visibility = android.view.View.GONE
         }
@@ -252,9 +254,8 @@ class LandingActivity : AppCompatActivity() {
             performLogout()
         }
         
-        // Load initial fragment
-        findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView).selectedItemId = R.id.nav_home
-        loadFragment(HomeFragment())
+        // Load initial fragment via navigation selection (which triggers loadFragment)
+        findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_home
     }
 
     fun performLogout() {
@@ -340,7 +341,7 @@ class LandingActivity : AppCompatActivity() {
         val tenantTitle = findViewById<TextView>(R.id.tenantTitle)
         val gymName = tenant.gymName ?: "HORIZON SYSTEMS"
         
-        tenantTitle.text = gymName.uppercase()
+        tenantTitle?.text = gymName.uppercase()
         
         // We preserve the user's XML description ("Enter your credentials...") 
         // unless the database provides a very specific branding title.

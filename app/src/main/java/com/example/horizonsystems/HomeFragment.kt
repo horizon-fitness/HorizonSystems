@@ -27,7 +27,7 @@ class HomeFragment : Fragment() {
         
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
         val shortName = if (userName.length > 6) userName.take(3).uppercase() else userName.uppercase()
-        dashUserName.text = shortName
+        dashUserName?.text = shortName
         
         // Profile Picture Placeholder with Initials
         val profilePic = view.findViewById<ImageView>(R.id.memberProfilePic)
@@ -46,30 +46,37 @@ class HomeFragment : Fragment() {
                 .map { it.first().uppercase() }
                 .joinToString("")
             
-            initialsText.text = if (initials.isNotEmpty()) initials else "U"
-            initialsText.visibility = View.VISIBLE
-            profilePic.visibility = View.GONE
+            initialsText?.text = if (initials.isNotEmpty()) initials else "U"
+            initialsText?.visibility = View.VISIBLE
+            profilePic?.visibility = View.GONE
         }
 
         // Handle Quick Action Navigation
-        view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {
+        view.findViewById<View>(R.id.btnNavBookSession)?.setOnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
         }
 
-        view.findViewById<View>(R.id.btnNavPayment).setOnClickListener {
+        view.findViewById<View>(R.id.btnNavPayment)?.setOnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_payment
         }
 
-        view.findViewById<View>(R.id.btnNavMembership).setOnClickListener {
+        view.findViewById<View>(R.id.btnNavMembership)?.setOnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
         }
 
-        // Today's Status "Book Now" link
-        view.findViewById<View>(R.id.btnBookNow).setOnClickListener {
+        // Today's Status Card & "Book Now" link
+        val bookClick = View.OnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
         }
+        view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
+        view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
 
-        view.findViewById<View>(R.id.btnNavAppointments).setOnClickListener {
+        // Membership Status Card
+        view.findViewById<View>(R.id.cardMembership)?.setOnClickListener {
+            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
+        }
+
+        view.findViewById<View>(R.id.btnNavAppointments)?.setOnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_appointment
         }
 

@@ -16,7 +16,6 @@ class PaymentFragment : Fragment() {
 
         val rvTransactions = view.findViewById<RecyclerView>(R.id.rvTransactions)
         val emptyState = view.findViewById<TextView>(R.id.emptyState)
-        val totalSpent = view.findViewById<TextView>(R.id.totalSpent)
 
         // Sample data matching web reference
         val sampleTransactions = listOf(
@@ -33,9 +32,8 @@ class PaymentFragment : Fragment() {
             rvTransactions.layoutManager = LinearLayoutManager(requireContext())
             rvTransactions.adapter = TransactionAdapter(sampleTransactions)
             
-            // Calculate total
+            // Calculate total (logic kept if needed for later, but UI removed per request)
             val total = sampleTransactions.sumOf { it.amount.toDoubleOrNull() ?: 0.0 }
-            totalSpent.text = "₱${String.format("%.2f", total)}"
         }
 
         return view
