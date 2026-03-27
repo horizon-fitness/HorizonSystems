@@ -25,7 +25,19 @@ class HomeFragment : Fragment() {
         val userRole = activity?.intent?.getStringExtra("user_role") ?: "Member"
         val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         
-        view.findViewById<TextView>(R.id.dashUserName).text = if (userName.length > 5) userName.take(3).uppercase() else userName.uppercase()
+        val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
+        val shortName = if (userName.length > 6) userName.take(3).uppercase() else userName.uppercase()
+        dashUserName.text = shortName
+        
+        // Profile Picture Placeholder
+        val profilePic = view.findViewById<ImageView>(R.id.memberProfilePic)
+        if (profilePic != null) {
+            // Using a colored placeholder based on the name for a premium feel
+            val colors = listOf("#A855F7", "#7f13ec", "#5e0eb3")
+            val colorIndex = userName.length % colors.size
+            profilePic.setBackgroundColor(android.graphics.Color.parseColor(colors[colorIndex]))
+            profilePic.setPadding(12, 12, 12, 12) // Give some space to the ic_profile
+        }
 
         // Handle Quick Action Navigation
         view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {

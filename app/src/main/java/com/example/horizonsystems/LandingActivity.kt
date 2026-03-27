@@ -195,7 +195,53 @@ class LandingActivity : AppCompatActivity() {
         dashContainer?.visibility = android.view.View.VISIBLE
 
         // Initialize persistent top header
-        findViewById<TextView>(R.id.gymNameHeader).text = user.gymName?.uppercase() ?: (branding?.gymName?.uppercase() ?: "HORIZON SYSTEMS")
+        val gymNameHeader = findViewById<TextView>(R.id.gymNameHeader)
+        val gymLogoHeader = findViewById<ImageView>(R.id.gymLogoHeader)
+        val gymLogoContainer = findViewById<View>(R.id.gymLogoContainer)
+        
+        val rawGymName = user.gymName?.uppercase() ?: (branding?.gymName?.uppercase() ?: "HORIZON SYSTEMS")
+        
+        // Apply "Brand + PORTAL" style if branded
+        if (branding != null || rawGymName != "HORIZON SYSTEMS") {
+            val portalSuffix = " PORTAL"
+            val fullText = if (rawGymName.endsWith("PORTAL")) rawGymName else rawGymName + portalSuffix
+            // Set as plain text for now ("default muna")
+            gymNameHeader.text = fullText
+        } else {
+            gymNameHeader.text = rawGymName
+        }
+        
+        val logoUrl = branding?.logoPath
+        if (!logoUrl.isNullOrEmpty()) {
+            gymLogoContainer?.visibility = android.view.View.VISIBLE
+            
+            val baseUrl = "https://horizonfitnesscorp.gt.tc/"
+            val fullLogoUrl = when {
+                logoUrl.startsWith("http") -> logoUrl
+                logoUrl.startsWith("data:image") -> logoUrl
+                else -> baseUrl + logoUrl.removePrefix("../").removePrefix("/")
+            }
+            
+            Log.d("LandingActivity", "Loading Gym Logo from DB Path: $logoUrl -> $fullLogoUrl")
+            
+            Glide.with(this)
+                .load(fullLogoUrl)
+                .placeholder(R.drawable.ic_dumbbell)
+                .error(R.drawable.ic_dumbbell)
+                .into(gymLogoHeader)
+            
+            gymLogoHeader.imageTintList = null 
+        } else if (branding != null) {
+            gymLogoContainer?.visibility = android.view.View.VISIBLE
+            gymLogoHeader.setImageResource(R.drawable.ic_dumbbell)
+            gymLogoHeader.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+        } else {
+            gymLogoContainer?.visibility = android.view.View.GONE
+        }
+        
+        // Handle Member Profile Pic Placeholder in HomeFragment (via Intent/Mock)
+        // Note: Actual fragment view might need to be reached if it's already inflated, 
+        // but since we call loadFragment(HomeFragment()), it will handle its own UI.
         
         findViewById<View>(R.id.btnTopProfile).setOnClickListener {
             // Load Profile Fragment
