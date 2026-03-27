@@ -15,33 +15,52 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp">
 
-        <LinearLayout
-            android:id="@+id/leftGroup"
+        <RelativeLayout
+            android:id="@+id/headerGroup"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Transaction History"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black"
-                android:textAllCaps="true" />
+                android:layout_alignParentStart="true"
+                android:orientation="vertical"
+                android:layout_toStartOf="@+id/seeAll">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Transaction History"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Your recent activity and billing history"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.05" />
+            </LinearLayout>
 
             <TextView
+                android:id="@+id/seeAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Your recent activity and billing history"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="See all"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:textAllCaps="true"
-                android:letterSpacing="0.05" />
-        </LinearLayout>
+                android:alpha="0.6" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <!-- History List -->

@@ -12,10 +12,10 @@ class AppointmentAdapter(private val appointments: List<Appointment>) :
     RecyclerView.Adapter<AppointmentAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val subject: TextView = view.findViewById(R.id.txnService) // Reuse item_transaction layout
-        val date: TextView = view.findViewById(R.id.txnDate)
-        val time: TextView = view.findViewById(R.id.txnTime)
-        val status: TextView = view.findViewById(R.id.txnAmount) // Repurpose for status text
+        val subject: TextView = view.findViewById(R.id.txnService)
+        val dateTime: TextView = view.findViewById(R.id.txnDateTime)
+        val status: TextView = view.findViewById(R.id.txnStatus)
+        val amount: TextView = view.findViewById(R.id.txnAmount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,9 +28,11 @@ class AppointmentAdapter(private val appointments: List<Appointment>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val appt = appointments[position]
         holder.subject.text = appt.subject
-        holder.date.text = appt.date
-        holder.time.text = appt.time
+        holder.dateTime.text = "${appt.date}, ${appt.time}"
         holder.status.text = appt.status.uppercase()
+        
+        // Appointments don't use amount field, hide it to keep look clean
+        holder.amount.visibility = View.GONE
 
         val context = holder.itemView.context
         when (appt.status.lowercase()) {

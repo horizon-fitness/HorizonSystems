@@ -11,11 +11,10 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
     RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val date: TextView = view.findViewById(R.id.txnDate)
-        val time: TextView = view.findViewById(R.id.txnTime)
         val service: TextView = view.findViewById(R.id.txnService)
-        val reference: TextView = view.findViewById(R.id.txnRef)
+        val dateTime: TextView = view.findViewById(R.id.txnDateTime)
         val amount: TextView = view.findViewById(R.id.txnAmount)
+        val status: TextView = view.findViewById(R.id.txnStatus)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,11 +25,10 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val txn = transactions[position]
-        holder.date.text = txn.date
-        holder.time.text = txn.time
         holder.service.text = txn.service
-        holder.reference.text = "Ref: ${txn.reference}"
+        holder.dateTime.text = "${txn.date}, ${txn.time}"
         holder.amount.text = "₱${txn.amount}"
+        holder.status.text = txn.status
     }
 
     override fun getItemCount() = transactions.size

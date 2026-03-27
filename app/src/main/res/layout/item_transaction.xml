@@ -8,18 +8,38 @@
     android:paddingVertical="16dp"
     android:gravity="center_vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="18dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="14dp">
 
+        <!-- Circular Icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:cardCornerRadius="22.5dp"
+            app:cardBackgroundColor="@color/card_stroke_premium"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+            <ImageView
+                android:id="@+id/txnIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_dumbbell"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Service & Subtitle (Date/Time) -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_toStartOf="@+id/rightGroup">
+            android:layout_marginStart="16dp">
 
             <TextView
                 android:id="@+id/txnService"
@@ -34,24 +54,22 @@
                 android:maxLines="1" />
 
             <TextView
-                android:id="@+id/txnRef"
+                android:id="@+id/txnDateTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Ref: GCASH-12345"
+                android:layout_marginTop="2dp"
+                android:text="Today, 10:00 AM"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:fontFamily="sans-serif"
-                android:alpha="0.7" />
+                android:textSize="12sp"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
 
+        <!-- Amount & Status -->
         <LinearLayout
-            android:id="@+id/rightGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:gravity="end"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="end">
 
             <TextView
                 android:id="@+id/txnAmount"
@@ -64,24 +82,18 @@
                 android:fontFamily="sans-serif-black" />
 
             <TextView
-                android:id="@+id/txnDate"
+                android:id="@+id/txnStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Mar 21, 2024"
+                android:layout_marginTop="2dp"
+                android:text="Approved"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:textAllCaps="true"
-                android:letterSpacing="0.02" />
-
-            <TextView
-                android:id="@+id/txnTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text="10:00 AM" />
+                android:letterSpacing="0.05"
+                android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
