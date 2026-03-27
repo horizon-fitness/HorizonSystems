@@ -63,7 +63,7 @@ object GymManager {
     }
 
     fun getGymName(context: Context): String {
-        return getPrefs(context).getString(KEY_GYM_NAME, "Horizon Fitness") ?: "Horizon Fitness"
+        return getPrefs(context).getString(KEY_GYM_NAME, "HORIZON SYSTEMS") ?: "HORIZON SYSTEMS"
     }
 
     fun saveLoginCredentials(context: Context, username: String, password: String) {

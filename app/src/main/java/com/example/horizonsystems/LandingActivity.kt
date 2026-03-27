@@ -33,6 +33,9 @@ class LandingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
+        
+        // 0. Pre-fill branding from cache to avoid jumping
+        prefillUIFromCache()
 
         // 1. First capture security cookie for InfinityFree
         val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
@@ -112,6 +115,74 @@ class LandingActivity : AppCompatActivity() {
             usernameEdit.setText(GymManager.getSavedUsername(this))
             passwordEdit.setText(GymManager.getSavedPassword(this))
         }
+
+        // Switch Gym Button
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym).setOnClickListener {
+            val intent = Intent(this, SwitchGymActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Initialize Bottom Navigation for Single Activity Dashboard
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNav.menu.clear()
+        bottomNav.inflateMenu(R.menu.bottom_nav_menu)
+        bottomNav.setOnItemSelectedListener { item ->
+            val fragment = when (item.itemId) {
+                R.id.nav_home -> HomeFragment()
+                R.id.nav_payment -> PaymentFragment()
+                R.id.nav_booking -> BookingFragment()
+                R.id.nav_membership -> MembershipFragment()
+                R.id.nav_appointment -> AppointmentFragment()
+                else -> HomeFragment()
+            }
+            loadFragment(fragment)
+            true
+        }
+    }
+
+    private fun loadFragment(fragment: androidx.fragment.app.Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+    }
+
+    fun showDashboard(user: com.example.horizonsystems.models.User, branding: TenantPage?) {
+        val loginContainer = findViewById<android.view.View>(R.id.loginContainer)
+        val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
+        
+        // Transfer data to "Activity Intent" equivalent (mocking Intent extras for fragments)
+        intent.apply {
+            putExtra("user_id", user.userId ?: -1)
+            putExtra("gym_id", user.gymId ?: -1)
+            putExtra("user_name", user.username ?: "Guest")
+            putExtra("user_email", user.email ?: "")
+            putExtra("gym_name", user.gymName ?: (branding?.gymName ?: "No Tenant"))
+            putExtra("tenant_id", user.tenantId ?: (branding?.tenantCode ?: "000"))
+            putExtra("logo_url", branding?.logoPath ?: "")
+            putExtra("user_role", user.role ?: "Member")
+        }
+
+        loginContainer.visibility = android.view.View.GONE
+        dashContainer.visibility = android.view.View.VISIBLE
+        
+        // Load initial fragment
+        findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView).selectedItemId = R.id.nav_home
+        loadFragment(HomeFragment())
+    }
+
+    fun performLogout() {
+        val loginContainer = findViewById<android.view.View>(R.id.loginContainer)
+        val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
+        
+        dashContainer.visibility = android.view.View.GONE
+        loginContainer.visibility = android.view.View.VISIBLE
+        
+        // Optional: clear inputs
+        findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit).setText("")
     }
 
 
@@ -178,18 +249,22 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 
+    private fun prefillUIFromCache() {
+        val tenantTitle = findViewById<TextView>(R.id.tenantTitle)
+        val savedName = GymManager.getGymName(this)
+        // Default to HORIZON SYSTEMS to match standard branding
+        tenantTitle.text = if (savedName == "HORIZON SYSTEMS" || savedName.isEmpty()) "HORIZON SYSTEMS" else savedName.uppercase()
+    }
+
     private fun updateUIWithBranding(tenant: TenantPage) {
-        val heroTitle = findViewById<TextView>(R.id.heroTitle)
-        val heroDescription = findViewById<TextView>(R.id.heroDescription)
-        val contactFooter = findViewById<TextView>(R.id.contactTextFooter)
-
-        heroTitle.text = tenant.pageTitle ?: "WELCOME BACK"
-        heroDescription.text = tenant.aboutText ?: "AUTHORIZED PERSONNEL ONLY"
-        contactFooter.text = tenant.contactText ?: ""
-
-        tenant.contactText?.let {
-            contactFooter.text = it
-        }
+        val tenantTitle = findViewById<TextView>(R.id.tenantTitle)
+        val gymName = tenant.gymName ?: "HORIZON SYSTEMS"
+        
+        tenantTitle.text = gymName.uppercase()
+        
+        // We preserve the user's XML description ("Enter your credentials...") 
+        // unless the database provides a very specific branding title.
+        // For now, we keep it static to avoid the "AUTHORIZED PERSONNEL ONLY" jump.
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {
@@ -197,12 +272,16 @@ class LandingActivity : AppCompatActivity() {
             try {
                 val color = android.graphics.Color.parseColor(it)
                 val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
+                val gymLogo = findViewById<ImageView>(R.id.gymLogo)
+                val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
+
                 btnSignIn.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+                gymLogo.imageTintList = android.content.res.ColorStateList.valueOf(color)
+                btnSwitchGym.iconTint = android.content.res.ColorStateList.valueOf(color)
             } catch (e: Exception) {
-                Log.e("LandingActivity", "Invalid theme color: $it")
+                Log.e("LandingActivity", "Error parsing color: $it")
             }
         }
-
         tenant.bgColor?.let {
             try {
                 val bg = android.graphics.Color.parseColor(it)
@@ -242,17 +321,6 @@ class LandingActivity : AppCompatActivity() {
                             val branding = loginResponse?.branding
                             Toast.makeText(this@LandingActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
                             
-                            val intent = Intent(this@LandingActivity, MainActivity::class.java).apply {
-                                putExtra("user_id", user?.userId ?: -1)
-                                putExtra("gym_id", user?.gymId ?: -1)
-                                putExtra("user_name", user?.username ?: "Guest")
-                                putExtra("user_email", user?.email ?: "")
-                                putExtra("gym_name", user?.gymName ?: (branding?.gymName ?: "No Tenant"))
-                                putExtra("tenant_id", user?.tenantId ?: (branding?.tenantCode ?: "000"))
-                                putExtra("logo_url", branding?.logoPath ?: "")
-                                putExtra("user_role", role)
-                            }
-
                             // Handle Remember Me
                             val rememberMeCheck = findViewById<android.widget.CheckBox>(R.id.rememberMe)
                             if (rememberMeCheck.isChecked) {
@@ -261,8 +329,10 @@ class LandingActivity : AppCompatActivity() {
                                 GymManager.clearLoginCredentials(this@LandingActivity)
                             }
 
-                            startActivity(intent)
-                            finish()
+                            // Instead of starting MainActivity, transition UI state
+                            if (user != null) {
+                                showDashboard(user, branding)
+                            }
                         } else if (loginResponse?.unverified == true) {
                             Toast.makeText(this@LandingActivity, "Please verify your account", Toast.LENGTH_LONG).show()
                             val intent = Intent(this@LandingActivity, VerifyActivity::class.java)

@@ -36,11 +36,6 @@
 
         
         <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-            
-            
-        <activity
             android:name=".VerifyActivity"
             android:exported="false"
             android:theme="@style/Theme.HorizonSystems" />
@@ -50,6 +45,10 @@
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false" />
+        <activity
+            android:name=".SwitchGymActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HorizonSystems" />
     </application>
 
 </manifest>
