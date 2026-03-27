@@ -14,15 +14,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <!-- Dash Container (Initially Gone) -->
+            <!-- Dash Container (Hidden by default, used for dashboard after login) -->
             <LinearLayout
                 android:id="@+id/dashContainer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <FrameLayout
                     android:id="@+id/fragment_container"
@@ -42,40 +44,49 @@
                     app:labelVisibilityMode="unlabeled" />
             </LinearLayout>
 
+            <!-- Premium Ambient Background Glow (Moved out of inner layout to avoid height issues) -->
+            <View
+                android:layout_width="600dp"
+                android:layout_height="600dp"
+                android:alpha="0.2"
+                android:background="@drawable/ambient_glow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="-300dp"
+                android:layout_marginTop="-200dp" />
+
+            <!-- Login Container (shifted up slightly and vertical padding removed for tighter fit) -->
             <LinearLayout
                 android:id="@+id/loginContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="32dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="40dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <!-- Premium Ambient Background Glow -->
-                    <View
-                        android:layout_width="600dp"
-                        android:layout_height="600dp"
-                        android:alpha="0.2"
-                        android:background="@drawable/ambient_glow"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginEnd="-300dp"
-                        android:layout_marginTop="-200dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp">
 
                     <LinearLayout
                         android:id="@+id/innerLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
                         <TextView
                             android:id="@+id/tenantTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="16dp"
                             android:text="HORIZON SYSTEMS"
                             android:textColor="@color/white"
                             android:textSize="18sp"
@@ -87,7 +98,7 @@
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="120dp"
                             android:layout_height="120dp"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="16dp"
                             app:cardBackgroundColor="#1AFFFFFF"
                             app:cardCornerRadius="64dp"
                             app:cardElevation="0dp">
@@ -106,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:gravity="center"
-                            android:layout_marginBottom="16dp">
+                            android:layout_marginBottom="4dp">
 
                             <TextView
                                 android:id="@+id/heroTitle"
@@ -357,7 +368,7 @@
         android:layout_height="match_parent"
         android:background="#E6050505"
         android:elevation="100dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:clickable="true"
         android:focusable="true">
 

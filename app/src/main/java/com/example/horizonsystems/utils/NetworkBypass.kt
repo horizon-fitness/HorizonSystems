@@ -48,7 +48,7 @@ object NetworkBypass {
                     }
                     webView.destroy()
                 }
-                handler.postDelayed(timeoutRunnable, 10000)
+                handler.postDelayed(timeoutRunnable, 5000)
 
                 webView.webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {

@@ -31,15 +31,16 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // Temporarily disabled to rule out API level issues
+        // enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
         
         // 0. Pre-fill branding from cache to avoid jumping
         prefillUIFromCache()
 
         // 1. First capture security cookie for InfinityFree
-        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
-        val btnManualBypass = findViewById<MaterialButton>(R.id.btnManualBypass)
+        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay) ?: return
+        val btnManualBypass = findViewById<MaterialButton>(R.id.btnManualBypass) ?: return
         
         // Timer for manual bypass (5 seconds)
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
@@ -54,6 +55,11 @@ class LandingActivity : AppCompatActivity() {
             handleIntent(intent) // Try to fetch branding anyway
         }
         
+        // 1. Show overlay ONLY if we don't have a cached session to avoid "not opening" feel
+        if (GymManager.getBypassCookie(this).isEmpty()) {
+            loadingOverlay.visibility = android.view.View.VISIBLE
+        }
+
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
             cachedCookie = cookie
             cachedUserAgent = userAgent
@@ -70,8 +76,8 @@ class LandingActivity : AppCompatActivity() {
         }
 
         // Navigation / Login
-        val usernameEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.usernameEdit)
-        val passwordEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)
+        val usernameEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.usernameEdit) ?: return
+        val passwordEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit) ?: return
         
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn).setOnClickListener {
             val username = usernameEdit.text.toString()
