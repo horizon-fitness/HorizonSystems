@@ -76,8 +76,8 @@ class HomeFragment : Fragment() {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
         }
 
-        view.findViewById<View>(R.id.btnNavAppointments)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_appointment
+        view.findViewById<View>(R.id.btnNavProfile)?.setOnClickListener {
+            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_profile
         }
 
         return view
