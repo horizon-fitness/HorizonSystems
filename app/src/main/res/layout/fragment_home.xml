@@ -28,13 +28,30 @@
                 app:strokeColor="@color/card_stroke_premium"
                 app:strokeWidth="2dp">
                 
-                <ImageView
-                    android:id="@+id/memberProfilePic"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile"
-                    app:tint="@color/text_secondary" />
+                    android:layout_height="match_parent">
+                    
+                    <ImageView
+                        android:id="@+id/memberProfilePic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_profile"
+                        android:visibility="gone"
+                        app:tint="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/memberInitials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="JD"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout

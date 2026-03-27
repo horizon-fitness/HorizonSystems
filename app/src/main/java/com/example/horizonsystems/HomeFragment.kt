@@ -29,14 +29,26 @@ class HomeFragment : Fragment() {
         val shortName = if (userName.length > 6) userName.take(3).uppercase() else userName.uppercase()
         dashUserName.text = shortName
         
-        // Profile Picture Placeholder
+        // Profile Picture Placeholder with Initials
         val profilePic = view.findViewById<ImageView>(R.id.memberProfilePic)
-        if (profilePic != null) {
-            // Using a colored placeholder based on the name for a premium feel
-            val colors = listOf("#A855F7", "#7f13ec", "#5e0eb3")
-            val colorIndex = userName.length % colors.size
-            profilePic.setBackgroundColor(android.graphics.Color.parseColor(colors[colorIndex]))
-            profilePic.setPadding(12, 12, 12, 12) // Give some space to the ic_profile
+        val initialsText = view.findViewById<TextView>(R.id.memberInitials)
+        val profileCard = profilePic?.parent?.parent as? com.google.android.material.card.MaterialCardView
+        
+        if (profileCard != null) {
+            val colors = listOf("#A855F7", "#7f13ec", "#5e0eb3", "#6366f1", "#4f46e5")
+            val colorIndex = Math.abs(userName.hashCode()) % colors.size
+            profileCard.setCardBackgroundColor(android.graphics.Color.parseColor(colors[colorIndex]))
+            
+            // Calculate Initials
+            val initials = userName.trim().split(" ")
+                .filter { it.isNotEmpty() }
+                .take(2)
+                .map { it.first().uppercase() }
+                .joinToString("")
+            
+            initialsText.text = if (initials.isNotEmpty()) initials else "U"
+            initialsText.visibility = View.VISIBLE
+            profilePic.visibility = View.GONE
         }
 
         // Handle Quick Action Navigation
