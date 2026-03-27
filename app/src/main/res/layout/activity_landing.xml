@@ -8,52 +8,17 @@
     android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/loginScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Dash Container (Hidden by default, used for dashboard after login) -->
-            <LinearLayout
-                android:id="@+id/dashContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
 
-                <FrameLayout
-                    android:id="@+id/fragment_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomNavigationView"
-                    style="@style/Widget.App.BottomNavigationView"
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:background="@color/landing_background"
-                    app:elevation="8dp"
-                    app:itemIconSize="26dp"
-                    app:itemIconTint="@color/nav_item_selector"
-                    app:labelVisibilityMode="unlabeled" />
-            </LinearLayout>
-
-            <!-- Premium Ambient Background Glow (Moved out of inner layout to avoid height issues) -->
-            <View
-                android:layout_width="600dp"
-                android:layout_height="600dp"
-                android:alpha="0.2"
-                android:background="@drawable/ambient_glow"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginEnd="-300dp"
-                android:layout_marginTop="-200dp" />
 
             <!-- Login Container (shifted up slightly and vertical padding removed for tighter fit) -->
             <LinearLayout
@@ -231,7 +196,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp">
+                    android:layout_marginBottom="16dp">
                     <CheckBox
                         android:id="@+id/rememberMe"
                         android:layout_width="wrap_content"
@@ -360,6 +325,33 @@
             </LinearLayout> <!-- End Login Container -->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Dash Container (Moved out of scrollable area to keep navigation fixed at bottom) -->
+    <LinearLayout
+        android:id="@+id/dashContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/landing_background">
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            style="@style/Widget.App.BottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/landing_background"
+            app:elevation="8dp"
+            app:itemIconSize="26dp"
+            app:itemIconTint="@color/nav_item_selector"
+            app:labelVisibilityMode="unlabeled" />
+    </LinearLayout>
 
     <!-- Loading Overlay -->
     <FrameLayout

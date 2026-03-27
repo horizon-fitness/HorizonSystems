@@ -72,6 +72,16 @@ class LandingActivity : AppCompatActivity() {
                 handler.removeCallbacks(showManualBypassRunnable)
                 loadingOverlay.visibility = android.view.View.GONE
                 handleIntent(intent)
+                
+                // Auto-login if Remember Me is enabled
+                if (GymManager.isRememberMeEnabled(this@LandingActivity)) {
+                    val savedUser = GymManager.getSavedUsername(this@LandingActivity)
+                    val savedPass = GymManager.getSavedPassword(this@LandingActivity)
+                    if (savedUser.isNotEmpty() && savedPass.isNotEmpty()) {
+                        loadingOverlay.visibility = android.view.View.VISIBLE
+                        performLogin(savedUser, savedPass)
+                    }
+                }
             }
         }
 
@@ -157,7 +167,7 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun showDashboard(user: com.example.horizonsystems.models.User, branding: TenantPage?) {
-        val loginContainer = findViewById<android.view.View>(R.id.loginContainer)
+        val loginScrollView = findViewById<android.view.View>(R.id.loginScrollView)
         val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
         
         // Transfer data to "Activity Intent" equivalent (mocking Intent extras for fragments)
@@ -172,7 +182,7 @@ class LandingActivity : AppCompatActivity() {
             putExtra("user_role", user.role ?: "Member")
         }
 
-        loginContainer.visibility = android.view.View.GONE
+        loginScrollView.visibility = android.view.View.GONE
         dashContainer.visibility = android.view.View.VISIBLE
         
         // Load initial fragment
@@ -181,14 +191,14 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun performLogout() {
-        val loginContainer = findViewById<android.view.View>(R.id.loginContainer)
+        val loginScrollView = findViewById<android.view.View>(R.id.loginScrollView)
         val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
         
         dashContainer.visibility = android.view.View.GONE
-        loginContainer.visibility = android.view.View.VISIBLE
+        loginScrollView.visibility = android.view.View.VISIBLE
         
         // Optional: clear inputs
-        findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit).setText("")
+        findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)?.setText("")
     }
 
 
@@ -292,7 +302,6 @@ class LandingActivity : AppCompatActivity() {
             try {
                 val bg = android.graphics.Color.parseColor(it)
                 findViewById<android.view.View>(R.id.rootLayout).setBackgroundColor(bg)
-                findViewById<android.view.View>(R.id.innerLayout).setBackgroundColor(bg)
                 findViewById<android.view.View>(android.R.id.content).rootView.setBackgroundColor(bg)
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Invalid bg color: $it")
@@ -312,6 +321,9 @@ class LandingActivity : AppCompatActivity() {
                  val response = api.login(loginRequest)
 
                 withContext(Dispatchers.Main) {
+                    val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
+                    loadingOverlay?.visibility = android.view.View.GONE
+
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse?.success == true) {
@@ -361,7 +373,6 @@ class LandingActivity : AppCompatActivity() {
                 if (isParsingError && !isRetry) {
                     withContext(Dispatchers.Main) {
                         Log.w("AuthError", "Bypass might have expired, refreshing...")
-                        Toast.makeText(this@LandingActivity, "Refreshing security... Please wait", Toast.LENGTH_SHORT).show()
                     }
                     
                     // Force refresh security cookie
@@ -371,6 +382,9 @@ class LandingActivity : AppCompatActivity() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
+                        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
+                        loadingOverlay?.visibility = android.view.View.GONE
+                        
                         val errorMsg = if (isParsingError) "Security check failed. Please restart the app." else "Connection Error: ${e.message}"
                         Toast.makeText(this@LandingActivity, errorMsg, Toast.LENGTH_LONG).show()
                     }
