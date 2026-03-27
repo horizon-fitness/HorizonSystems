@@ -17,6 +17,8 @@ import com.example.horizonsystems.models.LoginResponse
 import com.example.horizonsystems.models.TenantPage
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
+import androidx.core.widget.NestedScrollView
+import android.widget.LinearLayout
 import android.view.View
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,12 +32,20 @@ class LandingActivity : AppCompatActivity() {
     private var cachedCookie: String = ""
     private var cachedUserAgent: String = ""
     private var isBypassed = false
+    
+    // UI References
+    private var loginScrollView: NestedScrollView? = null
+    private var dashContainer: LinearLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Temporarily disabled to rule out API level issues
         // enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
+        
+        // Initialize view references
+        loginScrollView = findViewById(R.id.loginScrollView)
+        dashContainer = findViewById(R.id.dashContainer)
         
         // 0. Pre-fill branding from cache to avoid jumping
         prefillUIFromCache()
@@ -169,9 +179,6 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun showDashboard(user: com.example.horizonsystems.models.User, branding: TenantPage?) {
-        val loginScrollView = findViewById<android.view.View>(R.id.loginScrollView)
-        val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
-        
         // Transfer data to "Activity Intent" equivalent (mocking Intent extras for fragments)
         intent.apply {
             putExtra("user_id", user.userId ?: -1)
@@ -184,8 +191,8 @@ class LandingActivity : AppCompatActivity() {
             putExtra("user_role", user.role ?: "Member")
         }
 
-        loginScrollView.visibility = android.view.View.GONE
-        dashContainer.visibility = android.view.View.VISIBLE
+        loginScrollView?.visibility = android.view.View.GONE
+        dashContainer?.visibility = android.view.View.VISIBLE
 
         // Initialize persistent top header
         findViewById<TextView>(R.id.gymNameHeader).text = user.gymName?.uppercase() ?: (branding?.gymName?.uppercase() ?: "HORIZON SYSTEMS")
@@ -205,11 +212,8 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun performLogout() {
-        val loginScrollView = findViewById<android.view.View>(R.id.loginScrollView)
-        val dashContainer = findViewById<android.view.View>(R.id.dashContainer)
-        
-        dashContainer.visibility = android.view.View.GONE
-        loginScrollView.visibility = android.view.View.VISIBLE
+        dashContainer?.visibility = android.view.View.GONE
+        loginScrollView?.visibility = android.view.View.VISIBLE
         
         // Optional: clear inputs
         findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)?.setText("")
