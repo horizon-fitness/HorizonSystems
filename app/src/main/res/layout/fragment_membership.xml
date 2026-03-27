@@ -196,25 +196,12 @@
             android:textAllCaps="true"
             android:letterSpacing="0.15" />
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMembershipHistory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="100dp"
-            app:cardBackgroundColor="@color/surface_dark"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/border_light"
-            app:strokeWidth="1dp">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMembershipHistory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="8dp"
-                android:clipToPadding="false" />
-
-        </com.google.android.material.card.MaterialCardView>
+            android:paddingVertical="8dp"
+            android:clipToPadding="false" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

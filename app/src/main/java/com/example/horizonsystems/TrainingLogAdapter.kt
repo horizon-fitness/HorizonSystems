@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.TrainingLog
 
-class TrainingLogAdapter(private val logs: List<TrainingLog>) :
+class TrainingLogAdapter(private var logs: List<TrainingLog>) :
     RecyclerView.Adapter<TrainingLogAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -49,6 +49,11 @@ class TrainingLogAdapter(private val logs: List<TrainingLog>) :
                 holder.status.setBackgroundColor(android.graphics.Color.parseColor("#0DFFFFFF"))
             }
         }
+    }
+
+    fun updateLogs(newLogs: List<TrainingLog>) {
+        logs = newLogs
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = logs.size

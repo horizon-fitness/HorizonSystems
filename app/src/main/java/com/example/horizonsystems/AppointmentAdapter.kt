@@ -28,23 +28,17 @@ class AppointmentAdapter(private val appointments: List<Appointment>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val appt = appointments[position]
         holder.subject.text = appt.subject
-        holder.dateTime.text = "${appt.date}, ${appt.time}"
+        holder.dateTime.text = appt.date
         holder.status.text = appt.status.uppercase()
         
-        // Appointments don't use amount field, hide it to keep look clean
+        // Appointments don't use amount field, hide it
         holder.amount.visibility = View.GONE
 
         val context = holder.itemView.context
-        when (appt.status.lowercase()) {
-            "approved" -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))
-            }
-            "pending" -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.amber_500))
-            }
-            else -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
-            }
+        if (appt.status.equals("Approved", ignoreCase = true) || appt.status.equals("Completed", ignoreCase = true)) {
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))
+        } else {
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
         }
     }
 
