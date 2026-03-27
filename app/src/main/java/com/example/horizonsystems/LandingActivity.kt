@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import com.example.horizonsystems.models.LoginResponse
 import com.example.horizonsystems.models.TenantPage
 import com.example.horizonsystems.network.RetrofitClient
 import com.google.android.material.button.MaterialButton
+import android.view.View
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -184,6 +186,18 @@ class LandingActivity : AppCompatActivity() {
 
         loginScrollView.visibility = android.view.View.GONE
         dashContainer.visibility = android.view.View.VISIBLE
+
+        // Initialize persistent top header
+        findViewById<TextView>(R.id.gymNameHeader).text = user.gymName?.uppercase() ?: (branding?.gymName?.uppercase() ?: "HORIZON SYSTEMS")
+        
+        findViewById<View>(R.id.btnTopProfile).setOnClickListener {
+            // Load Profile Fragment
+            loadFragment(ProfileFragment())
+        }
+        
+        findViewById<View>(R.id.btnTopLogout).setOnClickListener {
+            performLogout()
+        }
         
         // Load initial fragment
         findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView).selectedItemId = R.id.nav_home
@@ -340,8 +354,8 @@ class LandingActivity : AppCompatActivity() {
                             Toast.makeText(this@LandingActivity, "Welcome ${user?.firstName ?: "User"}", Toast.LENGTH_SHORT).show()
                             
                             // Handle Remember Me
-                            val rememberMeCheck = findViewById<android.widget.CheckBox>(R.id.rememberMe)
-                            if (rememberMeCheck.isChecked) {
+                            val rememberMeCheck = findViewById<CheckBox>(R.id.rememberMe)
+                            if (rememberMeCheck?.isChecked == true) {
                                 GymManager.saveLoginCredentials(this@LandingActivity, username, password)
                             } else {
                                 GymManager.clearLoginCredentials(this@LandingActivity)

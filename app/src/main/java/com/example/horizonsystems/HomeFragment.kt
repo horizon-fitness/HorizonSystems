@@ -25,10 +25,7 @@ class HomeFragment : Fragment() {
         val userRole = activity?.intent?.getStringExtra("user_role") ?: "Member"
         val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         
-        view.findViewById<TextView>(R.id.dashUserName).text = userName
-        view.findViewById<TextView>(R.id.gymNameHeader).text = gymName.uppercase()
-        view.findViewById<TextView>(R.id.roleBadge).text = "GOLD MEMBER"
-        view.findViewById<TextView>(R.id.gymNameText).text = gymName.uppercase()
+        view.findViewById<TextView>(R.id.dashUserName).text = if (userName.length > 5) userName.take(3).uppercase() else userName.uppercase()
 
         // Handle Quick Action Navigation
         view.findViewById<View>(R.id.btnNavBookSession).setOnClickListener {
@@ -50,16 +47,6 @@ class HomeFragment : Fragment() {
 
         view.findViewById<View>(R.id.btnNavAppointments).setOnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_appointment
-        }
-
-
-        // Top Header Actions
-        view.findViewById<View>(R.id.btnTopProfile).setOnClickListener {
-            Toast.makeText(requireContext(), "Profile Access: $userName", Toast.LENGTH_SHORT).show()
-        }
-
-        view.findViewById<View>(R.id.btnTopLogout).setOnClickListener {
-            logout()
         }
 
         return view
