@@ -19,5 +19,12 @@ data class User(
     @SerializedName("tenant_id") val tenantId: String?,
     @SerializedName("gym_name") val gymName: String?,
     @SerializedName("gym_id") val gymId: Int?,
-    @SerializedName("role") val role: String?
+    @SerializedName("role") val role: String?,
+    @SerializedName("address") val address: String?,
+    @SerializedName("birth_date") val birthDate: String?,
+    @SerializedName("sex") val sex: String?,
+    @SerializedName("occupation") val occupation: String?,
+    @SerializedName("medical_history") val medicalHistory: String?,
+    @SerializedName("emergency_name") val emergencyName: String?,
+    @SerializedName("emergency_phone") val emergencyPhone: String?
 )

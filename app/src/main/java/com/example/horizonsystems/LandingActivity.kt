@@ -189,6 +189,19 @@ class LandingActivity : AppCompatActivity() {
             putExtra("tenant_id", user.tenantId ?: (branding?.tenantCode ?: "000"))
             putExtra("logo_url", branding?.logoPath ?: "")
             putExtra("user_role", user.role ?: "Member")
+            
+            // New Registration Fields
+            putExtra("first_name", user.firstName ?: "")
+            putExtra("last_name", user.lastName ?: "")
+            putExtra("middle_name", user.middleName ?: "")
+            putExtra("contact_number", user.contactNumber ?: "")
+            putExtra("address", user.address ?: "")
+            putExtra("birth_date", user.birthDate ?: "")
+            putExtra("sex", user.sex ?: "")
+            putExtra("occupation", user.occupation ?: "")
+            putExtra("medical_history", user.medicalHistory ?: "")
+            putExtra("emergency_name", user.emergencyName ?: "")
+            putExtra("emergency_phone", user.emergencyPhone ?: "")
         }
 
         loginScrollView?.visibility = android.view.View.GONE
@@ -256,6 +269,10 @@ class LandingActivity : AppCompatActivity() {
         
         // Load initial fragment via navigation selection (which triggers loadFragment)
         findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_home
+    }
+
+    fun setTopProfileVisibility(visible: Boolean) {
+        findViewById<View>(R.id.btnTopProfile)?.visibility = if (visible) android.view.View.VISIBLE else android.view.View.GONE
     }
 
     fun performLogout() {
