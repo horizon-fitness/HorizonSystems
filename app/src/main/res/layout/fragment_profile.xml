@@ -81,10 +81,10 @@
             android:id="@+id/profileEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:text="user@example.com"
             android:textColor="@color/text_secondary"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileName" />
@@ -97,7 +97,7 @@
             android:layout_marginTop="32dp"
             android:text="MEMBER IDENTIFICATION"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:letterSpacing="0.05"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,30 +122,30 @@
                 android:padding="20dp">
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FIRST NAME" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileFirstName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FIRST NAME" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileFirstName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LAST NAME" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileLastName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LAST NAME" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileLastName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_profile" app:tint="#BC8CF2" />
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MIDDLE NAME" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileMiddleName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MIDDLE NAME" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileMiddleName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -156,10 +156,10 @@
             android:id="@+id/headerContact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="CONTACT INFORMATION"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:letterSpacing="0.05"
             app:layout_constraintStart_toStartOf="parent"
@@ -184,20 +184,20 @@
                 android:padding="20dp">
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_copy" app:tint="#BC8CF2" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_copy" app:tint="#BC8CF2" />
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CONTACT NUMBER" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profilePhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CONTACT NUMBER" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profilePhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="top">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_marginTop="4dp" android:src="@drawable/ic_location" app:tint="#BC8CF2" />
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:layout_marginTop="4dp" android:src="@drawable/ic_location" app:tint="#BC8CF2" />
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RESIDENTIAL ADDRESS" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileAddress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RESIDENTIAL ADDRESS" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileAddress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -208,10 +208,10 @@
             android:id="@+id/headerHealth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="HEALTH &amp; STATUS"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:letterSpacing="0.05"
             app:layout_constraintStart_toStartOf="parent"
@@ -237,27 +237,27 @@
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BIRTH DATE" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileBirthDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="BIRTH DATE" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileBirthDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SEX" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/profileSex" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SEX" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                        <TextView android:id="@+id/profileSex" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="OCCUPATION" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileOccupation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="OCCUPATION" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileOccupation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MEDICAL HISTORY" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileMedHistory" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="None listed" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MEDICAL HISTORY" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileMedHistory" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="None listed" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -267,10 +267,10 @@
             android:id="@+id/headerEmergency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="EMERGENCY CONTACT"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:letterSpacing="0.05"
             app:layout_constraintStart_toStartOf="parent"
@@ -295,15 +295,15 @@
                 android:padding="20dp">
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CONTACT PERSON" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileEmergencyName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CONTACT PERSON" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileEmergencyName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginVertical="12dp" android:background="@color/border_light" android:alpha="0.2" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="EMERGENCY NUMBER" android:textColor="@color/text_secondary" android:textSize="9sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileEmergencyPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="EMERGENCY NUMBER" android:textColor="@color/text_secondary" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileEmergencyPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="18sp" android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -324,16 +324,16 @@
                 android:padding="16dp"
                 android:orientation="horizontal">
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MEMBER ROLE" android:textColor="@color/text_secondary" android:textSize="8sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileRole" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gold Member" android:textColor="@color/white" android:textSize="10sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MEMBER ROLE" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileRole" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gold Member" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TENANT ID" android:textColor="@color/text_secondary" android:textSize="8sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileTenantId" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="10sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TENANT ID" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileTenantId" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.2" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HOME GYM" android:textColor="@color/text_secondary" android:textSize="8sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/profileGym" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="10sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HOME GYM" android:textColor="@color/text_secondary" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/profileGym" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="---" android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
