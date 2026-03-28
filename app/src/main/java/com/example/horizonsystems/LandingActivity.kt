@@ -20,12 +20,6 @@ import com.google.android.material.button.MaterialButton
 import androidx.core.widget.NestedScrollView
 import android.widget.LinearLayout
 import android.view.View
-import android.animation.ObjectAnimator
-import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.horizonsystems.models.Notification
-import androidx.fragment.app.Fragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,8 +37,6 @@ class LandingActivity : AppCompatActivity() {
     private var loginScrollView: NestedScrollView? = null
     private var dashContainer: LinearLayout? = null
 
-    private var isNotifShadeOpen = false
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Temporarily disabled to rule out API level issues
@@ -267,14 +259,9 @@ class LandingActivity : AppCompatActivity() {
         // but since we call loadFragment(HomeFragment()), it will handle its own UI.
         
         findViewById<View>(R.id.btnTopNotifications).setOnClickListener {
-            toggleNotificationShade()
+            // Launch Notifications Sheet
+            NotificationSheet().show(supportFragmentManager, "notifications")
         }
-        
-        findViewById<View>(R.id.notifDimBackground).setOnClickListener {
-            if (isNotifShadeOpen) toggleNotificationShade()
-        }
-
-        setupNotificationShade()
         
         findViewById<View>(R.id.btnTopLogout).setOnClickListener {
             performLogout()
@@ -286,51 +273,6 @@ class LandingActivity : AppCompatActivity() {
 
     fun setTopNotificationsVisibility(visible: Boolean) {
         findViewById<View>(R.id.btnTopNotifications)?.visibility = if (visible) android.view.View.VISIBLE else android.view.View.GONE
-    }
-
-    private fun setupNotificationShade() {
-        val rv = findViewById<RecyclerView>(R.id.rvNotificationsShade)
-        val sampleNotifications = listOf(
-            Notification("1", "Welcome to Horizon!", "Get started by booking your first session today.", "10m ago", "system", false),
-            Notification("2", "Membership Renewal", "Your Pro Elite plan expires in 5 days.", "2h ago", "membership", false),
-            Notification("3", "Booking Confirmed", "Your Strength Training with Coach Mike is set.", "1d ago", "booking", true),
-            Notification("4", "New Coach Available", "Coach Sarah just joined our team. Check her schedule!", "2d ago", "system", true)
-        )
-        rv.layoutManager = LinearLayoutManager(this)
-        rv.adapter = NotificationAdapter(sampleNotifications)
-    }
-
-    fun toggleNotificationShade() {
-        val shade = findViewById<View>(R.id.notificationShade)
-        val dim = findViewById<View>(R.id.notifDimBackground)
-        
-        if (isNotifShadeOpen) {
-            // Close
-            ObjectAnimator.ofFloat(shade, "translationY", 512f, 0f).apply {
-                duration = 300
-                interpolator = AccelerateDecelerateInterpolator()
-                start()
-            }
-            dim.visibility = View.GONE
-            isNotifShadeOpen = false
-        } else {
-            // Open
-            dim.visibility = View.VISIBLE
-            ObjectAnimator.ofFloat(shade, "translationY", 0f, 512f).apply {
-                duration = 400
-                interpolator = AccelerateDecelerateInterpolator()
-                start()
-            }
-            isNotifShadeOpen = true
-        }
-    }
-
-    override fun onBackPressed() {
-        if (isNotifShadeOpen) {
-            toggleNotificationShade()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     fun performLogout() {

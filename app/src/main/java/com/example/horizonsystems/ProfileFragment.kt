@@ -12,8 +12,8 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // Keep top notifications icon visible for consistency
-        (activity as? LandingActivity)?.setTopNotificationsVisibility(true)
+        // Hide top notifications icon when on Profile screen
+        (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
         val intent = activity?.intent
         val userName = intent?.getStringExtra("user_name") ?: "User"
@@ -69,7 +69,7 @@ class ProfileFragment : Fragment() {
 
         // Notifications Page
         view.findViewById<View>(R.id.btnProfileNotifications).setOnClickListener {
-            (activity as? LandingActivity)?.toggleNotificationShade()
+            NotificationSheet().show(parentFragmentManager, "notifications")
         }
 
         // Edit Profile Placeholder
