@@ -12,8 +12,8 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // Hide top profile icon when on Profile screen
-        (activity as? LandingActivity)?.setTopProfileVisibility(false)
+        // Keep top notifications icon visible for consistency
+        (activity as? LandingActivity)?.setTopNotificationsVisibility(true)
 
         val intent = activity?.intent
         val userName = intent?.getStringExtra("user_name") ?: "User"
@@ -67,6 +67,11 @@ class ProfileFragment : Fragment() {
             (activity as? LandingActivity)?.performLogout() ?: activity?.finish()
         }
 
+        // Notifications Page
+        view.findViewById<View>(R.id.btnProfileNotifications).setOnClickListener {
+            (activity as? LandingActivity)?.toggleNotificationShade()
+        }
+
         // Edit Profile Placeholder
         view.findViewById<View>(R.id.btnEditProfile).setOnClickListener {
             android.widget.Toast.makeText(requireContext(), "Edit Profile coming soon", android.widget.Toast.LENGTH_SHORT).show()
@@ -91,8 +96,8 @@ class ProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Show top profile icon again when leaving
-        (activity as? LandingActivity)?.setTopProfileVisibility(true)
+        // Show top notifications icon again when leaving
+        (activity as? LandingActivity)?.setTopNotificationsVisibility(true)
     }
 
     override fun onCreateView(
