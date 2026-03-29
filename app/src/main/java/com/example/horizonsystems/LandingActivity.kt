@@ -184,6 +184,7 @@ class LandingActivity : AppCompatActivity() {
         // Transfer data to "Activity Intent" equivalent (mocking Intent extras for fragments)
         intent.apply {
             putExtra("user_id", user.userId ?: -1)
+            putExtra("member_id", user.memberId ?: -1)
             putExtra("gym_id", user.gymId ?: -1)
             putExtra("user_name", user.username ?: "Guest")
             putExtra("email", user.email ?: "")

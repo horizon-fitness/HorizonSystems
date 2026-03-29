@@ -49,6 +49,11 @@
             android:name=".SwitchGymActivity"
             android:exported="false"
             android:theme="@style/Theme.HorizonSystems" />
+        <activity
+            android:name=".PayMongoActivity"
+            android:exported="false"
+            android:label="Secure Payment"
+            android:theme="@style/Theme.HorizonSystems" />
     </application>
 
 </manifest>

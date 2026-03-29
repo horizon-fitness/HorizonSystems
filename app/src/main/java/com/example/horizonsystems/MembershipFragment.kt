@@ -58,7 +58,6 @@ class MembershipFragment : Fragment() {
     private fun fetchHistory() {
         val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         if (userId == -1) {
-            mockHistory()
             return
         }
 
@@ -72,24 +71,18 @@ class MembershipFragment : Fragment() {
                         historyList.addAll(response.body()!!)
                         adapter.notifyDataSetChanged()
                     } else {
-                        mockHistory()
+                        historyList.clear()
+                        adapter.notifyDataSetChanged()
                     }
                 }
             } catch (e: Exception) {
                 Log.e("MembershipFragment", "Fetch Error: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    mockHistory()
+                    historyList.clear()
+                    adapter.notifyDataSetChanged()
                 }
             }
         }
     }
 
-    private fun mockHistory() {
-        if (historyList.isNotEmpty()) return
-        historyList.addAll(listOf(
-            Transaction("2024-03-01", "09:00 AM", "Monthly Pass", "REF-001", "1,500.00", "Approved"),
-            Transaction("2024-02-01", "09:00 AM", "Monthly Pass", "REF-002", "1,500.00", "Approved")
-        ))
-        adapter.notifyDataSetChanged()
-    }
 }

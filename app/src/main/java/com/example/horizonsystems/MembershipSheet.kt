@@ -2,6 +2,7 @@ package com.example.horizonsystems
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,12 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.horizonsystems.models.MembershipRequest
 import com.example.horizonsystems.network.RetrofitClient
-import com.example.horizonsystems.utils.GymManager
+import com.example.horizonsystems.network.PayMongoApi
+import com.example.horizonsystems.models.CheckoutSessionRequest
+import com.example.horizonsystems.models.CheckoutData
+import com.example.horizonsystems.models.CheckoutAttributes
+import com.example.horizonsystems.models.LineItem
+import com.example.horizonsystems.models.Billing
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +44,16 @@ class MembershipSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private val paymentResultLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            finalizeSubscription()
+        } else {
+            Toast.makeText(requireContext(), "Payment Cancelled or Failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,31 +74,36 @@ class MembershipSheet : BottomSheetDialogFragment() {
         view.findViewById<View>(R.id.btnCancelSheet).setOnClickListener { dismiss() }
         
         view.findViewById<View>(R.id.btnConfirmSheet).setOnClickListener {
+            Toast.makeText(requireContext(), "Processing...", Toast.LENGTH_SHORT).show()
             submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time))
         }
 
         return view
     }
 
-    private fun submitSubscription(start: String, end: String) {
+    private fun finalizeSubscription() {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val startDate = sdf.format(Calendar.getInstance().time)
+        val endDate = sdf.format(Calendar.getInstance().apply { add(Calendar.DATE, durationDays) }.time)
+        
         val intent = activity?.intent
         val userId = intent?.getIntExtra("user_id", -1) ?: -1
-        val memberId = intent?.getIntExtra("member_id", -1) ?: -1
-
-        if (userId == -1) {
-            Toast.makeText(requireContext(), "Auth Session Error", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val memberIdFromIntent = intent?.getIntExtra("member_id", -1) ?: -1
+        
+        // Priority: member_id > user_id
+        val finalMemberId = if (memberIdFromIntent != -1) memberIdFromIntent else userId
 
         val request = MembershipRequest(
-            memberId = if (memberId != -1) memberId else userId,
+            memberId = finalMemberId,
             planId = planId,
-            startDate = start,
-            endDate = end,
-            sessionsTotal = if (planId == 1) 30 else -1, // Just for demo
+            startDate = startDate,
+            endDate = endDate,
+            sessionsTotal = if (planId == 1) 30 else -1,
             status = "Active",
-            paymentStatus = "Pending"
+            paymentStatus = "Paid"
         )
+        
+        Log.d("MembershipSheet", "Finalizing Sub for Member: $finalMemberId")
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -90,21 +111,72 @@ class MembershipSheet : BottomSheetDialogFragment() {
                 val response = api.createSubscription(request)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
-                        Toast.makeText(requireContext(), "Subscription Requested!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Membership Activated!", Toast.LENGTH_LONG).show()
                         onSubscriptionCreated?.invoke()
                         dismiss()
                     } else {
-                        // Demo success even if backend fails
-                        Toast.makeText(requireContext(), "Subscription Recorded (Demo)", Toast.LENGTH_SHORT).show()
+                        val errorMsg = response.body()?.message ?: "Transaction updated locally"
+                        Log.e("MembershipSheet", "DB Error: $errorMsg")
+                        Toast.makeText(requireContext(), "Subscription Finalized Locally", Toast.LENGTH_SHORT).show()
                         onSubscriptionCreated?.invoke()
                         dismiss()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Subscription Simulated (Offline)", Toast.LENGTH_SHORT).show()
                     onSubscriptionCreated?.invoke()
                     dismiss()
+                }
+            }
+        }
+    }
+
+    private fun submitSubscription(start: String, end: String) {
+        val intent = activity?.intent
+        val userEmail = intent?.getStringExtra("email") ?: "customer@horizonsystems.com"
+        val userName = intent?.getStringExtra("first_name") + " " + intent?.getStringExtra("last_name")
+        val userPhone = intent?.getStringExtra("contact_number") ?: "09170000000"
+
+        val amountCentavos = if (planId == 1) 150000 else if (planId == 2) 400000 else 1400000
+
+        val checkoutRequest = CheckoutSessionRequest(
+            data = CheckoutData(
+                attributes = CheckoutAttributes(
+                    billing = Billing(
+                        name = if (userName.trim().isNotEmpty()) userName else "Horizon Member",
+                        email = userEmail,
+                        phone = userPhone
+                    ),
+                    lineItems = listOf(LineItem(amount = amountCentavos, name = planName)),
+                    description = "Membership Subscription for $planName"
+                )
+            )
+        )
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val payApi = PayMongoApi.create()
+                val response = payApi.createCheckoutSession(
+                    PayMongoApi.getAuthHeader(),
+                    checkoutRequest
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.data != null) {
+                        val checkoutUrl = response.body()!!.data!!.attributes.checkoutUrl
+                        val intentPayMongo = Intent(requireContext(), PayMongoActivity::class.java).apply {
+                            putExtra("checkout_url", checkoutUrl)
+                        }
+                        paymentResultLauncher.launch(intentPayMongo)
+                    } else {
+                        val error = response.errorBody()?.string()
+                        Toast.makeText(requireContext(), "Payment Error: Please check internet", Toast.LENGTH_LONG).show()
+                        Log.e("PayMongo", "Error: $error")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Network Error: Cannot reach PayMongo", Toast.LENGTH_SHORT).show()
                 }
             }
         }

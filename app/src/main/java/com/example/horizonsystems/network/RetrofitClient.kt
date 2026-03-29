@@ -28,7 +28,11 @@ object RetrofitClient {
             }
         }
         
-        return builder.build()
+        return builder
+            .connectTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
     }
 
     /**

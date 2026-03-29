@@ -102,8 +102,6 @@ class BookingFragment : Fragment() {
     private fun fetchBookings(root: View) {
         val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         if (userId == -1) {
-            // Fallback mock data for demo if not logged in
-            mockData()
             applyPaginationAndRefresh(root)
             return
         }
@@ -118,28 +116,20 @@ class BookingFragment : Fragment() {
                         allLogs.addAll(response.body()!!.bookings!!)
                         applyPaginationAndRefresh(root)
                     } else {
-                        mockData()
+                        allLogs.clear()
                         applyPaginationAndRefresh(root)
                     }
                 }
             } catch (e: Exception) {
                 Log.e("BookingFragment", "Fetch Error: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    mockData()
+                    allLogs.clear()
                     applyPaginationAndRefresh(root)
                 }
             }
         }
     }
 
-    private fun mockData() {
-        if (allLogs.isNotEmpty()) return
-        allLogs.addAll(listOf(
-            TrainingLog("2024-03-21", "10:00:00", "1hr", "Unlimited Gym Use", "Staff", "APPROVED"),
-            TrainingLog("2024-03-22", "09:00:00", "2hrs", "Personal Training", "Coach Mike", "PENDING"),
-            TrainingLog("2024-03-23", "11:00:00", "1hr", "Yoga Session", "Sarah Wilson", "APPROVED")
-        ))
-    }
 
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton, inactives: List<com.google.android.material.button.MaterialButton>) {
         active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7")))

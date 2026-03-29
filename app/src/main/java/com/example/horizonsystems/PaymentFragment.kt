@@ -6,34 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Transaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PaymentFragment : Fragment() {
     private lateinit var adapter: TransactionAdapter
-    private val allTransactions = listOf(
-        Transaction("Mar 21, 2024", "10:00 AM", "Unlimited Gym Use", "GCASH-123", "500.00", "Approved"),
-        Transaction("Mar 20, 2024", "09:30 AM", "Personal Training", "CASH-456", "1500.00", "Approved"),
-        Transaction("Mar 19, 2024", "02:00 PM", "Yoga Session", "PAYMAYA-789", "300.00", "Approved"),
-        Transaction("Mar 18, 2024", "11:00 AM", "Boxing Class", "GCASH-001", "800.00", "Approved"),
-        Transaction("Mar 17, 2024", "04:30 PM", "Unlimited Gym Use", "CASH-002", "500.00", "Approved"),
-        Transaction("Mar 16, 2024", "10:00 AM", "Zumba Class", "GCASH-003", "400.00", "Approved"),
-        Transaction("Mar 15, 2024", "01:00 PM", "Personal Training", "CASH-004", "1500.00", "Approved"),
-        Transaction("Mar 14, 2024", "09:00 AM", "Unlimited Gym Use", "PAYMAYA-005", "500.00", "Approved"),
-        Transaction("Mar 13, 2024", "10:00 AM", "Crossfit", "GCASH-006", "1200.00", "Approved"),
-        Transaction("Mar 12, 2024", "03:00 PM", "Unlimited Gym Use", "CASH-007", "500.00", "Approved"),
-        Transaction("Mar 11, 2024", "05:00 PM", "Personal Training", "GCASH-008", "1500.00", "Approved"),
-        Transaction("Mar 10, 2024", "08:00 AM", "Unlimited Gym Use", "CASH-009", "500.00", "Approved"),
-        Transaction("Mar 09, 2024", "11:00 AM", "Yoga Session", "PAYMAYA-010", "300.00", "Approved"),
-        Transaction("Mar 08, 2024", "10:00 AM", "Boxing Class", "GCASH-011", "800.00", "Approved"),
-        Transaction("Mar 07, 2024", "04:30 PM", "Unlimited Gym Use", "CASH-012", "500.00", "Approved")
-    )
-
     private var currentPage = 1
-    private val itemsPerPage = 10
+    private val itemsPerPage = 8
     private var currentFilter = "RECENT"
-    private var filteredList = allTransactions
+    private var allTransactions = mutableListOf<Transaction>()
+    private var filteredList = listOf<Transaction>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_payment, container, false)
@@ -81,8 +68,8 @@ class PaymentFragment : Fragment() {
             }
         }
 
-        // Initial setup
-        applyFilterAndPage(view)
+        // Initial fetch
+        fetchTransactions(view)
 
         return view
     }
@@ -98,9 +85,37 @@ class PaymentFragment : Fragment() {
         inactive.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#333333")))
     }
 
+    private fun fetchTransactions(root: View) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) {
+            applyFilterAndPage(root)
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val response = api.getMembershipHistory(userId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body() != null) {
+                        allTransactions.clear()
+                        allTransactions.addAll(response.body()!!)
+                        applyFilterAndPage(root)
+                    } else {
+                        applyFilterAndPage(root)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    applyFilterAndPage(root)
+                }
+            }
+        }
+    }
+
     private fun applyFilterAndPage(root: View) {
         filteredList = if (currentFilter == "RECENT") {
-            allTransactions.take(5)
+            allTransactions.take(8)
         } else {
             allTransactions
         }
