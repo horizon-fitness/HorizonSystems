@@ -62,62 +62,57 @@
                 android:orientation="horizontal"
                 android:paddingBottom="16dp">
 
-                <!-- Basic Access -->
+                <!-- Monthly Pass -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardMonthly"
                     android:layout_width="300dp"
-                    android:layout_height="440dp"
+                    android:layout_height="460dp"
                     android:layout_marginEnd="20dp"
                     app:cardBackgroundColor="@color/surface_dark"
                     app:cardCornerRadius="24dp"
                     app:cardElevation="4dp"
-                    app:strokeColor="@color/card_stroke_premium"
+                    app:strokeColor="#1AFFFFFF"
                     app:strokeWidth="1dp">
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="28dp">
-
                         <TextView
-                            android:id="@+id/basicLabel"
+                            android:id="@+id/monthlyLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Basic Access"
+                            android:text="MONTHLY PASS"
                             android:textColor="@color/white"
                             android:textSize="22sp"
                             android:fontFamily="sans-serif-black"
-                            android:textAllCaps="true"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <TextView
-                            android:id="@+id/basicDesc"
+                            android:id="@+id/monthlyDesc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Essential Gym Access"
+                            android:text="30 Days Unlimited Access"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            app:layout_constraintTop_toBottomOf="@id/basicLabel"
+                            app:layout_constraintTop_toBottomOf="@id/monthlyLabel"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <View
-                            android:id="@+id/basicDivider"
+                            android:id="@+id/monthlyDivider"
                             android:layout_width="40dp"
                             android:layout_height="3dp"
                             android:layout_marginTop="20dp"
-                            android:background="@color/nav_active_color"
-                            app:layout_constraintTop_toBottomOf="@id/basicDesc"
+                            android:background="#BC8CF2"
+                            app:layout_constraintTop_toBottomOf="@id/monthlyDesc"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <LinearLayout
-                            android:id="@+id/priceContainer"
+                            android:id="@+id/monthlyPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="24dp"
                             android:orientation="horizontal"
                             android:gravity="bottom"
-                            app:layout_constraintTop_toBottomOf="@id/basicDivider"
+                            app:layout_constraintTop_toBottomOf="@id/monthlyDivider"
                             app:layout_constraintStart_toStartOf="parent">
                             <TextView
                                 android:layout_width="wrap_content"
@@ -130,134 +125,98 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="500"
+                                android:text="1,500"
                                 android:textColor="@color/white"
                                 android:textSize="48sp"
                                 android:fontFamily="sans-serif-black" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginBottom="10dp"
-                                android:text="/mo"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="16sp" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="32dp"
                             android:orientation="vertical"
-                            app:layout_constraintTop_toBottomOf="@id/priceContainer">
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="• Unlimited gym usage"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="• Standard equipment access"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="• Locker access"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
+                            app:layout_constraintTop_toBottomOf="@id/monthlyPrice">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• Full gym equipment access" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Locker Room &amp; Shower" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Free Wi-Fi" android:textColor="@color/white" android:alpha="0.8" />
                         </LinearLayout>
-
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSelectMonthly"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
-                            android:text="Get Started"
-                            android:textSize="16sp"
+                            android:text="Choose Plan"
                             android:textStyle="bold"
-                            android:textColor="@color/white"
-                            app:backgroundTint="@color/nav_active_color"
                             app:cornerRadius="16dp"
+                            app:backgroundTint="@color/surface_dark"
+                            app:strokeColor="#BC8CF2"
+                            app:strokeWidth="1dp"
                             app:layout_constraintBottom_toBottomOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Pro Coaching -->
+                <!-- Quarterly Elite -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardQuarterly"
                     android:layout_width="300dp"
-                    android:layout_height="440dp"
+                    android:layout_height="460dp"
                     android:layout_marginEnd="20dp"
                     app:cardBackgroundColor="@color/surface_dark"
                     app:cardCornerRadius="24dp"
                     app:cardElevation="8dp"
-                    app:strokeColor="@color/nav_active_color"
+                    app:strokeColor="#BC8CF2"
                     app:strokeWidth="2dp">
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="28dp">
-
                         <TextView
-                            android:id="@+id/proTag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/badge_premium"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="4dp"
-                            android:text="RECOMMENDED"
+                            android:text="POPULAR"
                             android:textColor="@color/white"
                             android:textSize="10sp"
                             android:textStyle="bold"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent" />
-
                         <TextView
-                            android:id="@+id/proLabel"
+                            android:id="@+id/quarterlyLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pro Elite"
+                            android:text="QUARTERLY ELITE"
                             android:textColor="@color/white"
                             android:textSize="22sp"
                             android:fontFamily="sans-serif-black"
-                            android:textAllCaps="true"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <TextView
-                            android:id="@+id/proDesc"
+                            android:id="@+id/quarterlyDesc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Premium Coaching"
+                            android:text="90 Days Unlimited Access"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            app:layout_constraintTop_toBottomOf="@id/proLabel"
+                            app:layout_constraintTop_toBottomOf="@id/quarterlyLabel"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <View
-                            android:id="@+id/proDivider"
+                            android:id="@+id/quarterlyDivider"
                             android:layout_width="40dp"
                             android:layout_height="3dp"
                             android:layout_marginTop="20dp"
-                            android:background="@color/nav_active_color"
-                            app:layout_constraintTop_toBottomOf="@id/proDesc"
+                            android:background="#BC8CF2"
+                            app:layout_constraintTop_toBottomOf="@id/quarterlyDesc"
                             app:layout_constraintStart_toStartOf="parent" />
-
                         <LinearLayout
-                            android:id="@+id/proPriceContainer"
+                            android:id="@+id/quarterlyPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="24dp"
                             android:orientation="horizontal"
                             android:gravity="bottom"
-                            app:layout_constraintTop_toBottomOf="@id/proDivider"
+                            app:layout_constraintTop_toBottomOf="@id/quarterlyDivider"
                             app:layout_constraintStart_toStartOf="parent">
                             <TextView
                                 android:layout_width="wrap_content"
@@ -270,64 +229,123 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="2,000"
+                                android:text="4,000"
                                 android:textColor="@color/white"
                                 android:textSize="48sp"
                                 android:fontFamily="sans-serif-black" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginBottom="10dp"
-                                android:text="/mo"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="16sp" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="32dp"
                             android:orientation="vertical"
-                            app:layout_constraintTop_toBottomOf="@id/proPriceContainer">
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="• Personal coach assigned"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="• Custom workout programs"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="• Priority machine use"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:alpha="0.9" />
+                            app:layout_constraintTop_toBottomOf="@id/quarterlyPrice">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• All Monthly Features" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• 1 Free PT Session" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Membership Card Included" android:textColor="@color/white" android:alpha="0.8" />
                         </LinearLayout>
-
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSelectQuarterly"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:text="Choose Plan"
-                            android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@color/white"
-                            app:backgroundTint="@color/nav_active_color"
+                            app:backgroundTint="#BC8CF2"
                             app:cornerRadius="16dp"
                             app:layout_constraintBottom_toBottomOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- VIP Annual -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAnnual"
+                    android:layout_width="300dp"
+                    android:layout_height="460dp"
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="#1AFFFFFF"
+                    app:strokeWidth="1dp">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="28dp">
+                        <TextView
+                            android:id="@+id/annualLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="VIP ANNUAL"
+                            android:textColor="@color/white"
+                            android:textSize="22sp"
+                            android:fontFamily="sans-serif-black"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+                        <TextView
+                            android:id="@+id/annualDesc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="365 Days Unlimited Access"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            app:layout_constraintTop_toBottomOf="@id/annualLabel"
+                            app:layout_constraintStart_toStartOf="parent" />
+                        <View
+                            android:id="@+id/annualDivider"
+                            android:layout_width="40dp"
+                            android:layout_height="3dp"
+                            android:layout_marginTop="20dp"
+                            android:background="#BC8CF2"
+                            app:layout_constraintTop_toBottomOf="@id/annualDesc"
+                            app:layout_constraintStart_toStartOf="parent" />
+                        <LinearLayout
+                            android:id="@+id/annualPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:orientation="horizontal"
+                            android:gravity="bottom"
+                            app:layout_constraintTop_toBottomOf="@id/annualDivider"
+                            app:layout_constraintStart_toStartOf="parent">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₱"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="6dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="14,000"
+                                android:textColor="@color/white"
+                                android:textSize="48sp"
+                                android:fontFamily="sans-serif-black" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="32dp"
+                            android:orientation="vertical"
+                            app:layout_constraintTop_toBottomOf="@id/annualPrice">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• Best Value — Save ₱4k!" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Full access to all services" android:textColor="@color/white" android:alpha="0.8" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• VIP lounge access" android:textColor="@color/white" android:alpha="0.8" />
+                        </LinearLayout>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSelectAnnual"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:text="Choose Plan"
+                            android:textStyle="bold"
+                            app:cornerRadius="16dp"
+                            app:backgroundTint="@color/surface_dark"
+                            app:strokeColor="#BC8CF2"
+                            app:strokeWidth="1dp"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
         </HorizontalScrollView>
 

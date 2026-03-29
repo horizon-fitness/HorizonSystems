@@ -59,4 +59,16 @@ interface HorizonApi {
         @Body request: com.example.horizonsystems.models.BookingRequest,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.BookingResponse>
+
+    @GET("api/get_membership_history.php")
+    suspend fun getMembershipHistory(
+        @Query("user_id") userId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<List<com.example.horizonsystems.models.Transaction>>
+
+    @POST("api/create_subscription.php")
+    suspend fun createSubscription(
+        @Body request: com.example.horizonsystems.models.MembershipRequest,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.MembershipResponse>
 }
