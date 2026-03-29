@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,24 +33,59 @@ class MembershipFragment : Fragment() {
         view.findViewById<View>(R.id.btnSelectMonthly).setOnClickListener {
             showConfirmationSheet(1, "MONTHLY PASS", "₱1,500.00", 30)
         }
-        
         view.findViewById<View>(R.id.btnSelectQuarterly).setOnClickListener {
             showConfirmationSheet(2, "QUARTERLY ELITE", "₱4,000.00", 90)
         }
-        
         view.findViewById<View>(R.id.btnSelectAnnual).setOnClickListener {
             showConfirmationSheet(3, "VIP ANNUAL", "₱14,000.00", 365)
         }
 
         // Initial fetch
+        fetchActiveMembership(view)
         fetchHistory()
 
         return view
     }
 
+    private fun fetchActiveMembership(root: View) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi()
+                val response = api.getActiveMembership(userId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val active = response.body()!!
+                        
+                        // Show active card
+                        val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
+                        root.findViewById<TextView>(R.id.tvActivePlanName).text = active.planName
+                        root.findViewById<TextView>(R.id.tvActivePlanDuration).text = "Until: ${active.formattedEnd}"
+                        root.findViewById<TextView>(R.id.tvDaysRemaining).text = "${active.daysRemaining} Days Remaining"
+                        
+                        cardActive.visibility = View.VISIBLE
+                        
+                        // Optionally hide/shrink plan selection if they have an active sub
+                        root.findViewById<View>(R.id.layoutPlanSelectionHeader).visibility = View.GONE
+                        root.findViewById<View>(R.id.cardMonthly).parent.let { (it as? View)?.visibility = View.GONE }
+                    } else {
+                        root.findViewById<View>(R.id.cardActiveMembership).visibility = View.GONE
+                        root.findViewById<View>(R.id.layoutPlanSelectionHeader).visibility = View.VISIBLE
+                        root.findViewById<View>(R.id.cardMonthly).parent.let { (it as? View)?.visibility = View.VISIBLE }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MembershipFragment", "Active Fetch Error: ${e.message}")
+            }
+        }
+    }
+
     private fun showConfirmationSheet(id: Int, name: String, price: String, days: Int) {
         val sheet = MembershipSheet.newInstance(id, name, price, days)
         sheet.onSubscriptionCreated = {
+            fetchActiveMembership(requireView())
             fetchHistory()
         }
         sheet.show(parentFragmentManager, "membership_sheet")

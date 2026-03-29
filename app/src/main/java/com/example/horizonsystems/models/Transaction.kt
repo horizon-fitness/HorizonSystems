@@ -6,5 +6,6 @@ data class Transaction(
     val service: String,
     val reference: String,
     val amount: String,
-    val status: String // Approved, Pending, etc.
+    val status: String, // Approved, Pending, etc.
+    val method: String? = "PayMongo"
 )

@@ -65,6 +65,17 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/txnReference"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Ref: PAYM-12345"
+                android:textColor="#BC8CF2"
+                android:textSize="11sp"
+                android:alpha="0.8"
+                android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
         <!-- Amount & Status -->

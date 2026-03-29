@@ -74,6 +74,11 @@ class PaymentFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        view?.let { fetchTransactions(it) }
+    }
+
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton, inactive: com.google.android.material.button.MaterialButton) {
         active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7")))
         active.setTextColor(android.graphics.Color.WHITE)

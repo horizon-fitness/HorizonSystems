@@ -31,6 +31,11 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
         holder.amount.text = "₱${txn.amount}"
         holder.status.text = txn.status.uppercase()
         
+        // Bind Reference
+        val referenceText = holder.itemView.findViewById<TextView>(R.id.txnReference)
+        referenceText?.text = "Ref: ${txn.reference}"
+        referenceText?.visibility = if (txn.reference.isNullOrEmpty()) View.GONE else View.VISIBLE
+        
         val context = holder.itemView.context
         if (txn.status.equals("Completed", ignoreCase = true) || txn.status.equals("Approved", ignoreCase = true)) {
             holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))

@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
+import java.security.MessageDigest
 
 class MembershipSheet : BottomSheetDialogFragment() {
 
@@ -48,7 +49,10 @@ class MembershipSheet : BottomSheetDialogFragment() {
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
-            finalizeSubscription()
+            // NOTE: finalizeSubscription() is now handled server-side via payment_success_redirect.php
+            Toast.makeText(requireContext(), "Payment Successful! Your membership is now active.", Toast.LENGTH_LONG).show()
+            onSubscriptionCreated?.invoke()
+            dismiss()
         } else {
             Toast.makeText(requireContext(), "Payment Cancelled or Failed", Toast.LENGTH_SHORT).show()
         }
@@ -81,57 +85,6 @@ class MembershipSheet : BottomSheetDialogFragment() {
         return view
     }
 
-    private fun finalizeSubscription() {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val startDate = sdf.format(Calendar.getInstance().time)
-        val endDate = sdf.format(Calendar.getInstance().apply { add(Calendar.DATE, durationDays) }.time)
-        
-        val intent = activity?.intent
-        val userId = intent?.getIntExtra("user_id", -1) ?: -1
-        val memberIdFromIntent = intent?.getIntExtra("member_id", -1) ?: -1
-        
-        // Priority: member_id > user_id
-        val finalMemberId = if (memberIdFromIntent != -1) memberIdFromIntent else userId
-
-        val request = MembershipRequest(
-            memberId = finalMemberId,
-            planId = planId,
-            startDate = startDate,
-            endDate = endDate,
-            sessionsTotal = if (planId == 1) 30 else -1,
-            status = "Active",
-            paymentStatus = "Paid"
-        )
-        
-        Log.d("MembershipSheet", "Finalizing Sub for Member: $finalMemberId")
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val api = RetrofitClient.getApi()
-                val response = api.createSubscription(request)
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful && response.body()?.success == true) {
-                        Toast.makeText(requireContext(), "Payment Verified! Membership Activated.", Toast.LENGTH_LONG).show()
-                        onSubscriptionCreated?.invoke()
-                        dismiss()
-                    } else {
-                        val message = response.body()?.message ?: "Server Error: Could not update database"
-                        Log.e("MembershipSheet", "DB Error: $message")
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        // Since payment was successful, we should still reflect it or tell user to contact support
-                        onSubscriptionCreated?.invoke()
-                        dismiss()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("MembershipSheet", "Exception finalizing: ${e.message}")
-                    onSubscriptionCreated?.invoke()
-                    dismiss()
-                }
-            }
-        }
-    }
 
     private fun submitSubscription(start: String, end: String) {
         val intent = activity?.intent
@@ -147,9 +100,25 @@ class MembershipSheet : BottomSheetDialogFragment() {
             else -> 100000 // Default PHP 1,000.00 if unknown
         }
 
+        val gymId = intent?.getIntExtra("gym_id", 1) ?: 1
+        val userId = intent?.getIntExtra("user_id", -1) ?: -1
+        val amountDecimal = "%.2f".format(amountCentavos / 100.0)
+
+        // Security: Generate Signature for Backend Verification
+        val salt = "FitPlatform_Secure_2026!"
+        val sigInput = "$gymId$userId$planId$amountDecimal$salt"
+        val sig = MessageDigest.getInstance("SHA-256")
+            .digest(sigInput.toByteArray())
+            .joinToString("") { "%02x".format(it) }
+
+        val baseUrl = "https://horizonfitnesscorp.gt.tc/api"
+        val successUrl = "$baseUrl/payment_success_redirect.php?plan_id=$planId&amount=$amountDecimal&gym_id=$gymId&user_id=$userId&sig=$sig"
+
         val checkoutRequest = CheckoutSessionRequest(
             data = CheckoutData(
                 attributes = CheckoutAttributes(
+                    successUrl = successUrl,
+                    cancelUrl = "https://horizonfitnesscorp.gt.tc/api/payment_cancel.php",
                     billing = Billing(
                         name = if (userName.trim().isNotEmpty()) userName else "Horizon Member",
                         email = userEmail,

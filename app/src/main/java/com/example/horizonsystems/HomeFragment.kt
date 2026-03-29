@@ -12,6 +12,10 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
 
@@ -80,7 +84,38 @@ class HomeFragment : Fragment() {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_profile
         }
 
+        fetchActiveStatus(view)
+
         return view
+    }
+
+    private fun fetchActiveStatus(root: View) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val response = api.getActiveMembership(userId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val active = response.body()!!
+                        
+                        // Update Membership Status Text
+                        val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
+                        val planText = root.findViewById<TextView>(R.id.membershipPlan)
+                        
+                        statusText?.text = "Active Member"
+                        statusText?.setTextColor(android.graphics.Color.parseColor("#FFD700")) // Gold color
+                        
+                        planText?.text = "Plan: ${active.planName}"
+                        planText?.visibility = View.VISIBLE
+                    }
+                }
+            } catch (e: Exception) {
+                // Ignore background errors
+            }
+        }
     }
 
     private fun logout() {

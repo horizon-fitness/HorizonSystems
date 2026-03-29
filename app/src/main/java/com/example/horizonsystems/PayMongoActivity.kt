@@ -67,7 +67,7 @@ class PayMongoActivity : AppCompatActivity() {
                 }
 
                 // Handle Success Redirect (More flexible detection)
-                if (url.contains("https://horizonsystems.com/success")) {
+                if (url.contains("status=success") || url.contains("payment_status=success") || url.contains("https://horizonsystems.com/success")) {
                     android.util.Log.d("PayMongo", "Payment Success URL Detected: $url")
                     setResult(RESULT_OK)
                     finish()
@@ -75,7 +75,7 @@ class PayMongoActivity : AppCompatActivity() {
                 }
 
                 // Handle Cancel Redirect
-                if (url.contains("https://horizonsystems.com/cancel")) {
+                if (url.contains("status=cancel") || url.contains("payment_status=failed") || url.contains("https://horizonsystems.com/cancel")) {
                     android.util.Log.d("PayMongo", "Payment Cancel URL Detected: $url")
                     setResult(RESULT_CANCELED)
                     finish()
