@@ -55,14 +55,21 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxStrokeColor="#A855F7"
+            app:boxBackgroundColor="#14FFFFFF"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
             app:hintEnabled="false"
-            android:textColorHint="#40FFFFFF">
+            app:hintTextColor="#B3FFFFFF"
+            android:textColorHint="#B3FFFFFF">
             <AutoCompleteTextView
                 android:id="@+id/bookService"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Select a gym service"
                 android:textColor="@color/white"
+                android:padding="20dp"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,18 +90,25 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:boxStrokeColor="#A855F7"
-            app:hintEnabled="false">
+            app:boxBackgroundColor="#14FFFFFF"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:hintEnabled="false"
+            android:textColorHint="#B3FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/bookDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Pick a date"
                 android:textColor="@color/white"
+                android:padding="20dp"
                 android:focusable="false"
                 android:clickable="true"
                 android:drawableStart="@drawable/ic_calendar"
                 android:drawablePadding="12dp"
-                app:drawableTint="@color/text_secondary" />
+                app:drawableTint="@color/accent_glow" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Time Picker -->
@@ -114,18 +128,25 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
             app:boxStrokeColor="#A855F7"
-            app:hintEnabled="false">
+            app:boxBackgroundColor="#14FFFFFF"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:hintEnabled="false"
+            android:textColorHint="#B3FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/bookTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Select time slot"
                 android:textColor="@color/white"
+                android:padding="20dp"
                 android:focusable="false"
                 android:clickable="true"
                 android:drawableStart="@drawable/ic_clock"
                 android:drawablePadding="12dp"
-                app:drawableTint="@color/text_secondary" />
+                app:drawableTint="@color/accent_glow" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Submit Button -->
@@ -146,6 +167,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Discard"
             android:textAllCaps="false"
             android:textColor="@color/text_secondary" />

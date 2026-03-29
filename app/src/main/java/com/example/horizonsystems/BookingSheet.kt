@@ -115,7 +115,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                             services.add(GymService(4, "Yoga Session", 700.0, 60))
                         }
 
-                        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, services.map { it.serviceName })
+                        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, services.map { it.serviceName })
                         spinner.setAdapter(adapter)
                     }
                 }
@@ -124,7 +124,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                 withContext(Dispatchers.Main) {
                     services.add(GymService(1, "Unlimited Gym Use", 500.0, 60))
                     services.add(GymService(2, "Personal Training", 1500.0, 60))
-                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, services.map { it.serviceName })
+                    val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, services.map { it.serviceName })
                     spinner.setAdapter(adapter)
                 }
             }
