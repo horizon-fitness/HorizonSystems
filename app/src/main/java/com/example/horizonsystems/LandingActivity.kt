@@ -186,13 +186,13 @@ class LandingActivity : AppCompatActivity() {
             putExtra("user_id", user.userId ?: -1)
             putExtra("gym_id", user.gymId ?: -1)
             putExtra("user_name", user.username ?: "Guest")
-            putExtra("user_email", user.email ?: "")
+            putExtra("email", user.email ?: "")
             putExtra("gym_name", user.gymName ?: (branding?.gymName ?: "No Tenant"))
             putExtra("tenant_id", user.tenantId ?: (branding?.tenantCode ?: "000"))
             putExtra("logo_url", branding?.logoPath ?: "")
             putExtra("user_role", user.role ?: "Member")
             
-            // New Registration Fields
+            // New Registration Fields (Schema Aligned)
             putExtra("first_name", user.firstName ?: "")
             putExtra("last_name", user.lastName ?: "")
             putExtra("middle_name", user.middleName ?: "")
@@ -202,8 +202,8 @@ class LandingActivity : AppCompatActivity() {
             putExtra("sex", user.sex ?: "")
             putExtra("occupation", user.occupation ?: "")
             putExtra("medical_history", user.medicalHistory ?: "")
-            putExtra("emergency_name", user.emergencyName ?: "")
-            putExtra("emergency_phone", user.emergencyPhone ?: "")
+            putExtra("emergency_contact_name", user.emergencyContactName ?: "")
+            putExtra("emergency_contact_number", user.emergencyContactNumber ?: "")
         }
 
         loginScrollView?.visibility = android.view.View.GONE

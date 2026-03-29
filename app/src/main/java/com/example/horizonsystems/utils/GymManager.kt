@@ -74,6 +74,10 @@ object GymManager {
         }.apply()
     }
 
+    fun updateSavedPassword(context: Context, newPassword: String) {
+        getPrefs(context).edit().putString(KEY_SAVED_PASSWORD, newPassword).apply()
+    }
+
     fun clearLoginCredentials(context: Context) {
         getPrefs(context).edit().apply {
             putBoolean(KEY_REMEMBER_ME, false)

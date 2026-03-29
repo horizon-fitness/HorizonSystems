@@ -31,30 +31,39 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Edit Profile
-        view.findViewById<View>(R.id.btnEditProfile)?.setOnClickListener {
+        // Edit Personal Information (Full Profile)
+        view.findViewById<View>(R.id.btnEditFullProfile)?.setOnClickListener {
             try {
                 val sheet = EditProfileSheet()
                 sheet.onSavedListener = {
                     refreshUI()
                 }
-                sheet.show(parentFragmentManager, "edit_profile")
+                sheet.show(parentFragmentManager, "edit_profile_full")
             } catch (e: Exception) {
                 // Handle fragment state errors
             }
         }
+        // Change Password
+        view.findViewById<View>(R.id.btnChangePassword)?.setOnClickListener {
+            try {
+                ChangePasswordSheet().show(parentFragmentManager, "change_password")
+            } catch (e: Exception) {
+                // Handle fragment state errors
+            }
+        }
+
     }
 
     fun refreshUI() {
         val view = view ?: return
         val intent = activity?.intent
         val userName = intent?.getStringExtra("user_name") ?: "User"
-        val userEmail = intent?.getStringExtra("user_email") ?: ""
+        val userEmail = intent?.getStringExtra("email") ?: ""
         val userRole = intent?.getStringExtra("user_role") ?: "Member"
         val gymName = intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         val tenantId = intent?.getStringExtra("tenant_id") ?: "000"
 
-        // Registration Fields
+        // Registration Fields (Schema Aligned)
         val firstName = intent?.getStringExtra("first_name") ?: ""
         val lastName = intent?.getStringExtra("last_name") ?: ""
         val middleName = intent?.getStringExtra("middle_name") ?: ""
@@ -64,8 +73,8 @@ class ProfileFragment : Fragment() {
         val sex = intent?.getStringExtra("sex") ?: ""
         val occupation = intent?.getStringExtra("occupation") ?: ""
         val medHistory = intent?.getStringExtra("medical_history") ?: ""
-        val emergencyName = intent?.getStringExtra("emergency_name") ?: ""
-        val emergencyPhone = intent?.getStringExtra("emergency_phone") ?: ""
+        val emergencyName = intent?.getStringExtra("emergency_contact_name") ?: ""
+        val emergencyPhone = intent?.getStringExtra("emergency_contact_number") ?: ""
 
         // Identification
         val displayName = if (firstName.isNotEmpty() && lastName.isNotEmpty()) "$firstName $lastName".uppercase() else userName.uppercase()

@@ -9,7 +9,7 @@ data class RegisterRequest(
     @SerializedName("email") val email: String,
     @SerializedName("username") val username: String,
     @SerializedName("password") val password: String,
-    @SerializedName("phone_number") val phoneNumber: String,
+    @SerializedName("contact_number") val contactNumber: String,
     @SerializedName("birth_date") val birthDate: String,
     @SerializedName("sex") val sex: String,
     @SerializedName("occupation") val occupation: String? = null,
@@ -17,6 +17,8 @@ data class RegisterRequest(
     @SerializedName("medical_history") val medicalHistory: String? = null,
     @SerializedName("emergency_contact_name") val emergencyContactName: String,
     @SerializedName("emergency_contact_number") val emergencyContactNumber: String,
-    @SerializedName("gym_id") val tenantId: String,
+    @SerializedName("tenant_code") val tenantCode: String,
+    @SerializedName("registration_source") val registrationSource: String = "Mobile App",
+    @SerializedName("registration_status") val registrationStatus: String = "Pending",
     @SerializedName("action") val action: String = "register"
 )

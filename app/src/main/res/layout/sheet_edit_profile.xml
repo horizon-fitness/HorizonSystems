@@ -23,28 +23,38 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
+            android:text="Edit Member Profile"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-black" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update your personal details below."
+            android:text="Please ensure all your information is accurate."
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
             android:alpha="0.8"
             android:layout_marginBottom="24dp" />
 
-        <!-- First Name -->
+        <!-- 1. PERSONAL INFORMATION -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1. PERSONAL INFORMATION"
+            android:textColor="@color/landing_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="12dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="First Name"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             app:boxStrokeColor="@color/landing_primary"
             app:hintTextColor="@color/landing_primary"
             android:textColorHint="#40FFFFFF">
@@ -56,13 +66,12 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Last Name -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Last Name"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             app:boxStrokeColor="@color/landing_primary"
             app:hintTextColor="@color/landing_primary"
             android:textColorHint="#40FFFFFF">
@@ -74,13 +83,101 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Contact Number -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contact Number"
-            android:layout_marginBottom="16dp"
+            android:hint="Middle Name"
+            android:layout_marginBottom="12dp"
+            app:boxStrokeColor="@color/landing_primary"
+            app:hintTextColor="@color/landing_primary"
+            android:textColorHint="#40FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editMiddleName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+            
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:hint="Birth Date"
+                android:layout_marginEnd="8dp"
+                app:boxStrokeColor="@color/landing_primary"
+                app:hintTextColor="@color/landing_primary"
+                android:textColorHint="#40FFFFFF">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:hint="Sex"
+                app:boxStrokeColor="@color/landing_primary"
+                app:hintTextColor="@color/landing_primary"
+                android:textColorHint="#40FFFFFF">
+                <AutoCompleteTextView
+                    android:id="@+id/editSex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- 2. CONTACT INFORMATION -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2. CONTACT INFORMATION"
+            android:textColor="@color/landing_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email Address"
+            android:layout_marginBottom="12dp"
+            app:boxStrokeColor="@color/landing_primary"
+            app:hintTextColor="@color/landing_primary"
+            android:textColorHint="#40FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:layout_marginBottom="12dp"
             app:boxStrokeColor="@color/landing_primary"
             app:hintTextColor="@color/landing_primary"
             android:textColorHint="#40FFFFFF">
@@ -92,13 +189,12 @@
                 android:inputType="phone" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Address -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Address"
-            android:layout_marginBottom="16dp"
+            android:hint="Residential Address"
+            android:layout_marginBottom="24dp"
             app:boxStrokeColor="@color/landing_primary"
             app:hintTextColor="@color/landing_primary"
             android:textColorHint="#40FFFFFF">
@@ -107,16 +203,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:inputType="textPostalAddress" />
+                android:inputType="textPostalAddress|textMultiLine"
+                android:lines="2" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Occupation -->
+        <!-- 3. HEALTH & BACKGROUND -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3. HEALTH &amp; BACKGROUND"
+            android:textColor="@color/landing_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="12dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Occupation"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
             app:boxStrokeColor="@color/landing_primary"
             app:hintTextColor="@color/landing_primary"
             android:textColorHint="#40FFFFFF">
@@ -128,18 +235,91 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Medical History / Allergies"
+            android:layout_marginBottom="24dp"
+            app:boxStrokeColor="@color/landing_primary"
+            app:hintTextColor="@color/landing_primary"
+            android:textColorHint="#40FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editMedical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="textMultiLine"
+                android:lines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 4. EMERGENCY CONTACT -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4. EMERGENCY CONTACT"
+            android:textColor="@color/landing_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contact Person"
+            android:layout_marginBottom="12dp"
+            app:boxStrokeColor="@color/landing_primary"
+            app:hintTextColor="@color/landing_primary"
+            android:textColorHint="#40FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEmergencyName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Emergency Number"
+            android:layout_marginBottom="32dp"
+            app:boxStrokeColor="@color/landing_primary"
+            app:hintTextColor="@color/landing_primary"
+            android:textColorHint="#40FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEmergencyPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:inputType="phone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Save Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:text="Save Changes"
+            android:text="Save Full Profile"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"
             app:cornerRadius="16dp"
             app:backgroundTint="@color/landing_primary"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelEdit"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Discard Changes"
+            android:textAllCaps="false"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="20dp" />
 
     </LinearLayout>

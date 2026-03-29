@@ -301,7 +301,7 @@ class RegisterActivity : AppCompatActivity() {
             email = email,
             username = user,
             password = pass,
-            phoneNumber = phone,
+            contactNumber = phone,
             birthDate = birth,
             sex = sex,
             occupation = if (occupation.isEmpty()) null else occupation,
@@ -309,7 +309,7 @@ class RegisterActivity : AppCompatActivity() {
             medicalHistory = if (medical.isEmpty()) null else medical,
             emergencyContactName = eName,
             emergencyContactNumber = ePhone,
-            tenantId = gymId
+            tenantCode = gymId
         )
 
         lifecycleScope.launch(Dispatchers.IO) {
