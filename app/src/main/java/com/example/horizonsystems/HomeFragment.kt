@@ -16,6 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -85,8 +87,48 @@ class HomeFragment : Fragment() {
         }
 
         fetchActiveStatus(view)
+        fetchUpcomingSession(view)
 
         return view
+    }
+
+    private fun fetchUpcomingSession(root: View) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) return
+
+        val sessionStatus = root.findViewById<TextView>(R.id.sessionStatus)
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val response = api.getUserBookings(userId)
+                
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val allBookings = response.body()?.bookings ?: emptyList()
+                        
+                        // Find the closest upcoming approved booking
+                        val upcoming = allBookings
+                            .filter { it.status.uppercase() == "APPROVED" && it.date >= today }
+                            .sortedWith(compareBy({ it.date }, { it.time }))
+                            .firstOrNull()
+
+                        if (upcoming != null) {
+                            // Format: "Yoga - 2:00 PM (Today)" or "Yoga - Mar 31"
+                            val dateLabel = if (upcoming.date == today) "Today" else upcoming.date
+                            val timePart = upcoming.time.substringBeforeLast(":")
+                            sessionStatus?.text = "${upcoming.service} at $timePart ($dateLabel)"
+                            sessionStatus?.setTextColor(android.graphics.Color.parseColor("#A855F7"))
+                        } else {
+                            sessionStatus?.text = "No Active Bookings"
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Keep default "No Active Bookings" text
+            }
+        }
     }
 
     private fun fetchActiveStatus(root: View) {
