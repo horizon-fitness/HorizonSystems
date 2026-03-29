@@ -68,29 +68,18 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_quick_book"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
                 app:backgroundTint="#A855F7"
-                android:text="QUICK BOOK"
+                android:text="BOOK YOUR SESSION"
+                android:textAllCaps="false"
                 android:textColor="@color/white"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="16dp"
-                android:layout_marginEnd="8dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_talk_to_admin"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                app:backgroundTint="@color/surface_dark"
-                android:text="TALK TO ADMIN"
-                android:textColor="#A855F7"
-                android:textStyle="bold"
-                app:strokeColor="#A855F7"
-                app:strokeWidth="1dp"
-                app:cornerRadius="16dp"
-                android:layout_marginStart="8dp"/>
+                app:icon="@drawable/ic_calendar"
+                app:iconPadding="12dp"
+                app:iconGravity="textStart" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView

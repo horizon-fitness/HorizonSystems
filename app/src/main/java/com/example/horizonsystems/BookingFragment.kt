@@ -1,37 +1,30 @@
 package com.example.horizonsystems
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.TrainingLog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.horizonsystems.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BookingFragment : Fragment() {
     private lateinit var adapter: TrainingLogAdapter
-    private val allLogs = listOf(
-        TrainingLog("Mar 21, 2024", "10:00 AM", "1hr", "Unlimited Gym Use", "John Doe", "APPROVED"),
-        TrainingLog("Mar 22, 2024", "09:00 AM", "2hrs", "Personal Training", "Coach Mike", "PENDING"),
-        TrainingLog("Mar 23, 2024", "11:00 AM", "1hr", "Yoga Session", "Sarah Wilson", "APPROVED"),
-        TrainingLog("Mar 24, 2024", "10:00 AM", "1hr", "Boxing Class", "Coach Mike", "APPROVED"),
-        TrainingLog("Mar 25, 2024", "08:30 AM", "1hr", "Unlimited Gym Use", "John Doe", "PENDING"),
-        TrainingLog("Mar 26, 2024", "04:00 PM", "2hrs", "Zumba session", "Sarah Wilson", "APPROVED"),
-        TrainingLog("Mar 27, 2024", "09:00 AM", "1hr", "Personal Training", "Coach Mike", "PENDING"),
-        TrainingLog("Mar 28, 2024", "10:00 AM", "1hr", "Boxing Class", "Coach Mike", "APPROVED"),
-        TrainingLog("Mar 29, 2024", "11:00 AM", "1hr", "Yoga Session", "Sarah Wilson", "PENDING"),
-        TrainingLog("Mar 30, 2024", "03:00 PM", "1hr", "Unlimited Gym Use", "John Doe", "APPROVED"),
-        TrainingLog("Mar 31, 2024", "10:00 AM", "1hr", "Zumba session", "Sarah Wilson", "APPROVED")
-    )
+    private val allLogs = mutableListOf<TrainingLog>()
 
     private var currentPage = 1
     private val itemsPerPage = 5
     private var currentFilter = "ALL"
-    private var filteredList = allLogs
+    private var filteredList: List<TrainingLog> = allLogs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_booking, container, false)
@@ -50,15 +43,17 @@ class BookingFragment : Fragment() {
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val date = "${month + 1}/$dayOfMonth/$year"
             dateDetailsCard.visibility = View.VISIBLE
-            dateInfoText.text = "Logs for $date: Found ${allLogs.filter { it.date.contains(dayOfMonth.toString()) }.size} sessions"
+            val count = allLogs.filter { it.date.contains(dayOfMonth.toString()) || it.date.contains(String.format("%02d", dayOfMonth)) }.size
+            dateInfoText.text = "Logs for $date: Found $count sessions"
         }
 
         // Action Buttons
         view.findViewById<View>(R.id.btn_quick_book).setOnClickListener {
-            Toast.makeText(requireContext(), "Opening Quick Booking...", Toast.LENGTH_SHORT).show()
-        }
-        view.findViewById<View>(R.id.btn_talk_to_admin).setOnClickListener {
-            Toast.makeText(requireContext(), "Connecting to Admin...", Toast.LENGTH_SHORT).show()
+            val sheet = BookingSheet()
+            sheet.onBookingCreated = {
+                fetchBookings(view)
+            }
+            sheet.show(parentFragmentManager, "booking_sheet")
         }
 
         // Filter Buttons
@@ -99,9 +94,51 @@ class BookingFragment : Fragment() {
 
         // Initial setup
         updateFilterButtons(btnAll, listOf(btnPending, btnApproved))
-        applyPaginationAndRefresh(view)
+        fetchBookings(view)
 
         return view
+    }
+
+    private fun fetchBookings(root: View) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) {
+            // Fallback mock data for demo if not logged in
+            mockData()
+            applyPaginationAndRefresh(root)
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi()
+                val response = api.getUserBookings(userId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.bookings != null) {
+                        allLogs.clear()
+                        allLogs.addAll(response.body()!!.bookings!!)
+                        applyPaginationAndRefresh(root)
+                    } else {
+                        mockData()
+                        applyPaginationAndRefresh(root)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("BookingFragment", "Fetch Error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    mockData()
+                    applyPaginationAndRefresh(root)
+                }
+            }
+        }
+    }
+
+    private fun mockData() {
+        if (allLogs.isNotEmpty()) return
+        allLogs.addAll(listOf(
+            TrainingLog("2024-03-21", "10:00:00", "1hr", "Unlimited Gym Use", "Staff", "APPROVED"),
+            TrainingLog("2024-03-22", "09:00:00", "2hrs", "Personal Training", "Coach Mike", "PENDING"),
+            TrainingLog("2024-03-23", "11:00:00", "1hr", "Yoga Session", "Sarah Wilson", "APPROVED")
+        ))
     }
 
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton, inactives: List<com.google.android.material.button.MaterialButton>) {
@@ -120,8 +157,8 @@ class BookingFragment : Fragment() {
     private fun applyPaginationAndRefresh(root: View) {
         filteredList = if (currentFilter == "ALL") allLogs else allLogs.filter { it.status.uppercase() == currentFilter }
         
-        val totalPages = Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt()
-        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages
+        val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
+        if (currentPage > totalPages) currentPage = totalPages
         if (currentPage < 1) currentPage = 1
 
         val startIndex = (currentPage - 1) * itemsPerPage

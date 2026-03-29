@@ -42,4 +42,21 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.LoginResponse>
 
+    @GET("api/get_gym_services.php")
+    suspend fun getGymServices(
+        @Query("gym_id") gymId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<List<com.example.horizonsystems.models.GymService>>
+
+    @GET("api/get_user_bookings.php")
+    suspend fun getUserBookings(
+        @Query("user_id") userId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.BookingResponse>
+
+    @POST("api/create_booking.php")
+    suspend fun createBooking(
+        @Body request: com.example.horizonsystems.models.BookingRequest,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.BookingResponse>
 }

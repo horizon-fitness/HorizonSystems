@@ -36,9 +36,13 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
         // Status coloring
         val context = holder.itemView.context
         when (log.status.uppercase()) {
-            "ACTIVE" -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))
+            "APPROVED", "ACTIVE" -> {
+                holder.status.setTextColor(android.graphics.Color.parseColor("#10B981"))
                 holder.status.setBackgroundColor(android.graphics.Color.parseColor("#1A10B981"))
+            }
+            "PENDING" -> {
+                holder.status.setTextColor(android.graphics.Color.parseColor("#F59E0B"))
+                holder.status.setBackgroundColor(android.graphics.Color.parseColor("#1AF59E0B"))
             }
             "COMPLETED" -> {
                 holder.status.setTextColor(ContextCompat.getColor(context, R.color.white))
