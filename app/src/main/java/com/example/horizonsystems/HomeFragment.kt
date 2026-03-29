@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
         // Profile Picture Placeholder with Initials
         val profilePic = view.findViewById<ImageView>(R.id.memberProfilePic)
         val initialsText = view.findViewById<TextView>(R.id.memberInitials)
-        val profileCard = profilePic?.parent?.parent as? com.google.android.material.card.MaterialCardView
+        val profileCard = profilePic?.parent?.let { it.parent as? com.google.android.material.card.MaterialCardView }
         
         if (profileCard != null) {
             val colors = listOf("#A855F7", "#7f13ec", "#5e0eb3", "#6366f1", "#4f46e5")

@@ -151,11 +151,13 @@ class LandingActivity : AppCompatActivity() {
         }
 
         // Initialize Bottom Navigation for Single Activity Dashboard
-        setupBottomNavigation()
+        findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.let {
+            setupBottomNavigation()
+        }
     }
 
     private fun setupBottomNavigation() {
-        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView) ?: return
         bottomNav.menu.clear()
         bottomNav.inflateMenu(R.menu.bottom_nav_menu)
         bottomNav.setOnItemSelectedListener { item ->
@@ -258,12 +260,16 @@ class LandingActivity : AppCompatActivity() {
         // Note: Actual fragment view might need to be reached if it's already inflated, 
         // but since we call loadFragment(HomeFragment()), it will handle its own UI.
         
-        findViewById<View>(R.id.btnTopNotifications).setOnClickListener {
+        findViewById<View>(R.id.btnTopNotifications)?.setOnClickListener {
             // Launch Notifications Sheet
-            NotificationSheet().show(supportFragmentManager, "notifications")
+            try {
+                NotificationSheet().show(supportFragmentManager, "notifications")
+            } catch (e: Exception) {
+                Log.e("LandingActivity", "Error showing NotificationSheet: ${e.message}")
+            }
         }
         
-        findViewById<View>(R.id.btnTopLogout).setOnClickListener {
+        findViewById<View>(R.id.btnTopLogout)?.setOnClickListener {
             performLogout()
         }
         
@@ -281,6 +287,16 @@ class LandingActivity : AppCompatActivity() {
         
         // Optional: clear inputs
         findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)?.setText("")
+    }
+
+    /**
+     * Helper to update user data in the intent extras dynamically.
+     * This allows fragments to see changes immediately during the demo.
+     */
+    fun updateUserData(updates: Map<String, String>) {
+        updates.forEach { (key, value) ->
+            intent.putExtra(key, value)
+        }
     }
 
 
@@ -348,7 +364,7 @@ class LandingActivity : AppCompatActivity() {
     }
 
     private fun prefillUIFromCache() {
-        val tenantTitle = findViewById<TextView>(R.id.tenantTitle)
+        val tenantTitle = findViewById<TextView>(R.id.tenantTitle) ?: return
         val savedName = GymManager.getGymName(this)
         // Default to HORIZON SYSTEMS to match standard branding
         tenantTitle.text = if (savedName == "HORIZON SYSTEMS" || savedName.isEmpty()) "HORIZON SYSTEMS" else savedName.uppercase()
@@ -373,9 +389,9 @@ class LandingActivity : AppCompatActivity() {
                 val gymLogo = findViewById<ImageView>(R.id.gymLogo)
                 val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
 
-                btnSignIn.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-                gymLogo.imageTintList = android.content.res.ColorStateList.valueOf(color)
-                btnSwitchGym.iconTint = android.content.res.ColorStateList.valueOf(color)
+                btnSignIn?.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+                gymLogo?.imageTintList = android.content.res.ColorStateList.valueOf(color)
+                btnSwitchGym?.iconTint = android.content.res.ColorStateList.valueOf(color)
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Error parsing color: $it")
             }
@@ -430,8 +446,15 @@ class LandingActivity : AppCompatActivity() {
                             }
 
                             // Instead of starting MainActivity, transition UI state
-                            if (user != null) {
-                                showDashboard(user, branding)
+                            if (user != null || loginResponse?.userId != null) {
+                                val finalUser = user ?: com.example.horizonsystems.models.User(
+                                    userId = loginResponse?.userId,
+                                    username = username,
+                                    role = "Member"
+                                )
+                                showDashboard(finalUser, branding)
+                            } else {
+                                Toast.makeText(this@LandingActivity, "User data missing from response", Toast.LENGTH_LONG).show()
                             }
                         } else if (loginResponse?.unverified == true) {
                             Toast.makeText(this@LandingActivity, "Please verify your account", Toast.LENGTH_LONG).show()
