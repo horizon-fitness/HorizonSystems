@@ -14,6 +14,8 @@ object GymManager {
     private const val KEY_REMEMBER_ME = "remember_me"
     private const val KEY_SAVED_USERNAME = "saved_username"
     private const val KEY_SAVED_PASSWORD = "saved_password"
+    private const val KEY_USER_ID = "user_id"
+    private const val KEY_MEMBER_ID = "member_id"
     private const val DEFAULT_SLUG = "horizon"
 
 
@@ -96,5 +98,21 @@ object GymManager {
 
     fun getSavedPassword(context: Context): String {
         return getPrefs(context).getString(KEY_SAVED_PASSWORD, "") ?: ""
+    }
+
+    fun saveUserId(context: Context, userId: Int) {
+        getPrefs(context).edit().putInt(KEY_USER_ID, userId).apply()
+    }
+
+    fun getUserId(context: Context): Int {
+        return getPrefs(context).getInt(KEY_USER_ID, -1)
+    }
+
+    fun saveMemberId(context: Context, memberId: Int) {
+        getPrefs(context).edit().putInt(KEY_MEMBER_ID, memberId).apply()
+    }
+
+    fun getMemberId(context: Context): Int {
+        return getPrefs(context).getInt(KEY_MEMBER_ID, -1)
     }
 }

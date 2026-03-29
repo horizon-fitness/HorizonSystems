@@ -48,12 +48,15 @@ class MembershipFragment : Fragment() {
     }
 
     private fun fetchActiveMembership(root: View) {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
         if (userId == -1) return
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = RetrofitClient.getApi()
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getActiveMembership(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
@@ -92,14 +95,17 @@ class MembershipFragment : Fragment() {
     }
 
     private fun fetchHistory() {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
         if (userId == -1) {
             return
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = RetrofitClient.getApi()
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getMembershipHistory(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {

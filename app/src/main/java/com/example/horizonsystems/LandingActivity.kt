@@ -181,6 +181,10 @@ class LandingActivity : AppCompatActivity() {
     }
 
     fun showDashboard(user: com.example.horizonsystems.models.User, branding: TenantPage?) {
+        // Persist session data in GymManager for reliable fragment access
+        user.userId?.let { GymManager.saveUserId(this, it) }
+        user.memberId?.let { GymManager.saveMemberId(this, it) }
+
         // Transfer data to "Activity Intent" equivalent (mocking Intent extras for fragments)
         intent.apply {
             putExtra("user_id", user.userId ?: -1)

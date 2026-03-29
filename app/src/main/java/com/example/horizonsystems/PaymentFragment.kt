@@ -91,7 +91,7 @@ class PaymentFragment : Fragment() {
     }
 
     private fun fetchTransactions(root: View) {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
         if (userId == -1) {
             applyFilterAndPage(root)
             return
@@ -99,7 +99,10 @@ class PaymentFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
                 val response = api.getMembershipHistory(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
