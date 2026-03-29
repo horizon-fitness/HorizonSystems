@@ -111,20 +111,21 @@ class MembershipSheet : BottomSheetDialogFragment() {
                 val response = api.createSubscription(request)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
-                        Toast.makeText(requireContext(), "Success: Membership Activated!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Payment Verified! Membership Activated.", Toast.LENGTH_LONG).show()
                         onSubscriptionCreated?.invoke()
                         dismiss()
                     } else {
                         val message = response.body()?.message ?: "Server Error: Could not update database"
                         Log.e("MembershipSheet", "DB Error: $message")
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        // Still dismiss or allow retry? Usually dismiss after a failure if it's already "Paid"
+                        // Since payment was successful, we should still reflect it or tell user to contact support
                         onSubscriptionCreated?.invoke()
                         dismiss()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    Log.e("MembershipSheet", "Exception finalizing: ${e.message}")
                     onSubscriptionCreated?.invoke()
                     dismiss()
                 }
@@ -178,18 +179,13 @@ class MembershipSheet : BottomSheetDialogFragment() {
                     } else {
                         val errorBody = response.errorBody()?.string()
                         Log.e("PayMongo", "API Error: $errorBody")
-                        
-                        // DEADLINE EMERGENCY FAILOVER: 
-                        // If PayMongo fails (due to key issues), we bypass and finalize directly for Demo purposes.
-                        Toast.makeText(requireContext(), "Demo Mode: Bypassing Gateway...", Toast.LENGTH_SHORT).show()
-                        finalizeSubscription() 
+                        Toast.makeText(requireContext(), "Payment Gateway Error. Please try again later.", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e("PayMongo", "Network Exception: ${e.message}")
-                    Toast.makeText(requireContext(), "Demo Mode: Network Failover...", Toast.LENGTH_SHORT).show()
-                    finalizeSubscription()
+                    Toast.makeText(requireContext(), "Connection Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

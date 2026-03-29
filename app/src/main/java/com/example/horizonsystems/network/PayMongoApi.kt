@@ -24,7 +24,7 @@ interface PayMongoApi {
         
         // IMPORTANT: Replace this with your actual PayMongo Secret Key from your dashboard
         // It usually starts with sk_test_ or sk_live_
-        private const val TEST_SECRET_KEY = "sk_test_..." 
+        private const val TEST_SECRET_KEY = "sk_test_jjaYP93HGcfyEwxC6kMbYf18" 
 
         fun create(): PayMongoApi {
             val logging = HttpLoggingInterceptor().apply {
