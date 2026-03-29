@@ -22,8 +22,9 @@ interface PayMongoApi {
     companion object {
         private const val BASE_URL = "https://api.paymongo.com/"
         
-        // TEST SECRET KEY (Removed for security)
-        private const val TEST_SECRET_KEY = "" // Insert Key Here
+        // IMPORTANT: Replace this with your actual PayMongo Secret Key from your dashboard
+        // It usually starts with sk_test_ or sk_live_
+        private const val TEST_SECRET_KEY = "sk_test_..." 
 
         fun create(): PayMongoApi {
             val logging = HttpLoggingInterceptor().apply {
@@ -31,9 +32,9 @@ interface PayMongoApi {
             }
             
             val client = OkHttpClient.Builder()
-                .connectTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
-                .writeTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+                .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .build()
 
