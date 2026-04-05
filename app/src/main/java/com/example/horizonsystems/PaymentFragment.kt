@@ -103,7 +103,7 @@ class PaymentFragment : Fragment() {
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
-                val response = api.getMembershipHistory(userId)
+                val response = api.getMembershipHistory(userId, showAll = 1)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         allTransactions.clear()

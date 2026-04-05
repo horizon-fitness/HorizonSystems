@@ -63,6 +63,7 @@ interface HorizonApi {
     @GET("api/get_membership_history.php")
     suspend fun getMembershipHistory(
         @Query("user_id") userId: Int,
+        @Query("show_all") showAll: Int = 0,
         @Query("i") bypass: Int = 1
     ): Response<List<com.example.horizonsystems.models.Transaction>>
 
