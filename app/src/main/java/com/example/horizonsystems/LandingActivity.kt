@@ -85,14 +85,18 @@ class LandingActivity : AppCompatActivity() {
                 loadingOverlay.visibility = android.view.View.GONE
                 handleIntent(intent)
                 
-                // Auto-login if Remember Me is enabled
-                if (GymManager.isRememberMeEnabled(this@LandingActivity)) {
+                // Auto-login only if Remember Me is on AND we're NOT coming from a fresh registration/verification
+                val skipAutoLogin = intent.getBooleanExtra("SKIP_AUTO_LOGIN", false)
+                if (GymManager.isRememberMeEnabled(this@LandingActivity) && !skipAutoLogin) {
                     val savedUser = GymManager.getSavedUsername(this@LandingActivity)
                     val savedPass = GymManager.getSavedPassword(this@LandingActivity)
                     if (savedUser.isNotEmpty() && savedPass.isNotEmpty()) {
                         loadingOverlay.visibility = android.view.View.VISIBLE
                         performLogin(savedUser, savedPass)
                     }
+                } else if (skipAutoLogin) {
+                    // Clear password field to ensure manual entry after verification
+                    findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)?.setText("")
                 }
             }
         }
