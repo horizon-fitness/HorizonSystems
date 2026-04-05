@@ -11,15 +11,20 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.example.horizonsystems.models.*
 import com.example.horizonsystems.network.RetrofitClient
 import com.example.horizonsystems.network.PayMongoApi
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.LinearLayout
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,6 +33,8 @@ class BookingSheet : BottomSheetDialogFragment() {
 
     var onBookingCreated: (() -> Unit)? = null
     private val services = mutableListOf<GymService>()
+    private val coaches = mutableListOf<Coach>()
+    private var selectedCoachId: Int? = null
 
     private val paymentResultLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
@@ -49,16 +56,22 @@ class BookingSheet : BottomSheetDialogFragment() {
         val view = inflater.inflate(R.layout.sheet_booking, container, false)
 
         val editService = view.findViewById<AutoCompleteTextView>(R.id.bookService)
+        val editCoach = view.findViewById<AutoCompleteTextView>(R.id.bookCoach)
+        val layoutCoach = view.findViewById<LinearLayout>(R.id.layoutCoach)
         val editDate = view.findViewById<TextInputEditText>(R.id.bookDate)
         val editTime = view.findViewById<TextInputEditText>(R.id.bookTime)
         val btnSubmit = view.findViewById<View>(R.id.btnSubmitBooking)
         val btnCancel = view.findViewById<View>(R.id.btnCancelBooking)
 
-        // Date Picker
+        // Date Picker (Disable Past Dates)
         editDate.setOnClickListener {
+            val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+            
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Booking Date")
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setCalendarConstraints(constraintsBuilder.build())
                 .build()
 
             datePicker.addOnPositiveButtonClickListener { selection ->
@@ -70,13 +83,37 @@ class BookingSheet : BottomSheetDialogFragment() {
             datePicker.show(childFragmentManager, "BOOK_DATE_PICKER")
         }
 
-        // Time Picker
+        // Time Picker (12-Hour Format)
         editTime.setOnClickListener {
             val calendar = Calendar.getInstance()
             TimePickerDialog(requireContext(), { _, hour, minute ->
-                val timeStr = String.format("%02d:%02d:00", hour, minute)
-                editTime.setText(timeStr)
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+                val displayCalendar = Calendar.getInstance()
+                displayCalendar.set(Calendar.HOUR_OF_DAY, hour)
+                displayCalendar.set(Calendar.MINUTE, minute)
+                
+                // For user display: 02:00 PM
+                val displayFormat = SimpleDateFormat("hh:mm a", Locale.US)
+                editTime.setText(displayFormat.format(displayCalendar.time))
+                
+                // Tag it with the 24h format for API later
+                editTime.tag = String.format("%02d:%02d:00", hour, minute)
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
+        }
+
+        // Service Matcher for Coach Selection
+        editService.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val isPT = s?.toString()?.contains("Personal Training", ignoreCase = true) == true
+                layoutCoach.visibility = if (isPT) View.VISIBLE else View.GONE
+                if (isPT) fetchCoaches(editCoach)
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        editCoach.setOnItemClickListener { parent, _, position, _ ->
+            val coachName = parent.getItemAtPosition(position) as String
+            selectedCoachId = coaches.find { "${it.firstName} ${it.lastName}" == coachName }?.coachId
         }
 
         // Fetch Services
@@ -86,11 +123,17 @@ class BookingSheet : BottomSheetDialogFragment() {
 
         btnSubmit.setOnClickListener {
             val date = editDate.text.toString()
-            val time = editTime.text.toString()
+            val time = editTime.tag?.toString() ?: "" // Use the 24h tag
             val serviceName = editService.text.toString()
+            val isPT = serviceName.contains("Personal Training", ignoreCase = true)
 
             if (serviceName.isEmpty() || date.isEmpty() || time.isEmpty()) {
                 Toast.makeText(requireContext(), "Please fill all booking details", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (isPT && selectedCoachId == null) {
+                Toast.makeText(requireContext(), "Please select a coach for Personal Training", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -104,6 +147,29 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
 
         return view
+    }
+
+    private fun fetchCoaches(spinner: AutoCompleteTextView) {
+        val gymId = activity?.intent?.getIntExtra("gym_id", -1) ?: -1
+        if (gymId == -1) return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi()
+                val response = api.getGymCoaches(gymId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        coaches.clear()
+                        response.body()?.coaches?.let { coaches.addAll(it) }
+                        
+                        val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, coaches.map { "${it.firstName} ${it.lastName}" })
+                        spinner.setAdapter(adapter)
+                    }
+                }
+            } catch (e: Exception) {
+                // Ignore silent
+            }
+        }
     }
 
     private fun fetchServices(spinner: AutoCompleteTextView) {
@@ -121,8 +187,8 @@ class BookingSheet : BottomSheetDialogFragment() {
                         
                         // Fake services for demo if DB is empty
                         if (services.isEmpty()) {
-                            services.add(GymService(1, "Unlimited Gym Use", 500.0, 60))
-                            services.add(GymService(2, "Personal Training", 1500.0, 60))
+                            services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
+                            services.add(GymService(2, "Personal Training", 150.0, 60))
                         }
 
                         val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, services.map { it.serviceName })
@@ -131,8 +197,8 @@ class BookingSheet : BottomSheetDialogFragment() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    services.add(GymService(1, "Unlimited Gym Use", 500.0, 60))
-                    services.add(GymService(2, "Personal Training", 1500.0, 60))
+                    services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
+                    services.add(GymService(2, "Personal Training", 150.0, 60))
                     val adapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, services.map { it.serviceName })
                     spinner.setAdapter(adapter)
                 }
@@ -161,14 +227,15 @@ class BookingSheet : BottomSheetDialogFragment() {
 
         // Security: Generate Signature for Backend Verification
         val salt = "FitPlatform_Secure_2026!"
-        // Sig format: gymId + userId + serviceId + date + time + amount + salt
-        val sigInput = "$gymId$userId${service.serviceId}$date$time$amountDecimal$salt"
+        // Sig format: gym_id + user_id + service_id + date + time + amount + coach_id (if any) + salt
+        val coachIdPart = if (selectedCoachId != null) selectedCoachId.toString() else ""
+        val sigInput = "$gymId$userId${service.serviceId}$date$time$amountDecimal$coachIdPart$salt"
         val sig = MessageDigest.getInstance("SHA-256")
             .digest(sigInput.toByteArray())
             .joinToString("") { "%02x".format(it) }
 
         val baseUrl = "https://horizonfitnesscorp.gt.tc/api"
-        val successUrl = "$baseUrl/booking_success_redirect.php?gym_id=$gymId&user_id=$userId&service_id=${service.serviceId}&date=$date&time=$time&amount=$amountDecimal&sig=$sig"
+        val successUrl = "$baseUrl/booking_success_redirect.php?gym_id=$gymId&user_id=$userId&service_id=${service.serviceId}&date=$date&time=$time&amount=$amountDecimal&coach_id=$coachIdPart&sig=$sig"
 
         val checkoutRequest = CheckoutSessionRequest(
             data = CheckoutData(

@@ -38,6 +38,16 @@
                 android:fontFamily="sans-serif-black" />
         </LinearLayout>
 
+        <!-- Loading Indicator -->
+        <ProgressBar
+            android:id="@+id/membershipLoading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:indeterminateTint="#A855F7"
+            android:visibility="visible" />
+
         <!-- Active Membership Card (Dynamic) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardActiveMembership"
@@ -72,33 +82,54 @@
 
                 <TextView
                     android:id="@+id/tvActivePlanName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
                     android:text="MONTHLY PASS"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-black"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tvActivePlanBadge" />
+
+                <TextView
+                    android:id="@+id/tvActivePlanStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="Pending Approval"
+                    android:textColor="#FFC107"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanName"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tvActivePlanName" />
 
                 <TextView
                     android:id="@+id/tvActivePlanDuration"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:layout_marginEnd="12dp"
                     android:text="Ends on: Apr 30, 2026"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanName"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanStatus"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tvActivePlanName" />
 
                 <View
                     android:id="@+id/activePlanDivider"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_marginTop="20dp"
                     android:background="#1AFFFFFF"
-                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanDuration" />
+                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanDuration"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/tvDaysRemaining"
@@ -121,7 +152,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -137,11 +169,13 @@
 
         <!-- Plan Cards -->
         <HorizontalScrollView
+            android:id="@+id/layoutPlanSelectionScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:clipToPadding="false"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            android:visibility="gone">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

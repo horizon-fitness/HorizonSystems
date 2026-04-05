@@ -101,7 +101,10 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
                 val response = api.getUserBookings(userId)
                 
                 withContext(Dispatchers.Main) {
@@ -122,11 +125,19 @@ class HomeFragment : Fragment() {
                             sessionStatus?.setTextColor(android.graphics.Color.parseColor("#A855F7"))
                         } else {
                             sessionStatus?.text = "No Active Bookings"
+                            sessionStatus?.setTextColor(android.graphics.Color.WHITE)
                         }
+                    } else {
+                        sessionStatus?.text = "No Active Bookings"
+                        sessionStatus?.setTextColor(android.graphics.Color.WHITE)
                     }
                 }
             } catch (e: Exception) {
-                // Keep default "No Active Bookings" text
+                withContext(Dispatchers.Main) {
+                    val sessionStatus = root.findViewById<TextView>(R.id.sessionStatus)
+                    sessionStatus?.text = "No Active Bookings"
+                    sessionStatus?.setTextColor(android.graphics.Color.WHITE)
+                }
             }
         }
     }
@@ -137,7 +148,10 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = com.example.horizonsystems.network.RetrofitClient.getApi()
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
                 val response = api.getActiveMembership(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
@@ -147,15 +161,32 @@ class HomeFragment : Fragment() {
                         val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
                         val planText = root.findViewById<TextView>(R.id.membershipPlan)
                         
-                        statusText?.text = "Active Member"
-                        statusText?.setTextColor(android.graphics.Color.parseColor("#FFD700")) // Gold color
+                        if (active.subscriptionStatus == "Pending Approval") {
+                            statusText?.text = "Pending Approval"
+                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFC107")) // Warning/Amber color
+                        } else {
+                            statusText?.text = "Active Member"
+                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFD700")) // Gold color
+                        }
                         
                         planText?.text = "Plan: ${active.planName}"
                         planText?.visibility = View.VISIBLE
+                    } else {
+                        val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
+                        val planText = root.findViewById<TextView>(R.id.membershipPlan)
+                        statusText?.text = "No Active Membership"
+                        statusText?.setTextColor(android.graphics.Color.WHITE)
+                        planText?.visibility = View.GONE
                     }
                 }
             } catch (e: Exception) {
-                // Ignore background errors
+                withContext(Dispatchers.Main) {
+                    val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
+                    val planText = root.findViewById<TextView>(R.id.membershipPlan)
+                    statusText?.text = "No Active Membership"
+                    statusText?.setTextColor(android.graphics.Color.WHITE)
+                    planText?.visibility = View.GONE
+                }
             }
         }
     }

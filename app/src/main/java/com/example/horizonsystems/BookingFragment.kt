@@ -49,11 +49,45 @@ class BookingFragment : Fragment() {
 
         // Action Buttons
         view.findViewById<View>(R.id.btn_quick_book).setOnClickListener {
-            val sheet = BookingSheet()
-            sheet.onBookingCreated = {
-                fetchBookings(view)
+            val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
+            if (userId == -1) return@setOnClickListener
+
+            // Disable button briefly to prevent double clicks
+            it.isEnabled = false
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val context = requireContext()
+                    val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                    val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                    val api = RetrofitClient.getApi(cookie, ua)
+                    val response = api.getActiveMembership(userId)
+                    
+                    withContext(Dispatchers.Main) {
+                        it.isEnabled = true
+                        if (response.isSuccessful && response.body()?.success == true && response.body()?.subscriptionStatus == "Active") {
+                            // User is an active member
+                            val sheet = BookingSheet()
+                            sheet.onBookingCreated = {
+                                fetchBookings(view)
+                            }
+                            sheet.show(parentFragmentManager, "booking_sheet")
+                        } else {
+                            // Membership pending, expired, or non-existent
+                            android.app.AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                                .setTitle("Membership Required")
+                                .setMessage("You must have an Active Membership to book a session. Please ensure your membership is approved and not expired.")
+                                .setPositiveButton("OK", null)
+                                .show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        it.isEnabled = true
+                        Toast.makeText(requireContext(), "Failed to verify membership status.", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            sheet.show(parentFragmentManager, "booking_sheet")
         }
 
         // Filter Buttons

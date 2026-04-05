@@ -59,8 +59,24 @@ class MembershipFragment : Fragment() {
     }
 
     private fun fetchActiveMembership(root: View) {
+        val loader = root.findViewById<View>(R.id.membershipLoading)
+        val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
+        val selectionHeader = root.findViewById<View>(R.id.layoutPlanSelectionHeader)
+        val selectionScroll = root.findViewById<View>(R.id.layoutPlanSelectionScroll)
+
+        // Reset state to Neutral/Loading
+        loader.visibility = View.VISIBLE
+        cardActive.visibility = View.GONE
+        selectionHeader.visibility = View.GONE
+        selectionScroll.visibility = View.GONE
+
         val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
-        if (userId == -1) return
+        if (userId == -1) {
+            loader.visibility = View.GONE
+            selectionHeader.visibility = View.VISIBLE
+            selectionScroll.visibility = View.VISIBLE
+            return
+        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -70,40 +86,48 @@ class MembershipFragment : Fragment() {
                 val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getActiveMembership(userId)
                 withContext(Dispatchers.Main) {
+                    loader.visibility = View.GONE
                     if (response.isSuccessful && response.body()?.success == true) {
                         val active = response.body()!!
 
                         // Show active card
-                        val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
                         val tvName = root.findViewById<TextView>(R.id.tvActivePlanName)
+                        val tvStatus = root.findViewById<TextView>(R.id.tvActivePlanStatus)
                         val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
                         val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
                         
                         if (active.subscriptionStatus == "Pending Approval") {
-                            tvName.text = "${active.planName} (Pending Approval)"
+                            tvName.text = active.planName
+                            tvStatus.text = "(Pending Approval)"
+                            tvStatus.visibility = View.VISIBLE
                             tvDuration.text = "Awaiting Staff Verification"
                             tvRemaining.text = "Payment verified by PayMongo"
-                            tvName.setTextColor(android.graphics.Color.parseColor("#FFC107")) // Warning/Amber color
+                            tvName.setTextColor(android.graphics.Color.WHITE)
                         } else {
                             tvName.text = active.planName
+                            tvStatus.visibility = View.GONE
                             tvDuration.text = "Until: ${active.formattedEnd}"
                             tvRemaining.text = "${active.daysRemaining} Days Remaining"
                             tvName.setTextColor(android.graphics.Color.WHITE)
                         }
 
                         cardActive.visibility = View.VISIBLE
-                        
-                        // Hide plan selection if they have any active or pending sub
-                        root.findViewById<View>(R.id.layoutPlanSelectionHeader).visibility = View.GONE
-                        root.findViewById<View>(R.id.cardMonthly).parent.let { (it as? View)?.visibility = View.GONE }
+                        selectionHeader.visibility = View.GONE
+                        selectionScroll.visibility = View.GONE
                     } else {
-                        root.findViewById<View>(R.id.cardActiveMembership).visibility = View.GONE
-                        root.findViewById<View>(R.id.layoutPlanSelectionHeader).visibility = View.VISIBLE
-                        root.findViewById<View>(R.id.cardMonthly).parent.let { (it as? View)?.visibility = View.VISIBLE }
+                        cardActive.visibility = View.GONE
+                        selectionHeader.visibility = View.VISIBLE
+                        selectionScroll.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {
                 Log.e("MembershipFragment", "Active Fetch Error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    loader.visibility = View.GONE
+                    cardActive.visibility = View.GONE
+                    selectionHeader.visibility = View.VISIBLE
+                    selectionScroll.visibility = View.VISIBLE
+                }
             }
         }
     }
