@@ -132,6 +132,22 @@ class MembershipSheet : BottomSheetDialogFragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                val context = requireContext()
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val api = RetrofitClient.getApi(cookie, ua)
+                
+                // 1. Eligibility Check
+                val checkResponse = api.checkSubscriptionStatus(userId)
+                if (checkResponse.isSuccessful && checkResponse.body()?.canBuy == false) {
+                    val msg = checkResponse.body()?.message ?: "You are not eligible to purchase a new membership at this time."
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                    }
+                    return@launch
+                }
+
+                // 2. Original Payment Logic
                 val payApi = PayMongoApi.create()
                 val response = payApi.createCheckoutSession(
                     PayMongoApi.getAuthHeader(),

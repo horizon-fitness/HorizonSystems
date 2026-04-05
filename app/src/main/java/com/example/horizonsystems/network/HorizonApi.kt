@@ -77,4 +77,10 @@ interface HorizonApi {
         @Body request: com.example.horizonsystems.models.MembershipRequest,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.MembershipResponse>
+
+    @GET("api/check_subscription_status.php")
+    suspend fun checkSubscriptionStatus(
+        @Query("user_id") userId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.CheckSubscriptionResponse>
 }

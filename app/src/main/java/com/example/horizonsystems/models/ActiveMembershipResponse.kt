@@ -10,6 +10,6 @@ data class ActiveMembershipResponse(
     @SerializedName("end_date") val endDate: String?,
     @SerializedName("formatted_start") val formattedStart: String?,
     @SerializedName("formatted_end") val formattedEnd: String?,
-    @SerializedName("subscription_status") val status: String?,
+    @SerializedName("subscription_status") val subscriptionStatus: String?,
     @SerializedName("days_remaining") val daysRemaining: Int?
 )

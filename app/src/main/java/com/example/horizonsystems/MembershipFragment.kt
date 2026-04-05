@@ -20,6 +20,8 @@ import kotlinx.coroutines.withContext
 class MembershipFragment : Fragment() {
     private lateinit var adapter: TransactionAdapter
     private val historyList = mutableListOf<Transaction>()
+    private val fullHistoryList = mutableListOf<Transaction>()
+    private var currentFilter = "ALL"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_membership, container, false)
@@ -28,6 +30,15 @@ class MembershipFragment : Fragment() {
         rvMembershipHistory.layoutManager = LinearLayoutManager(requireContext())
         adapter = TransactionAdapter(historyList)
         rvMembershipHistory.adapter = adapter
+
+        // Filter Buttons
+        val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterAll)
+        val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterPending)
+        val btnApproved = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterApproved)
+
+        btnAll.setOnClickListener { updateFilter("ALL", btnAll, btnPending, btnApproved) }
+        btnPending.setOnClickListener { updateFilter("Pending", btnAll, btnPending, btnApproved) }
+        btnApproved.setOnClickListener { updateFilter("Approved", btnAll, btnPending, btnApproved) }
 
         // Plan Selection Listeners
         view.findViewById<View>(R.id.btnSelectMonthly).setOnClickListener {
@@ -61,16 +72,28 @@ class MembershipFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val active = response.body()!!
-                        
+
                         // Show active card
                         val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
-                        root.findViewById<TextView>(R.id.tvActivePlanName).text = active.planName
-                        root.findViewById<TextView>(R.id.tvActivePlanDuration).text = "Until: ${active.formattedEnd}"
-                        root.findViewById<TextView>(R.id.tvDaysRemaining).text = "${active.daysRemaining} Days Remaining"
+                        val tvName = root.findViewById<TextView>(R.id.tvActivePlanName)
+                        val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
+                        val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
                         
+                        if (active.subscriptionStatus == "Pending Approval") {
+                            tvName.text = "${active.planName} (Pending Approval)"
+                            tvDuration.text = "Awaiting Staff Verification"
+                            tvRemaining.text = "Payment verified by PayMongo"
+                            tvName.setTextColor(android.graphics.Color.parseColor("#FFC107")) // Warning/Amber color
+                        } else {
+                            tvName.text = active.planName
+                            tvDuration.text = "Until: ${active.formattedEnd}"
+                            tvRemaining.text = "${active.daysRemaining} Days Remaining"
+                            tvName.setTextColor(android.graphics.Color.WHITE)
+                        }
+
                         cardActive.visibility = View.VISIBLE
                         
-                        // Optionally hide/shrink plan selection if they have an active sub
+                        // Hide plan selection if they have any active or pending sub
                         root.findViewById<View>(R.id.layoutPlanSelectionHeader).visibility = View.GONE
                         root.findViewById<View>(R.id.cardMonthly).parent.let { (it as? View)?.visibility = View.GONE }
                     } else {
@@ -109,22 +132,57 @@ class MembershipFragment : Fragment() {
                 val response = api.getMembershipHistory(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
-                        historyList.clear()
-                        historyList.addAll(response.body()!!)
-                        adapter.notifyDataSetChanged()
+                        fullHistoryList.clear()
+                        fullHistoryList.addAll(response.body()!!)
+                        applyFilter()
                     } else {
-                        historyList.clear()
-                        adapter.notifyDataSetChanged()
+                        fullHistoryList.clear()
+                        applyFilter()
                     }
                 }
             } catch (e: Exception) {
                 Log.e("MembershipFragment", "Fetch Error: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    historyList.clear()
-                    adapter.notifyDataSetChanged()
+                    fullHistoryList.clear()
+                    applyFilter()
                 }
             }
         }
+    }
+
+    private fun updateFilter(filter: String, btnAll: View, btnPending: View, btnApproved: View) {
+        currentFilter = filter
+        
+        // UI Visual Update (Purple for Active, Semi-transparent for Inactive)
+        val activeColor = android.graphics.Color.WHITE
+        val inactiveColor = android.graphics.Color.parseColor("#94A3B8")
+        val activeBg = android.graphics.Color.parseColor("#A855F7")
+        val inactiveBg = android.graphics.Color.parseColor("#1AFFFFFF")
+
+        (btnAll as? com.google.android.material.button.MaterialButton)?.let {
+            it.setTextColor(if (filter == "ALL") activeColor else inactiveColor)
+            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "ALL") activeBg else inactiveBg)
+        }
+        (btnPending as? com.google.android.material.button.MaterialButton)?.let {
+            it.setTextColor(if (filter == "Pending") activeColor else inactiveColor)
+            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "Pending") activeBg else inactiveBg)
+        }
+        (btnApproved as? com.google.android.material.button.MaterialButton)?.let {
+            it.setTextColor(if (filter == "Approved") activeColor else inactiveColor)
+            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "Approved") activeBg else inactiveBg)
+        }
+
+        applyFilter()
+    }
+
+    private fun applyFilter() {
+        historyList.clear()
+        if (currentFilter == "ALL") {
+            historyList.addAll(fullHistoryList)
+        } else {
+            historyList.addAll(fullHistoryList.filter { it.status == currentFilter })
+        }
+        adapter.notifyDataSetChanged()
     }
 
 }
