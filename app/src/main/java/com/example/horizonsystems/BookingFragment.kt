@@ -41,10 +41,33 @@ class BookingFragment : Fragment() {
 
         // Calendar Selection
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val date = "${month + 1}/$dayOfMonth/$year"
+            val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+            val displayDate = "${month + 1}/$dayOfMonth/$year"
             dateDetailsCard.visibility = View.VISIBLE
-            val count = allLogs.filter { it.date.contains(dayOfMonth.toString()) || it.date.contains(String.format("%02d", dayOfMonth)) }.size
-            dateInfoText.text = "Logs for $date: Found $count sessions"
+            
+            val approvedSessions = allLogs.filter { 
+                it.date == selectedDate && (it.status.uppercase() == "APPROVED" || it.status.uppercase() == "CONFIRMED") 
+            }
+            
+            if (approvedSessions.isEmpty()) {
+                dateInfoText.text = "No approved sessions for $displayDate"
+            } else {
+                val sb = StringBuilder("Approved for $displayDate:\n")
+                approvedSessions.forEachIndexed { index, session ->
+                    val timeFormatted = try {
+                        val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+                        val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                        val dateObj = sdf24.parse(session.time)
+                        sdf12.format(dateObj!!)
+                    } catch (e: Exception) {
+                        session.time.substringBeforeLast(":") // Fallback
+                    }
+                    
+                    sb.append("• ${session.service} at $timeFormatted")
+                    if (index < approvedSessions.size - 1) sb.append("\n")
+                }
+                dateInfoText.text = sb.toString()
+            }
         }
 
         // Action Buttons
@@ -184,7 +207,13 @@ class BookingFragment : Fragment() {
     }
 
     private fun applyPaginationAndRefresh(root: View) {
-        filteredList = if (currentFilter == "ALL") allLogs else allLogs.filter { it.status.uppercase() == currentFilter }
+        filteredList = if (currentFilter == "ALL") {
+            allLogs
+        } else if (currentFilter == "APPROVED") {
+            allLogs.filter { it.status.uppercase() == "APPROVED" || it.status.uppercase() == "CONFIRMED" }
+        } else {
+            allLogs.filter { it.status.uppercase() == currentFilter }
+        }
         
         val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
         if (currentPage > totalPages) currentPage = totalPages
