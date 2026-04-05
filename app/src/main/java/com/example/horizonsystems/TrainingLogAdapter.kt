@@ -40,12 +40,14 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
         val tintColor: String = when (log.status.uppercase()) {
             "APPROVED", "ACTIVE" -> "#1A10B981"
             "PENDING" -> "#1AF59E0B"
+            "REJECTED", "CANCELLED" -> "#1AEF4444"
             "COMPLETED" -> "#1AFFFFFF"
             else -> "#0DFFFFFF"
         }
         val textColor: String = when (log.status.uppercase()) {
             "APPROVED", "ACTIVE" -> "#10B981"
             "PENDING" -> "#F59E0B"
+            "REJECTED", "CANCELLED" -> "#EF4444"
             "COMPLETED" -> "#FFFFFF"
             else -> "#9CA3AF"
         }
