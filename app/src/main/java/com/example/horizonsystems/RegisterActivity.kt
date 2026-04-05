@@ -120,32 +120,79 @@ class RegisterActivity : AppCompatActivity() {
 
         // Wizard Logic
         fun validateStep(step: Int): Boolean {
-            return when (step) {
+            var isValid = true
+            when (step) {
                 1 -> {
-                    if (gymIdEdit.text.isNullOrEmpty() || userRegEdit.text.isNullOrEmpty() || passRegEdit.text.isNullOrEmpty()) {
-                        Toast.makeText(this, "Please complete account details", Toast.LENGTH_SHORT).show()
-                        return false
+                    if (gymIdEdit.text.isNullOrEmpty()) {
+                        gymIdEdit.error = "Tenant field is required"
+                        isValid = false
                     }
-                    if (passRegEdit.text.toString() != confirmPassRegEdit.text.toString()) {
-                        Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                        return false
+                    if (userRegEdit.text.isNullOrEmpty()) {
+                        userRegEdit.error = "Username is required"
+                        isValid = false
                     }
-                    true
+                    if (passRegEdit.text.isNullOrEmpty()) {
+                        passRegEdit.error = "Password is required"
+                        isValid = false
+                    }
+                    if (confirmPassRegEdit.text.isNullOrEmpty()) {
+                        confirmPassRegEdit.error = "Please confirm password"
+                        isValid = false
+                    } else if (passRegEdit.text.toString() != confirmPassRegEdit.text.toString()) {
+                        confirmPassRegEdit.error = "Passwords do not match"
+                        isValid = false
+                    }
                 }
                 2 -> {
-                    if (firstNameEdit.text.isNullOrEmpty() || lastNameEdit.text.isNullOrEmpty() || birthDateEdit.text.isNullOrEmpty() || sexSpinner.text.isNullOrEmpty()) {
-                        Toast.makeText(this, "Please fill all required personal information", Toast.LENGTH_SHORT).show()
-                        false
-                    } else true
+                    if (firstNameEdit.text.isNullOrEmpty()) {
+                        firstNameEdit.error = "First name is required"
+                        isValid = false
+                    }
+                    if (lastNameEdit.text.isNullOrEmpty()) {
+                        lastNameEdit.error = "Last name is required"
+                        isValid = false
+                    }
+                    if (birthDateEdit.text.isNullOrEmpty()) {
+                        birthDateEdit.error = "Birth date is required"
+                        isValid = false
+                    }
+                    if (sexSpinner.text.isNullOrEmpty()) {
+                        sexSpinner.error = "Sex is required"
+                        isValid = false
+                    }
                 }
                 3 -> {
-                    if (emailEdit.text.isNullOrEmpty() || phoneEdit.text.isNullOrEmpty() || addressEdit.text.isNullOrEmpty()) {
-                        Toast.makeText(this, "Please enter all required contact details", Toast.LENGTH_SHORT).show()
-                        false
-                    } else true
+                    if (emailEdit.text.isNullOrEmpty()) {
+                        emailEdit.error = "Email address is required"
+                        isValid = false
+                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailEdit.text.toString()).matches()) {
+                        emailEdit.error = "Invalid email format"
+                        isValid = false
+                    }
+                    if (phoneEdit.text.isNullOrEmpty()) {
+                        phoneEdit.error = "Phone number is required"
+                        isValid = false
+                    }
+                    if (addressEdit.text.isNullOrEmpty()) {
+                        addressEdit.error = "Address is required"
+                        isValid = false
+                    }
                 }
-                else -> true
+                4 -> {
+                    if (emergencyNameEdit.text.isNullOrEmpty()) {
+                        emergencyNameEdit.error = "Emergency contact name is required"
+                        isValid = false
+                    }
+                    if (emergencyPhoneEdit.text.isNullOrEmpty()) {
+                        emergencyPhoneEdit.error = "Emergency contact number is required"
+                        isValid = false
+                    }
+                }
             }
+            if (!isValid) {
+                Toast.makeText(this, "Please fix highlighted fields", Toast.LENGTH_SHORT).show()
+            }
+            return isValid
         }
 
         btnNext.setOnClickListener {
@@ -175,6 +222,8 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnRegister.setOnClickListener {
+            if (!validateStep(4)) return@setOnClickListener
+
             val first = firstNameEdit.text.toString()
             val last = lastNameEdit.text.toString()
             val middle = middleNameEdit.text.toString()
@@ -190,11 +239,6 @@ class RegisterActivity : AppCompatActivity() {
             val medical = medicalEdit.text.toString()
             val eName = emergencyNameEdit.text.toString()
             val ePhone = emergencyPhoneEdit.text.toString()
-
-            if (eName.isEmpty() || ePhone.isEmpty()) {
-                Toast.makeText(this, "Please enter emergency contact info", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             performRegistration(user, email, pass, first, middle, last, phone, birth, sex, occupation, address, medical, eName, ePhone, gymIdStr)
         }
