@@ -62,6 +62,7 @@ class ProfileFragment : Fragment() {
         val userRole = intent?.getStringExtra("user_role") ?: "Member"
         val gymName = intent?.getStringExtra("gym_name") ?: "Horizon Gym"
         val tenantId = intent?.getStringExtra("tenant_id") ?: "000"
+        val memberCode = intent?.getStringExtra("member_code") ?: ""
 
         // Registration Fields (Schema Aligned)
         val firstName = intent?.getStringExtra("first_name") ?: ""
@@ -82,6 +83,8 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.profileFirstName)?.text = firstName.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileLastName)?.text = lastName.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileMiddleName)?.text = middleName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileUsernameDisplay)?.text = userName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileMemberCode)?.text = memberCode.ifEmpty { "---" }
         
         // Contact
         view.findViewById<TextView>(R.id.profileEmail)?.text = userEmail.ifEmpty { "---" }

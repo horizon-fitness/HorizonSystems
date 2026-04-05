@@ -27,5 +27,6 @@ data class User(
     @SerializedName("occupation") val occupation: String? = null,
     @SerializedName("medical_history") val medicalHistory: String? = null,
     @SerializedName("emergency_contact_name") val emergencyContactName: String? = null,
-    @SerializedName("emergency_contact_number") val emergencyContactNumber: String? = null
+    @SerializedName("emergency_contact_number") val emergencyContactNumber: String? = null,
+    @SerializedName("member_code") val memberCode: String? = null
 )

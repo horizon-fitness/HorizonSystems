@@ -42,6 +42,9 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         val editEmergencyName = view.findViewById<TextInputEditText>(R.id.editEmergencyName)
         val editEmergencyPhone = view.findViewById<TextInputEditText>(R.id.editEmergencyPhone)
         
+        val editUsername = view.findViewById<TextInputEditText>(R.id.editUsername)
+        val editMemberCode = view.findViewById<TextInputEditText>(R.id.editMemberCode)
+        
         val btnSave = view.findViewById<View>(R.id.btnSaveChanges)
         val btnCancel = view.findViewById<View>(R.id.btnCancelEdit)
 
@@ -83,6 +86,9 @@ class EditProfileSheet : BottomSheetDialogFragment() {
             
             editEmergencyName.setText(intent.getStringExtra("emergency_contact_name"))
             editEmergencyPhone.setText(intent.getStringExtra("emergency_contact_number"))
+            
+            editUsername?.setText(intent.getStringExtra("user_name"))
+            editMemberCode?.setText(intent.getStringExtra("member_code"))
         }
 
         btnCancel.setOnClickListener { dismiss() }

@@ -209,6 +209,7 @@ class LandingActivity : AppCompatActivity() {
             putExtra("medical_history", user.medicalHistory ?: "")
             putExtra("emergency_contact_name", user.emergencyContactName ?: "")
             putExtra("emergency_contact_number", user.emergencyContactNumber ?: "")
+            putExtra("member_code", user.memberCode ?: "")
         }
 
         loginScrollView?.visibility = android.view.View.GONE

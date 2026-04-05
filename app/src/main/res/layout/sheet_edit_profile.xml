@@ -49,6 +49,49 @@
             android:letterSpacing="0.1"
             android:layout_marginBottom="12dp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Username"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                app:boxStrokeColor="@color/landing_primary"
+                app:hintTextColor="@color/landing_primary"
+                android:textColorHint="#40FFFFFF">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Member Code"
+                android:enabled="false"
+                app:boxStrokeColor="@color/landing_primary"
+                app:hintTextColor="@color/landing_primary"
+                android:textColorHint="#40FFFFFF">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editMemberCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
