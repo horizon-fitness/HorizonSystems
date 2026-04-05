@@ -89,4 +89,13 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.CoachListResponse>
+
+    @GET("api/check_booking_availability.php")
+    suspend fun checkBookingAvailability(
+        @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
+        @Query("date") date: String,
+        @Query("time") time: String,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.AvailabilityResponse>
 }

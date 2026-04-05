@@ -17,184 +17,266 @@
             android:layout_width="40dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
             android:background="#33FFFFFF" />
 
+        <!-- Title -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BOOK "
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&amp; PAY"
+                android:textColor="#A855F7"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+        </LinearLayout>
+
+        <!-- Date Picker (Full Width) -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxStrokeColor="#A855F7"
+            app:boxBackgroundColor="#14FFFFFF"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:hintEnabled="false">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bookDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select Booking Date"
+                android:textColor="@color/white"
+                android:textColorHint="#9CA3AF"
+                android:padding="20dp"
+                android:focusable="false"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="12dp"
+                app:drawableTint="#FFFFFF" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Start Time & Duration (Side by Side) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:layout_marginBottom="16dp">
+
+            <!-- Start Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="START"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxStrokeColor="#A855F7"
+                    app:boxBackgroundColor="#14FFFFFF"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    android:hint="--:-- --"
+                    app:hintEnabled="false">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/bookTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="--:-- --"
+                        android:textColor="@color/white"
+                        android:textColorHint="#9CA3AF"
+                        android:padding="20dp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:drawableStart="@drawable/ic_clock"
+                        android:drawablePadding="12dp"
+                        app:drawableTint="#FFFFFF" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- Duration -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DURATION"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxStrokeColor="#A855F7"
+                    app:boxBackgroundColor="#14FFFFFF"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:hintEnabled="false">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/bookDuration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="1 Hour"
+                        android:textColor="@color/white"
+                        android:padding="20dp"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Service -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Schedule Your Session"
-            android:textColor="@color/white"
-            android:textSize="22sp"
+            android:text="SERVICE"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
             android:textStyle="bold"
-            android:fontFamily="sans-serif-black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select your desired workout or training slot."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:alpha="0.8"
-            android:layout_marginBottom="32dp" />
-
-        <!-- Service Picker -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SERVICE CATEGORY"
-            android:textColor="#A855F7"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp" />
-
+            android:layout_marginBottom="4dp" />
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             app:boxStrokeColor="#A855F7"
             app:boxBackgroundColor="#14FFFFFF"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:hintEnabled="false"
-            app:hintTextColor="#B3FFFFFF"
-            android:textColorHint="#B3FFFFFF">
-            <AutoCompleteTextView
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:hintEnabled="false">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/bookService"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select a gym service"
+                android:hint="Select Session Type"
                 android:textColor="@color/white"
                 android:textColorHint="#9CA3AF"
                 android:padding="20dp"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Coach Picker (Hidden by Default) -->
-        <LinearLayout
-            android:id="@+id/layoutCoach"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_marginBottom="24dp">
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CHOOSE YOUR COACH"
-                android:textColor="#A855F7"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxStrokeColor="#A855F7"
-                app:boxBackgroundColor="#14FFFFFF"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:hintEnabled="false">
-                <AutoCompleteTextView
-                    android:id="@+id/bookCoach"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Select a preferred coach"
-                    android:textColor="@color/white"
-                    android:textColorHint="#9CA3AF"
-                    android:padding="20dp"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-
-        <!-- Date Picker -->
+        <!-- Trainer -->
         <TextView
+            android:id="@+id/labelTrainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PREFERRED DATE"
-            android:textColor="#A855F7"
-            android:textSize="11sp"
+            android:text="TRAINER (+₱120/HR)"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
             android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp" />
-
+            android:layout_marginBottom="4dp" />
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            app:boxStrokeColor="#A855F7"
+            app:boxBackgroundColor="#14FFFFFF"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
+            app:hintEnabled="false">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/bookCoach"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="General Workout (Self-Train)"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Total View Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            app:boxStrokeColor="#A855F7"
-            app:boxBackgroundColor="#14FFFFFF"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:hintEnabled="false"
-            android:textColorHint="#B3FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/bookDate"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="#1A1A1A"
+            app:strokeWidth="1dp"
+            app:strokeColor="#333333">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Pick a date"
-                android:textColor="@color/white"
-                android:textColorHint="#9CA3AF"
-                android:padding="20dp"
-                android:focusable="false"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_calendar"
-                android:drawablePadding="12dp"
-                app:drawableTint="@color/accent_glow" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="24dp">
+                
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="TOTAL TO PAY"
+                    android:textColor="#9CA3AF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
 
-        <!-- Time Picker -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="START TIME"
-            android:textColor="#A855F7"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="end">
+                    <TextView
+                        android:id="@+id/txtTotalPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₱100.00"
+                        android:textColor="@color/white"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-black" />
+                    <TextView
+                        android:id="@+id/txtCoachFeeInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NO COACH FEE"
+                        android:textColor="#10B981"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            app:boxStrokeColor="#A855F7"
-            app:boxBackgroundColor="#14FFFFFF"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:hintEnabled="false"
-            android:textColorHint="#B3FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/bookTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Select time slot"
-                android:textColor="@color/white"
-                android:textColorHint="#9CA3AF"
-                android:padding="20dp"
-                android:focusable="false"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_clock"
-                android:drawablePadding="12dp"
-                app:drawableTint="@color/accent_glow" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Submit Button -->
+        <!-- Confirm Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitBooking"
             android:layout_width="match_parent"
@@ -206,16 +288,6 @@
             app:cornerRadius="16dp"
             app:backgroundTint="#A855F7"
             android:layout_marginBottom="12dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelBooking"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Discard"
-            android:textAllCaps="false"
-            android:textColor="@color/text_secondary" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

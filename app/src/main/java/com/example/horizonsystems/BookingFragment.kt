@@ -134,7 +134,11 @@ class BookingFragment : Fragment() {
     }
 
     private fun fetchBookings(root: View) {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        val context = requireContext()
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(context)
+        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
+        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+
         if (userId == -1) {
             applyPaginationAndRefresh(root)
             return
@@ -142,7 +146,7 @@ class BookingFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val api = RetrofitClient.getApi()
+                val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getUserBookings(userId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.bookings != null) {
@@ -152,6 +156,7 @@ class BookingFragment : Fragment() {
                     } else {
                         allLogs.clear()
                         applyPaginationAndRefresh(root)
+                        // Optional: Show empty Toast if truly 0
                     }
                 }
             } catch (e: Exception) {

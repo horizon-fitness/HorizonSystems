@@ -30,29 +30,28 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
         holder.date.text = log.date
         holder.time.text = "${log.time} - ${log.duration}"
         holder.service.text = log.service
-        holder.trainer.text = "Trainer: ${log.trainer}"
+        
+        // Smart Trainer Label: "Self" vs "Trainer: Name"
+        holder.trainer.text = if (log.trainer.equals("Self", ignoreCase = true)) "Self" else "Trainer: ${log.trainer}"
+        
         holder.status.text = log.status
 
         // Status coloring
-        val context = holder.itemView.context
-        when (log.status.uppercase()) {
-            "APPROVED", "ACTIVE" -> {
-                holder.status.setTextColor(android.graphics.Color.parseColor("#10B981"))
-                holder.status.setBackgroundColor(android.graphics.Color.parseColor("#1A10B981"))
-            }
-            "PENDING" -> {
-                holder.status.setTextColor(android.graphics.Color.parseColor("#F59E0B"))
-                holder.status.setBackgroundColor(android.graphics.Color.parseColor("#1AF59E0B"))
-            }
-            "COMPLETED" -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.white))
-                holder.status.setBackgroundColor(android.graphics.Color.parseColor("#1AFFFFFF"))
-            }
-            else -> {
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
-                holder.status.setBackgroundColor(android.graphics.Color.parseColor("#0DFFFFFF"))
-            }
+        val tintColor: String = when (log.status.uppercase()) {
+            "APPROVED", "ACTIVE" -> "#1A10B981"
+            "PENDING" -> "#1AF59E0B"
+            "COMPLETED" -> "#1AFFFFFF"
+            else -> "#0DFFFFFF"
         }
+        val textColor: String = when (log.status.uppercase()) {
+            "APPROVED", "ACTIVE" -> "#10B981"
+            "PENDING" -> "#F59E0B"
+            "COMPLETED" -> "#FFFFFF"
+            else -> "#9CA3AF"
+        }
+
+        holder.status.setTextColor(android.graphics.Color.parseColor(textColor))
+        holder.status.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(tintColor))
     }
 
     fun updateLogs(newLogs: List<TrainingLog>) {
