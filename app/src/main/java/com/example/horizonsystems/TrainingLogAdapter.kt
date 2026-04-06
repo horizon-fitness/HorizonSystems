@@ -28,13 +28,24 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val log = logs[position]
         holder.date.text = log.date
-        holder.time.text = "${log.time} - ${log.duration}"
+        // Format Time to 12h: hh:mm AM/PM
+        val timeFormatted = try {
+            val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+            val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+            val dateObj = sdf24.parse(log.time)
+            sdf12.format(dateObj!!)
+        } catch (e: Exception) {
+            log.time.substringBeforeLast(":") // Fallback
+        }
+        holder.time.text = "$timeFormatted - ${log.duration}"
         holder.service.text = log.service
         
         // Smart Trainer Label: "Self" vs "Trainer: Name"
         holder.trainer.text = if (log.trainer.equals("Self", ignoreCase = true)) "Self" else "Trainer: ${log.trainer}"
         
-        holder.status.text = log.status
+        // Status Mapping: "CANCELLED" -> "REJECTED" for clearer donor/member communication
+        val displayStatus = if (log.status.equals("CANCELLED", ignoreCase = true)) "REJECTED" else log.status.uppercase()
+        holder.status.text = displayStatus
 
         // Status coloring
         val tintColor: String = when (log.status.uppercase()) {

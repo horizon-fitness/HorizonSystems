@@ -120,8 +120,16 @@ class HomeFragment : Fragment() {
                         if (upcoming != null) {
                             // Format: "Yoga - 2:00 PM (Today)" or "Yoga - Mar 31"
                             val dateLabel = if (upcoming.date == today) "Today" else upcoming.date
-                            val timePart = upcoming.time.substringBeforeLast(":")
-                            sessionStatus?.text = "${upcoming.service} at $timePart ($dateLabel)"
+                            // Format Time to 12h: hh:mm AM/PM
+                            val timeFormatted = try {
+                                val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+                                val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                                val dateObj = sdf24.parse(upcoming.time)
+                                sdf12.format(dateObj!!)
+                            } catch (e: Exception) {
+                                upcoming.time.substringBeforeLast(":") // Fallback
+                            }
+                            sessionStatus?.text = "${upcoming.service} at $timeFormatted ($dateLabel)"
                             sessionStatus?.setTextColor(android.graphics.Color.parseColor("#A855F7"))
                         } else {
                             sessionStatus?.text = "No Active Bookings"

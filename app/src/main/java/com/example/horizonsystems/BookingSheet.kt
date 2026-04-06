@@ -109,6 +109,7 @@ class BookingSheet : BottomSheetDialogFragment() {
         editTime.setOnClickListener {
             val calendar = Calendar.getInstance()
             TimePickerDialog(requireContext(), { _, hour, minute ->
+                // Rule: 7 AM (07:00) to 10 PM (22:00)
                 if (hour < 7 || hour > 22 || (hour == 22 && minute > 0)) {
                     Toast.makeText(requireContext(), "Bookings are only available from 7 AM to 10 PM", Toast.LENGTH_LONG).show()
                     return@TimePickerDialog
