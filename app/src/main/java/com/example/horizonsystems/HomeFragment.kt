@@ -111,15 +111,25 @@ class HomeFragment : Fragment() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val allBookings = response.body()?.bookings ?: emptyList()
                         
-                        // Find the closest upcoming approved booking
+                        // Find the closest upcoming approved/confirmed booking
                         val upcoming = allBookings
-                            .filter { it.status.uppercase() == "APPROVED" && it.date >= today }
+                            .filter { (it.status.uppercase() == "APPROVED" || it.status.uppercase() == "CONFIRMED") && it.date >= today }
                             .sortedWith(compareBy({ it.date }, { it.time }))
                             .firstOrNull()
 
                         if (upcoming != null) {
-                            // Format: "Yoga - 2:00 PM (Today)" or "Yoga - Mar 31"
-                            val dateLabel = if (upcoming.date == today) "Today" else upcoming.date
+                            // Format: "Yoga at 2:00 PM (Today)" or "Yoga at 2:00 PM (Apr 06)"
+                            val dateLabel = if (upcoming.date == today) {
+                                "Today"
+                            } else {
+                                try {
+                                    val inSdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                                    val outSdf = java.text.SimpleDateFormat("MMM dd", java.util.Locale.US)
+                                    outSdf.format(inSdf.parse(upcoming.date)!!)
+                                } catch (e: Exception) {
+                                    upcoming.date
+                                }
+                            }
                             // Format Time to 12h: hh:mm AM/PM
                             val timeFormatted = try {
                                 val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
