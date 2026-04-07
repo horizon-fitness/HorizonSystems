@@ -61,9 +61,9 @@ class LandingActivity : AppCompatActivity() {
         }
         handler.postDelayed(showManualBypassRunnable, 5000)
         
-        btnManualBypass.setOnClickListener {
+        btnManualBypass?.setOnClickListener {
             handler.removeCallbacks(showManualBypassRunnable)
-            loadingOverlay.visibility = android.view.View.GONE
+            loadingOverlay?.visibility = android.view.View.GONE
             handleIntent(intent) // Try to fetch branding anyway
         }
         
@@ -105,7 +105,7 @@ class LandingActivity : AppCompatActivity() {
         val usernameEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.usernameEdit) ?: return
         val passwordEdit = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit) ?: return
         
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn).setOnClickListener {
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)?.setOnClickListener {
             val username = usernameEdit.text.toString()
             val password = passwordEdit.text.toString()
 
@@ -118,18 +118,18 @@ class LandingActivity : AppCompatActivity() {
             performLogin(username, password)
         }
 
-        findViewById<android.widget.TextView>(R.id.btnCreateAccount).setOnClickListener {
+        findViewById<android.widget.TextView>(R.id.btnCreateAccount)?.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
-        findViewById<android.widget.TextView>(R.id.btnForgotPassword).setOnClickListener {
+        findViewById<android.widget.TextView>(R.id.btnForgotPassword)?.setOnClickListener {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
 
         val btnTogglePassword = findViewById<ImageView>(R.id.btnTogglePassword)
-        btnTogglePassword.setOnClickListener {
+        btnTogglePassword?.setOnClickListener {
             if (passwordEdit.transformationMethod is android.text.method.PasswordTransformationMethod) {
                 passwordEdit.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
                 btnTogglePassword.alpha = 1.0f
@@ -149,7 +149,7 @@ class LandingActivity : AppCompatActivity() {
         }
 
         // Switch Gym Button
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym).setOnClickListener {
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)?.setOnClickListener {
             val intent = Intent(this, SwitchGymActivity::class.java)
             startActivity(intent)
         }

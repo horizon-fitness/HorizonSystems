@@ -26,7 +26,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
+        if (bottomNav == null) {
+            Log.e("MainActivity", "BottomNavigationView not found, exiting onCreate")
+            return
+        }
+        bottomNavigationView = bottomNav
         
         // Simplified: Always use standardized Member menu
         bottomNavigationView.menu.clear() 
