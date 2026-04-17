@@ -43,6 +43,13 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.glide)
+    
+    // QR Scanning & Camera
+    implementation(libs.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+    implementation(libs.mlkit.barcode.scanning)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

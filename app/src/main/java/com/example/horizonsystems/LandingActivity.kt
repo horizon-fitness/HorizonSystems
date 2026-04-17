@@ -252,16 +252,13 @@ class LandingActivity : AppCompatActivity() {
             gymLogoHeader?.let {
                 Glide.with(this)
                     .load(fullLogoUrl)
-                    .placeholder(R.drawable.ic_dumbbell)
-                    .error(R.drawable.ic_dumbbell)
                     .into(it)
             }
             
             gymLogoHeader?.imageTintList = null 
         } else if (branding != null) {
             gymLogoContainer?.visibility = android.view.View.VISIBLE
-            gymLogoHeader?.setImageResource(R.drawable.ic_dumbbell)
-            gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+            gymLogoHeader?.setImageDrawable(null)
         } else {
             gymLogoContainer?.visibility = android.view.View.GONE
         }
@@ -314,7 +311,9 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh branding if we're already bypassed to show changes from Owner dashboard
+        // Always refresh branding from cache to show changes after switching gyms
+        prefillUIFromCache()
+        
         if (isBypassed) {
             val slug = GymManager.getGymSlug(this)
             fetchTenantBranding(slug)
@@ -334,9 +333,18 @@ class LandingActivity : AppCompatActivity() {
         var slug = GymManager.getGymSlug(this)
         
         if (appLinkData != null) {
-            val deepSlug = appLinkData.getQueryParameter("gym")
-            if (deepSlug != null) {
-                slug = deepSlug
+            if (appLinkData.scheme == "horizon" && appLinkData.host == "connect") {
+                val code = appLinkData.getQueryParameter("tenant_code")
+                if (!code.isNullOrEmpty()) {
+                    Log.d("LandingActivity", "Deep link connection: $code")
+                    fetchTenantBranding(code)
+                    return
+                }
+            } else {
+                val deepSlug = appLinkData.getQueryParameter("gym")
+                if (deepSlug != null) {
+                    slug = deepSlug
+                }
             }
         }
         
@@ -375,20 +383,74 @@ class LandingActivity : AppCompatActivity() {
 
     private fun prefillUIFromCache() {
         val tenantTitle = findViewById<TextView>(R.id.tenantTitle) ?: return
+        val gymLogo = findViewById<ImageView>(R.id.gymLogo)
+        
+        // Always reset logo state first to ensure default icons are gone
+        gymLogo?.setImageDrawable(null)
+        gymLogo?.imageTintList = null
+        
         val savedName = GymManager.getGymName(this)
+        val savedLogo = GymManager.getGymLogo(this)
+        
         // Default to HORIZON SYSTEMS to match standard branding
         tenantTitle.text = if (savedName == "HORIZON SYSTEMS" || savedName.isEmpty()) "HORIZON SYSTEMS" else savedName.uppercase()
+        
+        if (!savedLogo.isNullOrEmpty()) {
+            loadLogoIntoView(savedLogo, gymLogo)
+        }
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
         val tenantTitle = findViewById<TextView>(R.id.tenantTitle)
+        val gymLogo = findViewById<ImageView>(R.id.gymLogo)
         val gymName = tenant.gymName ?: "HORIZON SYSTEMS"
+        
+        // Always reset logo state first
+        gymLogo?.setImageDrawable(null)
+        gymLogo?.imageTintList = null
         
         tenantTitle?.text = gymName.uppercase()
         
-        // We preserve the user's XML description ("Enter your credentials...") 
-        // unless the database provides a very specific branding title.
-        // For now, we keep it static to avoid the "AUTHORIZED PERSONNEL ONLY" jump.
+        tenant.logoPath?.let {
+            loadLogoIntoView(it, gymLogo)
+        }
+    }
+    
+    private fun loadLogoIntoView(logoPath: String, imageView: ImageView?) {
+        if (imageView == null) return
+        
+        val baseUrl = "https://horizonfitnesscorp.gt.tc/"
+        val fullLogoUrl = when {
+            logoPath.startsWith("http") -> logoPath
+            logoPath.startsWith("data:image") -> logoPath
+            else -> baseUrl + logoPath.removePrefix("../").removePrefix("/")
+        }
+        
+        // Remove tint and set padding so real logo fits nicely inside the circle
+        imageView.imageTintList = null
+        val paddingPx = (8 * resources.displayMetrics.density).toInt()
+        imageView.setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
+        imageView.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+        
+        // InfinityFree Security Bypass for Glide
+        val cookie = GymManager.getBypassCookie(this)
+        val ua = GymManager.getBypassUA(this)
+        
+        val glideUrl = if (cookie.isNotEmpty() && ua.isNotEmpty() && fullLogoUrl.startsWith("http")) {
+            com.bumptech.glide.load.model.GlideUrl(
+                fullLogoUrl,
+                com.bumptech.glide.load.model.LazyHeaders.Builder()
+                    .addHeader("Cookie", cookie)
+                    .addHeader("User-Agent", ua)
+                    .build()
+            )
+        } else {
+            fullLogoUrl
+        }
+        
+        Glide.with(this)
+            .load(glideUrl)
+            .into(imageView)
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {

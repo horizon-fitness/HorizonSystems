@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +32,14 @@
                 <data android:scheme="https" />
                 <data android:host="horizonfitnesscorp.gt.tc" />
                 <data android:pathPattern="/portal.php" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="horizon" />
+                <data android:host="connect" />
             </intent-filter>
         </activity>
 

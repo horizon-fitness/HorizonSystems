@@ -9,6 +9,7 @@ object GymManager {
     private const val KEY_GYM_ID = "selected_gym_id" // numeric
     private const val KEY_TENANT_CODE = "selected_tenant_code" // alphanumeric
     private const val KEY_GYM_NAME = "selected_gym_name"
+    private const val KEY_GYM_LOGO = "selected_gym_logo"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
     private const val KEY_REMEMBER_ME = "remember_me"
@@ -27,12 +28,13 @@ object GymManager {
         getPrefs(context).edit().putString(KEY_GYM_SLUG, slug).apply()
     }
 
-    fun saveGymData(context: Context, slug: String, id: Int, code: String, name: String) {
+    fun saveGymData(context: Context, slug: String, id: Int, code: String, name: String, logo: String? = null) {
         getPrefs(context).edit().apply {
             putString(KEY_GYM_SLUG, slug)
             putInt(KEY_GYM_ID, id)
             putString(KEY_TENANT_CODE, code)
             putString(KEY_GYM_NAME, name)
+            putString(KEY_GYM_LOGO, logo)
         }.apply()
     }
 
@@ -66,6 +68,10 @@ object GymManager {
 
     fun getGymName(context: Context): String {
         return getPrefs(context).getString(KEY_GYM_NAME, "HORIZON SYSTEMS") ?: "HORIZON SYSTEMS"
+    }
+    
+    fun getGymLogo(context: Context): String? {
+        return getPrefs(context).getString(KEY_GYM_LOGO, null)
     }
 
     fun saveLoginCredentials(context: Context, username: String, password: String) {

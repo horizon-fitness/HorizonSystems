@@ -23,7 +23,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp">
+                android:layout_marginBottom="32dp">
                 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnBack"
@@ -49,6 +49,96 @@
                     android:letterSpacing="0.1" />
             </RelativeLayout>
 
+            <!-- Current Connection Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/currentGymCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="#0DFFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#20FFFFFF"
+                app:strokeWidth="1dp">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+                    
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardCornerRadius="24dp"
+                        app:cardBackgroundColor="#20FFFFFF"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:id="@+id/currentGymLogo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_launcher_foreground"
+                            android:scaleType="centerInside" />
+                    </com.google.android.material.card.MaterialCardView>
+                    
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Currently Connected To:"
+                            android:textColor="#80FFFFFF"
+                            android:textSize="11sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.05" />
+                        
+                        <TextView
+                            android:id="@+id/currentGymName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Horizon Systems"
+                            android:textColor="@color/white"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                    
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/nav_active_color" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDisconnectGym"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="DISCONNECT"
+                        android:textColor="#FF5252"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Loading Indicator -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone"
+                android:indeterminateTint="@color/nav_active_color" />
+
             <!-- Option 1: QR Scan -->
             <TextView
                 android:layout_width="wrap_content"
@@ -62,7 +152,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/qrCameraPlaceholder"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
                 android:layout_marginBottom="40dp"
                 app:cardBackgroundColor="#0DFFFFFF"
                 app:cardCornerRadius="16dp"
@@ -70,28 +160,18 @@
                 app:strokeColor="#20FFFFFF"
                 app:strokeWidth="1dp">
                 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_qr_code"
-                        app:tint="@color/nav_active_color"
-                        android:alpha="0.8" />
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Tap to Start Scanning"
-                        android:textColor="#80FFFFFF"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                <androidx.camera.view.PreviewView
+                    android:id="@+id/previewView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:scaleType="fillCenter" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="60dp"
+                    android:src="@drawable/ic_qr_code"
+                    app:tint="#20FFFFFF" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Option 2: Tenant Code -->

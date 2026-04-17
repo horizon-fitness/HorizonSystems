@@ -70,9 +70,9 @@ class RegisterActivity : AppCompatActivity() {
         val btnNext = findViewById<MaterialButton>(R.id.btnNext)
         val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
 
-        // Pre-fill tenant code
+        // Pre-fill tenant code from cache (Automated Integration)
         val currentTenantCode = com.example.horizonsystems.utils.GymManager.getTenantCode(this)
-        if (currentTenantCode != "000") {
+        if (currentTenantCode.isNotEmpty() && currentTenantCode != "000" && currentTenantCode != "default") {
             gymIdEdit.setText(currentTenantCode)
         }
 

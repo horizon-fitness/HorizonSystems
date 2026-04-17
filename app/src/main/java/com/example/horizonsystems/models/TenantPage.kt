@@ -19,5 +19,7 @@ data class TenantPage(
     @SerializedName("banner_image") val bannerImage: String?,
     @SerializedName("gym_name") val gymName: String?,
     @SerializedName("gym_email") val gymEmail: String?,
-    @SerializedName("gym_contact") val gymContact: String?
+    @SerializedName("gym_contact") val gymContact: String?,
+    @SerializedName("success") val success: Boolean?,
+    @SerializedName("message") val message: String?
 )
