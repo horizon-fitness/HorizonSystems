@@ -6,13 +6,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.RadioButton
-import android.widget.Switch
 import android.widget.TextView
+import android.widget.CheckBox
 import com.example.horizonsystems.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
@@ -68,103 +65,60 @@ object ThemeUtils {
     fun applyThemeToView(view: View?) {
         if (view == null) return
         val context = view.context
-        
-        val themeColor = GymManager.getThemeColor(context)
-        val bgColor = GymManager.getBgColor(context)
-        val textColor = GymManager.getTextColor(context)
-        val iconColor = GymManager.getIconColor(context)
-        val surfaceColor = GymManager.getSurfaceColor(context)
+        val themeColorStr = GymManager.getThemeColor(context)
         
         try {
-            val palette = Palette(
-                main = Color.parseColor(themeColor),
-                bg = Color.parseColor(bgColor),
-                text = Color.parseColor(textColor),
-                icon = Color.parseColor(iconColor),
-                surface = Color.parseColor(surfaceColor)
-            )
+            val color = Color.parseColor(themeColorStr)
+            val colorStateList = ColorStateList.valueOf(color)
             
-            internalApplyTheme(view, palette)
+            internalApplyTheme(view, color, colorStateList)
         } catch (e: Exception) {
-            // Error parsing colors
+            // Error parsing color
         }
     }
 
-    private data class Palette(
-        val main: Int,
-        val bg: Int,
-        val text: Int,
-        val icon: Int,
-        val surface: Int
-    )
-
-    private fun internalApplyTheme(view: View, p: Palette) {
-        val colorListMain = ColorStateList.valueOf(p.main)
-        val colorListText = ColorStateList.valueOf(p.text)
-        val colorListIcon = ColorStateList.valueOf(p.icon)
-        val colorListSurface = ColorStateList.valueOf(p.surface)
-
+    private fun internalApplyTheme(view: View, color: Int, colorList: ColorStateList) {
         when (view) {
             is MaterialButton -> {
-                // Background usually uses Main, unless it's an outlined button
+                // If the button has a specific ID or style that should be branded
+                // Often we only want to tint filled buttons, not text buttons (unless specified)
                 if (view.backgroundTintList != null || view.id != View.NO_ID) {
-                    view.backgroundTintList = colorListMain
-                }
-                // Text color for buttons
-                if (view.currentTextColor == Color.WHITE || view.currentTextColor == Color.BLACK) {
-                     // Keep it as is or tint? Usually buttons have their own text color
+                     view.backgroundTintList = colorList
                 }
             }
             is FloatingActionButton -> {
-                view.backgroundTintList = colorListMain
+                view.backgroundTintList = colorList
             }
             is ProgressBar -> {
-                view.indeterminateTintList = colorListMain
-                view.progressTintList = colorListMain
-            }
-            is CompoundButton -> {
-                // CheckBox and RadioButton use Main for primary accents
-                view.buttonTintList = colorListMain
-            }
-            is Switch -> {
-                view.thumbTintList = colorListMain
-                view.trackTintList = ColorStateList.valueOf(p.main.adjustAlpha(0.3f))
+                view.indeterminateTintList = colorList
+                view.progressTintList = colorList
             }
             is TabLayout -> {
-                view.setSelectedTabIndicatorColor(p.main)
-                view.setTabTextColors(p.text.adjustAlpha(0.6f), p.main)
-            }
-            is TextView -> {
-                // Only tint general text if it's not already specialized (like titles)
-                // We typically tint labels or descriptive text
-                if (view.tag == "theme_text") {
-                    view.setTextColor(p.text)
-                }
+                view.setSelectedTabIndicatorColor(color)
+                view.setTabTextColors(Color.parseColor("#80FFFFFF"), color)
             }
             is ImageView -> {
-                // Tint icons specifically
-                if (view.tag == "theme_icon") {
-                    view.imageTintList = colorListIcon
-                } else if (view.tag == "theme_tint") {
-                    view.imageTintList = colorListMain
+                // Only tint if it's meant to be an icon (check if it has a specific tag or name)
+                if (view.tag == "theme_tint") {
+                    view.imageTintList = colorList
                 }
             }
-            is com.google.android.material.card.MaterialCardView -> {
-                if (view.tag == "theme_surface") {
-                    view.setCardBackgroundColor(colorListSurface)
-                }
-            }
-            else -> {
-                // For general views with surface tag (like LinearLayout input backgrounds)
-                if (view.tag == "theme_surface") {
-                    view.background?.setTint(p.surface)
-                }
+            is CheckBox -> {
+                val states = arrayOf(
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf(-android.R.attr.state_checked)
+                )
+                val colors = intArrayOf(
+                    color,
+                    Color.parseColor("#80FFFFFF")
+                )
+                view.buttonTintList = ColorStateList(states, colors)
             }
         }
 
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
-                internalApplyTheme(view.getChildAt(i), p)
+                internalApplyTheme(view.getChildAt(i), color, colorList)
             }
         }
     }

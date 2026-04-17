@@ -501,12 +501,6 @@ class RegisterActivity : AppCompatActivity() {
             findViewById<MaterialButton>(R.id.btnRegister)?.let { btn ->
                 btn.backgroundTintList = colorStateList
             }
-
-            // Explicitly tint action links
-            findViewById<TextView>(R.id.btnSignBack)?.setTextColor(color)
-
-            // Apply global theme traversal to catch any nested widgets
-            ThemeUtils.applyThemeToView(findViewById(android.R.id.content))
             
         } catch (e: Exception) {
             Log.e("RegisterActivity", "Error applying theme color: $themeColor", e)

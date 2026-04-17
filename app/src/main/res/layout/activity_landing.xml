@@ -71,7 +71,8 @@
                                 android:id="@+id/gymLogo"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:scaleType="centerCrop" />
+                                android:src="@drawable/horizon_logo"
+                                android:scaleType="centerInside" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <!-- Header Section -->
@@ -124,7 +125,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:background="@drawable/input_field_bg"
-                    android:tag="theme_surface"
                     android:gravity="center_vertical"
                     android:paddingHorizontal="20dp"
                     android:layout_marginBottom="24dp">
@@ -132,7 +132,6 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_profile"
-                        android:tag="theme_icon"
                         app:tint="#80FFFFFF" />
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/usernameEdit"
@@ -167,7 +166,6 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_lock_idle_lock"
-                        android:tag="theme_icon"
                         app:tint="#80FFFFFF" />
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/passwordEdit"
@@ -205,7 +203,7 @@
                         android:text="Remember Me"
                         android:textColor="#80FFFFFF"
                         android:textSize="13sp"
-                        android:buttonTint="@color/nav_active_color"
+                        android:buttonTint="#80FFFFFF"
                         android:fontFamily="sans-serif-medium" />
                     <TextView
                         android:id="@+id/btnForgotPassword"
@@ -281,6 +279,7 @@
                     app:iconTint="@color/nav_active_color"
                     app:iconGravity="textStart"
                     app:iconPadding="12dp"
+                    app:backgroundTint="@android:color/transparent"
                     android:fontFamily="sans-serif-medium" />
 
                 <!-- Footer -->

@@ -375,10 +375,7 @@ class LandingActivity : AppCompatActivity() {
                                 it.gymName ?: "Unknown",
                                 it.logoPath,
                                 it.themeColor,
-                                it.bgColor,
-                                it.textColor,
-                                it.iconColor,
-                                it.surfaceColor
+                                it.bgColor
                             )
                             updateUIWithBranding(it)
                             applyDynamicColors(it)
@@ -431,44 +428,40 @@ class LandingActivity : AppCompatActivity() {
             GymManager.loadLogo(this, it, gymLogo)
         }
     }
+
     private fun applyDynamicColors(themeColor: String) {
         try {
             val color = android.graphics.Color.parseColor(themeColor)
             val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
             val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
+            val rememberMe = findViewById<android.widget.CheckBox>(R.id.rememberMe)
+            val btnForgotPassword = findViewById<android.widget.TextView>(R.id.btnForgotPassword)
+            val btnCreateAccount = findViewById<android.widget.TextView>(R.id.btnCreateAccount)
 
             btnSignIn?.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
             btnSwitchGym?.iconTint = android.content.res.ColorStateList.valueOf(color)
+            btnSwitchGym?.rippleColor = android.content.res.ColorStateList.valueOf(color)
             
-            // Explicitly tint action links
-            findViewById<TextView>(R.id.btnForgotPassword)?.setTextColor(color)
-            findViewById<TextView>(R.id.btnCreateAccount)?.setTextColor(color)
-            
-            // Apply global theme traversal to catch checkboxes and other nested widgets
-            ThemeUtils.applyThemeToView(findViewById(R.id.rootLayout))
-            
+            btnForgotPassword?.setTextColor(color)
+            btnCreateAccount?.setTextColor(color)
         } catch (e: Exception) {
             Log.e("LandingActivity", "Error parsing color: $themeColor")
         }
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {
-        // Apply Main Theme Color
-        tenant.themeColor?.let { applyDynamicColors(it) }
-        
-        // Apply Background Color to Root Layouts
+        tenant.themeColor?.let {
+            applyDynamicColors(it)
+        }
         tenant.bgColor?.let {
             try {
                 val bg = android.graphics.Color.parseColor(it)
-                findViewById<android.view.View>(R.id.rootLayout)?.setBackgroundColor(bg)
-                findViewById<android.view.View>(R.id.loginScrollView)?.setBackgroundColor(bg)
+                findViewById<android.view.View>(R.id.rootLayout).setBackgroundColor(bg)
+                findViewById<android.view.View>(android.R.id.content).rootView.setBackgroundColor(bg)
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Invalid bg color: $it")
             }
         }
-
-        // Apply Text and Icon colors via global ThemeUtils traversal
-        ThemeUtils.applyThemeToView(findViewById(R.id.rootLayout))
     }
 
     private fun performLogin(username: String, password: String, isRetry: Boolean = false, forcedCookie: String? = null, forcedUA: String? = null) {

@@ -16,9 +16,6 @@ object GymManager {
     private const val KEY_GYM_LOGO = "selected_gym_logo"
     private const val KEY_THEME_COLOR = "selected_theme_color"
     private const val KEY_BG_COLOR = "selected_bg_color"
-    private const val KEY_TEXT_COLOR = "selected_text_color"
-    private const val KEY_ICON_COLOR = "selected_icon_color"
-    private const val KEY_SURFACE_COLOR = "selected_surface_color"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
     private const val KEY_REMEMBER_ME = "remember_me"
@@ -45,10 +42,7 @@ object GymManager {
         name: String, 
         logo: String? = null,
         themeColor: String? = null,
-        bgColor: String? = null,
-        textColor: String? = null,
-        iconColor: String? = null,
-        surfaceColor: String? = null
+        bgColor: String? = null
     ) {
         getPrefs(context).edit().apply {
             putString(KEY_GYM_SLUG, slug)
@@ -58,9 +52,6 @@ object GymManager {
             putString(KEY_GYM_LOGO, logo)
             putString(KEY_THEME_COLOR, themeColor)
             putString(KEY_BG_COLOR, bgColor)
-            putString(KEY_TEXT_COLOR, textColor)
-            putString(KEY_ICON_COLOR, iconColor)
-            putString(KEY_SURFACE_COLOR, surfaceColor)
         }.apply()
     }
 
@@ -105,19 +96,7 @@ object GymManager {
     }
 
     fun getBgColor(context: Context): String {
-        return getPrefs(context).getString(KEY_BG_COLOR, "#0d0d0d") ?: "#0d0d0d"
-    }
-
-    fun getTextColor(context: Context): String {
-        return getPrefs(context).getString(KEY_TEXT_COLOR, "#d1d5db") ?: "#d1d5db"
-    }
-
-    fun getIconColor(context: Context): String {
-        return getPrefs(context).getString(KEY_ICON_COLOR, "#a1a1aa") ?: "#a1a1aa"
-    }
-
-    fun getSurfaceColor(context: Context): String {
-        return getPrefs(context).getString(KEY_SURFACE_COLOR, "#141216") ?: "#141216"
+        return getPrefs(context).getString(KEY_BG_COLOR, "#0a090d") ?: "#0a090d"
     }
 
     fun saveLoginCredentials(context: Context, username: String, password: String) {
@@ -185,8 +164,8 @@ object GymManager {
         imageView.imageTintList = null
         imageView.setPadding(0, 0, 0, 0)
         
-        // Use standard FIT_CENTER for logos
-        imageView.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+        // Use standard CENTER_INSIDE for logos to ensure they fit without being cut off
+        imageView.scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
 
         val cookie = getBypassCookie(context)
         val ua = getBypassUA(context)
