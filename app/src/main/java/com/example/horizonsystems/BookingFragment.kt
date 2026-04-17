@@ -16,6 +16,8 @@ import com.example.horizonsystems.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class BookingFragment : Fragment() {
     private lateinit var adapter: TrainingLogAdapter
@@ -152,6 +154,8 @@ class BookingFragment : Fragment() {
         // Initial setup
         updateFilterButtons(btnAll, listOf(btnPending, btnApproved))
         fetchBookings(view)
+        
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }
@@ -194,7 +198,8 @@ class BookingFragment : Fragment() {
 
 
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton, inactives: List<com.google.android.material.button.MaterialButton>) {
-        active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7")))
+        val themeColor = GymManager.getThemeColor(requireContext())
+        active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(themeColor)))
         active.setTextColor(android.graphics.Color.WHITE)
         active.setStrokeWidth(0)
 

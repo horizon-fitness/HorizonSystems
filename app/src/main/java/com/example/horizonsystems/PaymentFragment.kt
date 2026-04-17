@@ -13,6 +13,8 @@ import com.example.horizonsystems.models.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class PaymentFragment : Fragment() {
     private lateinit var adapter: TransactionAdapter
@@ -71,6 +73,8 @@ class PaymentFragment : Fragment() {
         // Initial fetch
         fetchTransactions(view)
 
+        ThemeUtils.applyThemeToView(view)
+
         return view
     }
 
@@ -80,7 +84,8 @@ class PaymentFragment : Fragment() {
     }
 
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton, inactive: com.google.android.material.button.MaterialButton) {
-        active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A855F7")))
+        val themeColor = GymManager.getThemeColor(requireContext())
+        active.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(themeColor)))
         active.setTextColor(android.graphics.Color.WHITE)
         active.setStrokeWidth(0)
 

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Appointment
+import com.example.horizonsystems.utils.ThemeUtils
 
 class AppointmentFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -23,6 +24,8 @@ class AppointmentFragment : Fragment() {
 
         rvMeetingRequests.layoutManager = LinearLayoutManager(requireContext())
         rvMeetingRequests.adapter = AppointmentAdapter(sampleAppointments)
+
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }

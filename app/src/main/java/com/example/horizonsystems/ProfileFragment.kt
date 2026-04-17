@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.horizonsystems.utils.ThemeUtils
 
 class ProfileFragment : Fragment() {
 
@@ -15,6 +16,7 @@ class ProfileFragment : Fragment() {
         // Hide top notifications icon when on Profile screen
         (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
+        ThemeUtils.applyThemeToView(view)
         refreshUI()
 
         // Sign Out Logic

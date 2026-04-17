@@ -105,7 +105,16 @@ class SwitchGymActivity : AppCompatActivity() {
         // Disconnect button
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDisconnectGym)?.setOnClickListener {
             // Reset to global default (no gym)
-            GymManager.saveGymData(this, "horizon", 1, "000", "HORIZON SYSTEMS", null)
+            GymManager.saveGymData(
+                this, 
+                "horizon", 
+                1, 
+                "000", 
+                "HORIZON SYSTEMS", 
+                null,
+                "#8c2bee", // Default Purple
+                "#0a090d"  // Default Dark BG
+            )
             Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
             updateCurrentGymUI()
             // Card will auto-hide since isDefault becomes true
@@ -129,38 +138,8 @@ class SwitchGymActivity : AppCompatActivity() {
         gymNameTxt.text = currentName.uppercase()
         
         if (!currentLogo.isNullOrEmpty()) {
-            val baseUrl = "https://horizonfitnesscorp.gt.tc/"
-            val fullLogoUrl = when {
-                currentLogo.startsWith("http") -> currentLogo
-                currentLogo.startsWith("data:image") -> currentLogo
-                else -> baseUrl + currentLogo.removePrefix("../").removePrefix("/")
-            }
-            
-            // Premium fit for custom logos
-            gymLogoImg.imageTintList = null
-            val paddingPx = (6 * resources.displayMetrics.density).toInt()
-            gymLogoImg.setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
-            gymLogoImg.scaleType = ImageView.ScaleType.FIT_CENTER
-
-            // InfinityFree Security Bypass for Glide
-            val cookie = GymManager.getBypassCookie(this)
-            val ua = GymManager.getBypassUA(this)
-            
-            val glideUrl = if (cookie.isNotEmpty() && ua.isNotEmpty() && fullLogoUrl.startsWith("http")) {
-                com.bumptech.glide.load.model.GlideUrl(
-                    fullLogoUrl,
-                    com.bumptech.glide.load.model.LazyHeaders.Builder()
-                        .addHeader("Cookie", cookie)
-                        .addHeader("User-Agent", ua)
-                        .build()
-                )
-            } else {
-                fullLogoUrl
-            }
-
-            Glide.with(this)
-                .load(glideUrl)
-                .into(gymLogoImg)
+            GymManager.loadLogo(this, currentLogo, gymLogoImg)
+            applyDynamicColors()
         } else {
             gymLogoImg.setImageDrawable(null)
             gymLogoImg.setPadding(0, 0, 0, 0)
@@ -168,6 +147,19 @@ class SwitchGymActivity : AppCompatActivity() {
             gymLogoImg.imageTintList = android.content.res.ColorStateList.valueOf(
                 ContextCompat.getColor(this, R.color.white)
             )
+        }
+    }
+
+    private fun applyDynamicColors() {
+        val themeColor = GymManager.getThemeColor(this)
+        try {
+            val color = android.graphics.Color.parseColor(themeColor)
+            val colorStateList = android.content.res.ColorStateList.valueOf(color)
+            
+            findViewById<ImageView>(R.id.statusIcon)?.imageTintList = colorStateList
+            findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDisconnectGym)?.setTextColor(color)
+        } catch (e: Exception) {
+            Log.e("SwitchGymActivity", "Error applying theme color: $themeColor", e)
         }
     }
 
@@ -327,7 +319,9 @@ class SwitchGymActivity : AppCompatActivity() {
                                 tenant.gymId ?: 0,
                                 tenant.tenantCode ?: slug,
                                 tenant.gymName ?: "Gym",
-                                tenant.logoPath
+                                tenant.logoPath,
+                                tenant.themeColor,
+                                tenant.bgColor
                             )
                             Toast.makeText(this@SwitchGymActivity, "Connected to ${tenant.gymName ?: "Gym"}", Toast.LENGTH_SHORT).show()
                             updateCurrentGymUI()

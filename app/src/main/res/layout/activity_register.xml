@@ -45,6 +45,23 @@
                 app:tint="@color/white"
                 android:contentDescription="Back" />
 
+            <!-- Gym Logo Header -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gymLogoContainer"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1AFFFFFF"
+                app:cardCornerRadius="40dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:id="@+id/registerGymLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Header -->
             <TextView
                 android:id="@+id/registerTitle"
@@ -76,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="Step 1 of 4: Account Access"
-                android:textColor="@color/nav_active_color"
+                android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1"

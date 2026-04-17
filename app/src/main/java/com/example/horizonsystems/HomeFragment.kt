@@ -16,6 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,9 +43,8 @@ class HomeFragment : Fragment() {
         val profileCard = profilePic?.parent?.let { it.parent as? com.google.android.material.card.MaterialCardView }
         
         if (profileCard != null) {
-            val colors = listOf("#A855F7", "#7f13ec", "#5e0eb3", "#6366f1", "#4f46e5")
-            val colorIndex = Math.abs(userName.hashCode()) % colors.size
-            profileCard.setCardBackgroundColor(android.graphics.Color.parseColor(colors[colorIndex]))
+            val themeColor = GymManager.getThemeColor(requireContext())
+            profileCard.setCardBackgroundColor(android.graphics.Color.parseColor(themeColor))
             
             // Calculate Initials
             val initials = userName.trim().split(" ")
@@ -88,6 +89,8 @@ class HomeFragment : Fragment() {
 
         fetchActiveStatus(view)
         fetchUpcomingSession(view)
+        
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }
@@ -140,7 +143,8 @@ class HomeFragment : Fragment() {
                                 upcoming.time.substringBeforeLast(":") // Fallback
                             }
                             sessionStatus?.text = "${upcoming.service} at $timeFormatted ($dateLabel)"
-                            sessionStatus?.setTextColor(android.graphics.Color.parseColor("#A855F7"))
+                            val tColor = GymManager.getThemeColor(requireContext())
+                            sessionStatus?.setTextColor(android.graphics.Color.parseColor(tColor))
                         } else {
                             sessionStatus?.text = "No Active Bookings"
                             sessionStatus?.setTextColor(android.graphics.Color.WHITE)

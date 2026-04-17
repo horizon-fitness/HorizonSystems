@@ -12,6 +12,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.horizonsystems.utils.GymManager
+import com.example.horizonsystems.utils.ThemeUtils
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,8 +57,12 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // Apply Global Background Branding if provided
-        val bgColorStr = intent.getStringExtra("bg_color") ?: ""
+        // Apply Global Dynamic Branding
+        ThemeUtils.applyThemeToActivity(this)
+        ThemeUtils.applyThemeToBottomNav(bottomNavigationView)
+
+        // Apply Global Background Branding if provided (Migration: ThemeUtils handles better)
+        val bgColorStr = intent.getStringExtra("bg_color") ?: GymManager.getBgColor(this)
         if (bgColorStr.isNotEmpty()) {
             try {
                 val bgColor = android.graphics.Color.parseColor(bgColorStr)

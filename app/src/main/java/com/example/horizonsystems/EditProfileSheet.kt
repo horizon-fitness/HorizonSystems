@@ -13,6 +13,7 @@ import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.horizonsystems.utils.ThemeUtils
 
 class EditProfileSheet : BottomSheetDialogFragment() {
 
@@ -122,6 +123,8 @@ class EditProfileSheet : BottomSheetDialogFragment() {
             onSavedListener?.invoke()
             dismiss()
         }
+
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }

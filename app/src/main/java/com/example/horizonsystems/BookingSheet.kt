@@ -28,6 +28,8 @@ import android.widget.TextView
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class BookingSheet : BottomSheetDialogFragment() {
 
@@ -170,6 +172,9 @@ class BookingSheet : BottomSheetDialogFragment() {
         
         fetchServices(editService)
         updatePrice()
+        
+        ThemeUtils.applyThemeToView(view)
+
         return view
     }
 
@@ -181,8 +186,9 @@ class BookingSheet : BottomSheetDialogFragment() {
         txtTotalPrice.text = "₱%.2f".format(total)
         
         if (currentCoachFee > 0) {
+            val themeColor = GymManager.getThemeColor(requireContext())
             txtCoachFeeInfo.text = "+₱120.00 COACH FEE / HR"
-            txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor("#A855F7"))
+            txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor(themeColor))
         } else {
             txtCoachFeeInfo.text = "NO COACH FEE"
             txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor("#10B981"))

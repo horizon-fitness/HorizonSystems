@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Notification
+import com.example.horizonsystems.utils.ThemeUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class NotificationSheet : BottomSheetDialogFragment() {
@@ -34,6 +35,8 @@ class NotificationSheet : BottomSheetDialogFragment() {
             rvNotifications.visibility = View.VISIBLE
             rvNotifications.adapter = NotificationAdapter(notifications)
         }
+
+        ThemeUtils.applyThemeToView(view)
     }
 
     private fun getMockNotifications(): List<Notification> {

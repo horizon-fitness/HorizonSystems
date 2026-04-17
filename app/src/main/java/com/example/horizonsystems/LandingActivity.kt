@@ -240,7 +240,7 @@ class LandingActivity : AppCompatActivity() {
         if (!logoUrl.isNullOrEmpty()) {
             gymLogoContainer?.visibility = android.view.View.VISIBLE
             
-            val baseUrl = "https://horizonfitnesscorp.gt.tc/"
+            val baseUrl = "https://horizonfitnesscorp.gt.tc/horizon/"
             val fullLogoUrl = when {
                 logoUrl.startsWith("http") -> logoUrl
                 logoUrl.startsWith("data:image") -> logoUrl
@@ -367,7 +367,19 @@ class LandingActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         tenant?.let {
                             // Persist all data
-                            GymManager.saveGymData(this@LandingActivity, it.pageSlug ?: "default", it.gymId ?: 0, it.tenantCode ?: "000", it.gymName ?: "Unknown")
+                            GymManager.saveGymData(
+                                this@LandingActivity, 
+                                it.pageSlug ?: "default", 
+                                it.gymId ?: 0, 
+                                it.tenantCode ?: "000", 
+                                it.gymName ?: "Unknown",
+                                it.logoPath,
+                                it.themeColor,
+                                it.bgColor,
+                                it.textColor,
+                                it.iconColor,
+                                it.surfaceColor
+                            )
                             updateUIWithBranding(it)
                             applyDynamicColors(it)
                         }
@@ -396,8 +408,12 @@ class LandingActivity : AppCompatActivity() {
         tenantTitle.text = if (savedName == "HORIZON SYSTEMS" || savedName.isEmpty()) "HORIZON SYSTEMS" else savedName.uppercase()
         
         if (!savedLogo.isNullOrEmpty()) {
-            loadLogoIntoView(savedLogo, gymLogo)
+            GymManager.loadLogo(this, savedLogo, gymLogo)
         }
+        
+        // Pre-emptively apply the theme color from cache so it stays on restart
+        val savedColor = GymManager.getThemeColor(this)
+        applyDynamicColors(savedColor)
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
@@ -412,71 +428,47 @@ class LandingActivity : AppCompatActivity() {
         tenantTitle?.text = gymName.uppercase()
         
         tenant.logoPath?.let {
-            loadLogoIntoView(it, gymLogo)
+            GymManager.loadLogo(this, it, gymLogo)
         }
     }
-    
-    private fun loadLogoIntoView(logoPath: String, imageView: ImageView?) {
-        if (imageView == null) return
-        
-        val baseUrl = "https://horizonfitnesscorp.gt.tc/"
-        val fullLogoUrl = when {
-            logoPath.startsWith("http") -> logoPath
-            logoPath.startsWith("data:image") -> logoPath
-            else -> baseUrl + logoPath.removePrefix("../").removePrefix("/")
+    private fun applyDynamicColors(themeColor: String) {
+        try {
+            val color = android.graphics.Color.parseColor(themeColor)
+            val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
+            val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
+
+            btnSignIn?.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            btnSwitchGym?.iconTint = android.content.res.ColorStateList.valueOf(color)
+            
+            // Explicitly tint action links
+            findViewById<TextView>(R.id.btnForgotPassword)?.setTextColor(color)
+            findViewById<TextView>(R.id.btnCreateAccount)?.setTextColor(color)
+            
+            // Apply global theme traversal to catch checkboxes and other nested widgets
+            ThemeUtils.applyThemeToView(findViewById(R.id.rootLayout))
+            
+        } catch (e: Exception) {
+            Log.e("LandingActivity", "Error parsing color: $themeColor")
         }
-        
-        // Remove tint and set padding so real logo fits nicely inside the circle
-        imageView.imageTintList = null
-        val paddingPx = (8 * resources.displayMetrics.density).toInt()
-        imageView.setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
-        imageView.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-        
-        // InfinityFree Security Bypass for Glide
-        val cookie = GymManager.getBypassCookie(this)
-        val ua = GymManager.getBypassUA(this)
-        
-        val glideUrl = if (cookie.isNotEmpty() && ua.isNotEmpty() && fullLogoUrl.startsWith("http")) {
-            com.bumptech.glide.load.model.GlideUrl(
-                fullLogoUrl,
-                com.bumptech.glide.load.model.LazyHeaders.Builder()
-                    .addHeader("Cookie", cookie)
-                    .addHeader("User-Agent", ua)
-                    .build()
-            )
-        } else {
-            fullLogoUrl
-        }
-        
-        Glide.with(this)
-            .load(glideUrl)
-            .into(imageView)
     }
 
     private fun applyDynamicColors(tenant: TenantPage) {
-        tenant.themeColor?.let {
-            try {
-                val color = android.graphics.Color.parseColor(it)
-                val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
-                val gymLogo = findViewById<ImageView>(R.id.gymLogo)
-                val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
-
-                btnSignIn?.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
-                gymLogo?.imageTintList = android.content.res.ColorStateList.valueOf(color)
-                btnSwitchGym?.iconTint = android.content.res.ColorStateList.valueOf(color)
-            } catch (e: Exception) {
-                Log.e("LandingActivity", "Error parsing color: $it")
-            }
-        }
+        // Apply Main Theme Color
+        tenant.themeColor?.let { applyDynamicColors(it) }
+        
+        // Apply Background Color to Root Layouts
         tenant.bgColor?.let {
             try {
                 val bg = android.graphics.Color.parseColor(it)
-                findViewById<android.view.View>(R.id.rootLayout).setBackgroundColor(bg)
-                findViewById<android.view.View>(android.R.id.content).rootView.setBackgroundColor(bg)
+                findViewById<android.view.View>(R.id.rootLayout)?.setBackgroundColor(bg)
+                findViewById<android.view.View>(R.id.loginScrollView)?.setBackgroundColor(bg)
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Invalid bg color: $it")
             }
         }
+
+        // Apply Text and Icon colors via global ThemeUtils traversal
+        ThemeUtils.applyThemeToView(findViewById(R.id.rootLayout))
     }
 
     private fun performLogin(username: String, password: String, isRetry: Boolean = false, forcedCookie: String? = null, forcedUA: String? = null) {

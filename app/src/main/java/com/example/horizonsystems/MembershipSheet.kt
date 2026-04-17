@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import java.security.MessageDigest
+import com.example.horizonsystems.utils.ThemeUtils
 
 class MembershipSheet : BottomSheetDialogFragment() {
 
@@ -81,6 +82,8 @@ class MembershipSheet : BottomSheetDialogFragment() {
             Toast.makeText(requireContext(), "Processing...", Toast.LENGTH_SHORT).show()
             submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time))
         }
+
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }

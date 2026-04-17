@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputEditText
+import com.example.horizonsystems.utils.ThemeUtils
 
 class ChangePasswordSheet : BottomSheetDialogFragment() {
 
@@ -54,6 +55,8 @@ class ChangePasswordSheet : BottomSheetDialogFragment() {
             Toast.makeText(requireContext(), "Password updated. Try logging out and back in!", Toast.LENGTH_LONG).show()
             dismiss()
         }
+
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }

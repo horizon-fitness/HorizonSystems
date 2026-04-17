@@ -16,6 +16,8 @@ import com.example.horizonsystems.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class MembershipFragment : Fragment() {
     private lateinit var adapter: TransactionAdapter
@@ -54,6 +56,8 @@ class MembershipFragment : Fragment() {
         // Initial fetch
         fetchActiveMembership(view)
         fetchHistory()
+
+        ThemeUtils.applyThemeToView(view)
 
         return view
     }
@@ -177,10 +181,11 @@ class MembershipFragment : Fragment() {
     private fun updateFilter(filter: String, btnAll: View, btnPending: View, btnApproved: View) {
         currentFilter = filter
         
-        // UI Visual Update (Purple for Active, Semi-transparent for Inactive)
+        // UI Visual Update (Dynamic for Active, Semi-transparent for Inactive)
         val activeColor = android.graphics.Color.WHITE
         val inactiveColor = android.graphics.Color.parseColor("#94A3B8")
-        val activeBg = android.graphics.Color.parseColor("#A855F7")
+        val themeColor = GymManager.getThemeColor(requireContext())
+        val activeBg = android.graphics.Color.parseColor(themeColor)
         val inactiveBg = android.graphics.Color.parseColor("#1AFFFFFF")
 
         (btnAll as? com.google.android.material.button.MaterialButton)?.let {
