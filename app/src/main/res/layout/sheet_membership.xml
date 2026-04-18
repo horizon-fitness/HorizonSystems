@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootSheetContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/surface_dark"
+    android:background="@drawable/bg_bottom_sheet"
     android:orientation="vertical"
     android:padding="28dp">
 
@@ -38,8 +39,56 @@
         android:textAllCaps="true"
         android:letterSpacing="0.2" />
 
+    <!-- Payment Mode Selection -->
+    <TextView
+        android:id="@+id/tvPaymentModeHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="PAYMENT OPTION"
+        android:textColor="@color/text_secondary"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.15" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cgPaymentMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:singleSelection="true"
+        app:selectionRequired="true">
+        
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFullPayment"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Full Payment"
+            android:checked="true"
+            app:chipBackgroundColor="#1AFFFFFF"
+            app:chipStrokeColor="#33FFFFFF"
+            app:chipStrokeWidth="1dp"
+            android:textColor="@color/white"
+            android:textSize="11sp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipMonthlyPayment"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monthly Installment"
+            app:chipBackgroundColor="#1AFFFFFF"
+            app:chipStrokeColor="#33FFFFFF"
+            app:chipStrokeWidth="1dp"
+            android:textColor="@color/white"
+            android:textSize="11sp" />
+    </com.google.android.material.chip.ChipGroup>
+
     <!-- Summary Card -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -74,8 +123,9 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Terms Summary -->
+    <!-- Terms Summary Header -->
     <TextView
+        android:id="@+id/sheetTermsHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -87,8 +137,9 @@
         android:letterSpacing="0.2" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardTerms"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="160dp"
         android:layout_marginTop="12dp"
         app:cardBackgroundColor="#05FFFFFF"
         app:cardCornerRadius="16dp"
@@ -102,10 +153,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1. AUTHORIZATION: By clicking Confirm, you authorize the gym to process your payment for the selected membership.\n\n2. CANCELLATION: Memberships are non-refundable and non-transferable unless verified as a technical error.\n\n3. PROCESSING: Your status will remain 'Pending Approval' until the staff verifies the transaction receipt."
+                android:text="1. AUTHORIZATION: By confirming, you authorize the gym to charge the total amount displayed. For subscription plans, you authorize recurring charges until you manually cancel.\n\n2. BILLING &amp; RENEWAL: Your account will be charged automatically at the start of every billing period. Price changes will be announced via email at least 30 days prior.\n\n3. CANCELLATION &amp; REFUNDS: You can cancel anytime via the Dashboard. Access continues until the current period ends. All sales are final; refunds are only issued for technical errors.\n\n4. SECURITY: We do not store full payment credentials on our servers. All transactions are processed via secure, encrypted third-party gateways."
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
-                android:lineSpacingExtra="6dp" />
+                android:lineSpacingExtra="5dp"
+                android:fontFamily="sans-serif-medium" />
         </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>
 
@@ -115,11 +167,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="I have read and understood the summary and authorize this transaction."
-        android:textColor="@color/text_secondary"
+        android:text="I have read and understood the informative summary above and authorize this transaction."
+        android:textColor="#80FFFFFF"
         android:textSize="11sp"
-        android:buttonTint="#A855F7"
-        android:paddingStart="12dp" />
+        android:buttonTint="#80FFFFFF"
+        android:paddingStart="12dp"
+        android:fontFamily="sans-serif-medium" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnConfirmSheet"
@@ -141,15 +194,19 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCancelSheet"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="12dp"
         android:text="CANCEL TRANSACTION"
-        android:textColor="@color/text_secondary"
+        android:textColor="#EF4444"
         android:textSize="10sp"
         android:textStyle="bold"
         android:textAllCaps="true"
-        android:letterSpacing="0.15" />
+        android:letterSpacing="0.15"
+        app:strokeColor="#EF4444"
+        app:strokeWidth="1dp"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@android:color/transparent" />
 
 </LinearLayout>

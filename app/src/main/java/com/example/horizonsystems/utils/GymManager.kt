@@ -16,6 +16,8 @@ object GymManager {
     private const val KEY_GYM_LOGO = "selected_gym_logo"
     private const val KEY_THEME_COLOR = "selected_theme_color"
     private const val KEY_BG_COLOR = "selected_bg_color"
+    private const val KEY_CARD_COLOR = "selected_card_color"
+    private const val KEY_AUTO_CARD_THEME = "selected_auto_card_theme"
     private const val KEY_BYPASS_COOKIE = "bypass_cookie"
     private const val KEY_BYPASS_UA = "bypass_ua"
     private const val KEY_REMEMBER_ME = "remember_me"
@@ -42,7 +44,9 @@ object GymManager {
         name: String, 
         logo: String? = null,
         themeColor: String? = null,
-        bgColor: String? = null
+        bgColor: String? = null,
+        cardColor: String? = null,
+        autoCardTheme: String? = null
     ) {
         getPrefs(context).edit().apply {
             putString(KEY_GYM_SLUG, slug)
@@ -52,6 +56,23 @@ object GymManager {
             putString(KEY_GYM_LOGO, logo)
             putString(KEY_THEME_COLOR, themeColor)
             putString(KEY_BG_COLOR, bgColor)
+            putString(KEY_CARD_COLOR, cardColor)
+            putString(KEY_AUTO_CARD_THEME, autoCardTheme)
+        }.apply()
+    }
+
+    fun updateBranding(
+        context: Context,
+        themeColor: String?,
+        bgColor: String?,
+        cardColor: String?,
+        autoCardTheme: String?
+    ) {
+        getPrefs(context).edit().apply {
+            putString(KEY_THEME_COLOR, themeColor)
+            putString(KEY_BG_COLOR, bgColor)
+            putString(KEY_CARD_COLOR, cardColor)
+            putString(KEY_AUTO_CARD_THEME, autoCardTheme)
         }.apply()
     }
 
@@ -97,6 +118,14 @@ object GymManager {
 
     fun getBgColor(context: Context): String {
         return getPrefs(context).getString(KEY_BG_COLOR, "#0a090d") ?: "#0a090d"
+    }
+
+    fun getCardColor(context: Context): String {
+        return getPrefs(context).getString(KEY_CARD_COLOR, "#141216") ?: "#141216"
+    }
+
+    fun getAutoCardTheme(context: Context): String {
+        return getPrefs(context).getString(KEY_AUTO_CARD_THEME, "1") ?: "1"
     }
 
     fun saveLoginCredentials(context: Context, username: String, password: String) {

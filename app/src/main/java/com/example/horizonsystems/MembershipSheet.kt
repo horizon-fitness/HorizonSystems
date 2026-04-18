@@ -83,6 +83,28 @@ class MembershipSheet : BottomSheetDialogFragment() {
         
         val btnConfirm = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConfirmSheet)
         val cbAgreement = view.findViewById<android.widget.CheckBox>(R.id.cbAgreement)
+        val cgPaymentMode = view.findViewById<com.google.android.material.chip.ChipGroup>(R.id.cgPaymentMode)
+        val chipMonthly = view.findViewById<com.google.android.material.chip.Chip>(R.id.chipMonthlyPayment)
+        val tvPaymentModeHeader = view.findViewById<View>(R.id.tvPaymentModeHeader)
+        val tvPrice = view.findViewById<TextView>(R.id.sheetPrice)
+
+        // Rule: No monthly installments for 1-month plans (<= 30 days)
+        if (durationDays <= 30) {
+            chipMonthly?.visibility = View.GONE
+            cgPaymentMode?.visibility = View.GONE
+            tvPaymentModeHeader?.visibility = View.GONE
+        }
+
+        cgPaymentMode?.setOnCheckedStateChangeListener { _, checkedIds ->
+            val formatter = java.text.NumberFormat.getInstance(java.util.Locale.US)
+            if (checkedIds.contains(R.id.chipMonthlyPayment)) {
+                val months = (durationDays / 30).coerceAtLeast(1)
+                val monthlyPrice = price / months
+                tvPrice?.text = "₱${formatter.format(monthlyPrice)} / mo"
+            } else {
+                tvPrice?.text = "₱${formatter.format(price)}"
+            }
+        }
 
         cbAgreement?.setOnCheckedChangeListener { _, isChecked ->
             btnConfirm?.isEnabled = isChecked
@@ -94,7 +116,8 @@ class MembershipSheet : BottomSheetDialogFragment() {
         btnConfirm?.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
             Toast.makeText(ctx, "Processing Payment...", Toast.LENGTH_SHORT).show()
-            submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time))
+            val selectedMode = if (cgPaymentMode?.checkedChipId == R.id.chipMonthlyPayment) "Monthly" else "Full"
+            submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time), selectedMode)
         }
 
         applyBranding(view)
@@ -102,24 +125,78 @@ class MembershipSheet : BottomSheetDialogFragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Ensure the dialog's window background is transparent so rounded corners of bg_bottom_sheet show
+        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
+            it.setBackgroundResource(android.R.color.transparent)
+        }
+    }
+
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(ctx)
+        val cardColorStr = com.example.horizonsystems.utils.GymManager.getCardColor(ctx)
+        val isAutoCard = com.example.horizonsystems.utils.GymManager.getAutoCardTheme(ctx) == "1"
+
         if (!themeColorStr.isNullOrEmpty()) {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
-                view.findViewById<TextView>(R.id.sheetPlanName)?.setTextColor(themeColor)
-                view.findViewById<android.widget.CheckBox>(R.id.cbAgreement)?.buttonTintList = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
                 
+                // 1. Text Accents
+                view.findViewById<TextView>(R.id.sheetPlanName)?.setTextColor(themeColor)
+                view.findViewById<TextView>(R.id.sheetTermsHeader)?.setTextColor(themeColor)
+                
+                // 2. Agreement Checkbox Tint (Semi-transparent white per user request)
+                view.findViewById<android.widget.CheckBox>(R.id.cbAgreement)?.buttonTintList = 
+                    android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#80FFFFFF"))
+                
+                // 3. Confirm Button Branding
                 val btnConfirm = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConfirmSheet)
                 btnConfirm?.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
-            } catch (e: Exception) {}
+                btnConfirm?.iconTint = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+
+                // 4. Card Appearance Synchronization
+                val cardColor = if (isAutoCard) {
+                    // Replicate web logic: themeColor with 5% alpha (0x0D in hex)
+                    val r = android.graphics.Color.red(themeColor)
+                    val g = android.graphics.Color.green(themeColor)
+                    val b = android.graphics.Color.blue(themeColor)
+                    android.graphics.Color.argb(13, r, g, b) // 13 is ~5% alpha
+                } else {
+                    android.graphics.Color.parseColor(cardColorStr)
+                }
+
+                // 4a. Apply to Root Modal Background
+                view.findViewById<android.widget.LinearLayout>(R.id.rootSheetContainer)?.let { root ->
+                    val shape = android.graphics.drawable.GradientDrawable()
+                    shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                    shape.setColor(cardColor)
+                    val radius = (28 * ctx.resources.displayMetrics.density)
+                    shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+                    root.background = shape
+                }
+
+                // 4b. Apply to Internal Summary Cards
+                val cardSummary = view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardSummary)
+                val cardTerms = view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardTerms)
+                
+                cardSummary?.setCardBackgroundColor(cardColor)
+                cardTerms?.setCardBackgroundColor(cardColor)
+                
+                // Subtle stroke update to match the card color if not auto
+                if (!isAutoCard) {
+                    cardSummary?.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
+                    cardTerms?.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
+                }
+            } catch (e: Exception) {
+                Log.e("MembershipSheet", "Branding Error: ${e.message}")
+            }
         }
     }
 
 
-    private fun submitSubscription(start: String, end: String) {
+    private fun submitSubscription(start: String, end: String, mode: String = "Full") {
         val ctx = context ?: return
         val intent = activity?.intent
         val userEmail = intent?.getStringExtra("email") ?: "customer@horizonsystems.com"
@@ -142,6 +219,7 @@ class MembershipSheet : BottomSheetDialogFragment() {
 
         val baseUrl = "https://horizonfitnesscorp.gt.tc/api"
         val successUrl = "$baseUrl/payment_success_redirect.php?plan_id=$planId&amount=$amountDecimal&gym_id=$gymId&user_id=$userId&sig=$sig"
+        val gymName = com.example.horizonsystems.utils.GymManager.getGymName(ctx)
 
         val checkoutRequest = CheckoutSessionRequest(
             data = CheckoutData(
@@ -153,8 +231,8 @@ class MembershipSheet : BottomSheetDialogFragment() {
                         email = userEmail,
                         phone = userPhone
                     ),
-                    lineItems = listOf(LineItem(amount = amountCentavos, name = planName)),
-                    description = "Membership Subscription: $planName"
+                    lineItems = listOf(LineItem(amount = amountCentavos, name = "$planName @ $gymName")),
+                    description = "$gymName - Membership Subscription: $planName ($mode Payment)"
                 )
             )
         )

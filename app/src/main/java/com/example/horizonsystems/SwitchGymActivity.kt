@@ -147,7 +147,9 @@ class SwitchGymActivity : AppCompatActivity() {
                         "HORIZON SYSTEMS", 
                         null,
                         "#7f13ec", // Specific Brand Purple
-                        "#0a090d"  // Default Dark BG
+                        "#0a090d",  // Default Dark BG
+                        "#141216",
+                        "1"
                     )
                     Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
                     updateCurrentGymUI()
@@ -371,7 +373,9 @@ class SwitchGymActivity : AppCompatActivity() {
                                 tenant.gymName ?: "Gym",
                                 tenant.logoPath,
                                 tenant.themeColor,
-                                tenant.bgColor
+                                tenant.bgColor,
+                                tenant.cardColor,
+                                tenant.autoCardTheme
                             )
                             updateCurrentGymUI()
                             

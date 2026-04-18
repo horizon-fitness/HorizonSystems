@@ -17,6 +17,7 @@ import java.util.Locale
 
 class PlanAdapter(
     private val plans: List<MembershipPlan>,
+    private val canPurchase: Boolean = true,
     private val onPlanSelected: (MembershipPlan) -> Unit
 ) : RecyclerView.Adapter<PlanAdapter.PlanViewHolder>() {
 
@@ -49,6 +50,20 @@ class PlanAdapter(
         val formatter = NumberFormat.getInstance(Locale.US)
         holder.tvPlanPrice.text = formatter.format(plan.price)
 
+        // Card Appearance Synchronization
+        val cardColorStr = GymManager.getCardColor(context)
+        val isAutoCard = GymManager.getAutoCardTheme(context) == "1"
+        
+        val cardColor = if (isAutoCard) {
+            // Replicate web logic: themeColor with 5% alpha
+            val r = Color.red(themeColor)
+            val g = Color.green(themeColor)
+            val b = Color.blue(themeColor)
+            Color.argb(13, r, g, b)
+        } else {
+            try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
+        }
+
         // Featured Card Styling (No Scaling to prevent clipping & ensure mobile feel)
         if (!plan.badgeText.isNullOrEmpty()) {
             holder.tvPlanBadge.text = plan.badgeText
@@ -58,14 +73,13 @@ class PlanAdapter(
             holder.cardPlan.setStrokeColor(ColorStateList.valueOf(themeColor))
             holder.cardPlan.setStrokeWidth(4) // Thicker border for featured
             
-            // Subtle primary background tint (5% alpha)
-            val tintColor = Color.argb(13, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor))
-            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(tintColor))
+            // For featured cards, we still use the synchronized background
+            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
         } else {
             holder.tvPlanBadge.visibility = View.GONE
             holder.cardPlan.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
             holder.cardPlan.setStrokeWidth(2)
-            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(Color.parseColor("#0D0D10")))
+            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
         }
 
         // Branding
@@ -94,26 +108,44 @@ class PlanAdapter(
             holder.layoutFeatures.addView(tvFeature)
         }
 
-        holder.btnChoosePlan.setOnClickListener { onPlanSelected(plan) }
+        holder.btnChoosePlan.setOnClickListener { 
+            if (canPurchase) onPlanSelected(plan) 
+        }
         
+        if (!canPurchase) {
+            holder.btnChoosePlan.isEnabled = false
+            holder.btnChoosePlan.text = "PLAN ALREADY ACTIVE"
+            holder.btnChoosePlan.alpha = 0.5f
+            holder.btnChoosePlan.setIconResource(0) // Hide icon
+        } else {
+            holder.btnChoosePlan.isEnabled = true
+            holder.btnChoosePlan.alpha = 1.0f
+            holder.btnChoosePlan.text = "SELECT THIS PLAN"
+            holder.btnChoosePlan.setIconResource(R.drawable.ic_check_circle)
+        }
+
         // Button Hover/Click Effect Simulation via State
         holder.btnChoosePlan.setIconTint(ColorStateList.valueOf(themeColor))
-        holder.btnChoosePlan.setOnTouchListener { v, event ->
-            when (event.action) {
-                android.view.MotionEvent.ACTION_DOWN -> {
-                    v.setBackgroundColor(themeColor)
-                    (v as MaterialButton).setIconTint(ColorStateList.valueOf(Color.WHITE))
-                    v.setStrokeColor(ColorStateList.valueOf(themeColor))
-                    v.setTextColor(Color.WHITE)
+        if (canPurchase) {
+            holder.btnChoosePlan.setOnTouchListener { v, event ->
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        v.setBackgroundColor(themeColor)
+                        (v as MaterialButton).setIconTint(ColorStateList.valueOf(Color.WHITE))
+                        v.setStrokeColor(ColorStateList.valueOf(themeColor))
+                        v.setTextColor(Color.WHITE)
+                    }
+                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                        v.setBackgroundColor(Color.parseColor("#1AFFFFFF"))
+                        (v as MaterialButton).setIconTint(ColorStateList.valueOf(themeColor))
+                        v.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
+                        v.setTextColor(Color.WHITE)
+                    }
                 }
-                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
-                    v.setBackgroundColor(Color.parseColor("#1AFFFFFF"))
-                    (v as MaterialButton).setIconTint(ColorStateList.valueOf(themeColor))
-                    v.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
-                    v.setTextColor(Color.WHITE)
-                }
+                false
             }
-            false
+        } else {
+            holder.btnChoosePlan.setOnTouchListener(null)
         }
     }
 

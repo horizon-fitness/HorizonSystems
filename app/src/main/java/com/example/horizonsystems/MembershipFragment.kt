@@ -59,83 +59,112 @@ class MembershipFragment : Fragment() {
         // Fetch dynamic plans
         fetchMembershipPlans(view)
 
-        // Initial fetch
-        fetchActiveMembership(view)
-        fetchHistory()
+        // Fetch Initial State
+        fetchData(view)
 
         ThemeUtils.applyThemeToView(view)
 
         return view
     }
 
-    private fun fetchActiveMembership(root: View) {
-        val loader = root.findViewById<View>(R.id.membershipLoading)
-        val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
-        val selectionHeader = root.findViewById<View>(R.id.layoutPlanSelectionHeader)
-        val rvPlanSelection = root.findViewById<View>(R.id.rvPlanSelection)
+    private var hasActivePlan = false
 
-        // Reset state (Safe Access)
-        loader?.visibility = View.VISIBLE
-        cardActive?.visibility = View.GONE
-        selectionHeader?.visibility = View.GONE
-        rvPlanSelection?.visibility = View.GONE
-
+    private fun fetchData(root: View) {
         val ctx = context ?: return
         val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
-        if (userId == -1) {
-            loader?.visibility = View.GONE
-            selectionHeader?.visibility = View.VISIBLE
-            rvPlanSelection?.visibility = View.VISIBLE
-            return
-        }
-
+        
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
-                val response = api.getActiveMembership(userId)
+                
+                // 1. Fetch Latest Branding (Hot Refresh)
+                val slug = com.example.horizonsystems.utils.GymManager.getGymSlug(ctx)
+                val tenantResponse = api.getTenantInfo(slug)
+                
+                // 2. Fetch Active State
+                val activeResponse = api.getActiveMembership(userId)
+                
                 withContext(Dispatchers.Main) {
-                    loader?.visibility = View.GONE
-                    if (response.isSuccessful && response.body()?.success == true) {
-                        val active = response.body()!!
-
-                        // Show active card (Safe Access)
-                        root.findViewById<TextView>(R.id.tvActivePlanName)?.text = active.planName ?: "Plan"
-                        val tvStatus = root.findViewById<TextView>(R.id.tvActivePlanStatus)
-                        val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
-                        val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
-                        
-                        if (active.subscriptionStatus == "Pending Approval") {
-                            tvStatus?.text = "(Pending Approval)"
-                            tvStatus?.visibility = View.VISIBLE
-                            tvDuration?.text = "Awaiting Staff Verification"
-                            tvRemaining?.text = "Payment verified by PayMongo"
-                        } else {
-                            tvStatus?.visibility = View.GONE
-                            tvDuration?.text = "Until: ${active.formattedEnd ?: "N/A"}"
-                            tvRemaining?.text = "${active.daysRemaining ?: 0} Days Remaining"
-                        }
-
-                        cardActive?.visibility = View.VISIBLE
-                        selectionHeader?.visibility = View.GONE
-                        rvPlanSelection?.visibility = View.GONE
-                    } else {
-                        cardActive?.visibility = View.GONE
-                        selectionHeader?.visibility = View.VISIBLE
-                        rvPlanSelection?.visibility = View.VISIBLE
+                    // Update branding in background so it's ready for applyBranding
+                    if (tenantResponse.isSuccessful) {
+                        val tenant = tenantResponse.body()
+                        com.example.horizonsystems.utils.GymManager.updateBranding(
+                            ctx,
+                            tenant?.themeColor,
+                            tenant?.bgColor,
+                            tenant?.cardColor,
+                            tenant?.autoCardTheme
+                        )
                     }
+
+                    val active = activeResponse.body()
+                    hasActivePlan = activeResponse.isSuccessful && active?.success == true && (active.subscriptionStatus == "Active" || active.subscriptionStatus == "Pending Approval")
+                    
+                    applyBranding(root) // Recalculate and apply colors immediately
+                    updateActiveCardUI(root, active)
+                    fetchMembershipPlans(root)
+                    fetchHistory()
                 }
             } catch (e: Exception) {
-                Log.e("MembershipFragment", "Active Fetch Error: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    loader?.visibility = View.GONE
-                    cardActive?.visibility = View.GONE
-                    selectionHeader?.visibility = View.VISIBLE
-                    rvPlanSelection?.visibility = View.VISIBLE
-                }
+                Log.e("MembershipFragment", "Fetch Error: ${e.message}")
             }
         }
+    }
+
+    private fun updateActiveCardUI(root: View, active: com.example.horizonsystems.models.ActiveMembershipResponse?) {
+        val loader = root.findViewById<View>(R.id.membershipLoading)
+        val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
+        val selectionHeader = root.findViewById<View>(R.id.layoutPlanSelectionHeader)
+        val rvPlanSelection = root.findViewById<View>(R.id.rvPlanSelection)
+
+        loader?.visibility = View.GONE
+        
+        if (active != null && active.success == true) {
+            root.findViewById<TextView>(R.id.tvActivePlanName)?.text = active.planName ?: "Plan"
+            val tvStatus = root.findViewById<TextView>(R.id.tvActivePlanStatus)
+            val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
+            val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
+            
+            if (active.subscriptionStatus == "Pending Approval") {
+                tvStatus?.text = "(Pending Approval)"
+                tvStatus?.visibility = View.VISIBLE
+                tvDuration?.text = "Awaiting Staff Verification"
+                tvRemaining?.text = "Payment verified by PayMongo"
+            } else {
+                tvStatus?.visibility = View.GONE
+                tvDuration?.text = "Until: ${active.formattedEnd ?: "N/A"}"
+                tvRemaining?.text = "${active.daysRemaining ?: 0} Days Remaining"
+            }
+
+            cardActive?.visibility = View.VISIBLE
+            
+            // Apply Sync Card Color
+            val ctx = root.context
+            val themeColorStr = GymManager.getThemeColor(ctx)
+            val cardColorStr = GymManager.getCardColor(ctx)
+            val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
+            
+            if (!themeColorStr.isNullOrEmpty()) {
+                val themeColor = Color.parseColor(themeColorStr)
+                val cardColor = if (isAutoCard) {
+                    val r = Color.red(themeColor)
+                    val g = Color.green(themeColor)
+                    val b = Color.blue(themeColor)
+                    Color.argb(13, r, g, b)
+                } else {
+                    try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
+                }
+                cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+            }
+        } else {
+            cardActive?.visibility = View.GONE
+        }
+
+        // Always show these now
+        selectionHeader?.visibility = View.VISIBLE
+        rvPlanSelection?.visibility = View.VISIBLE
     }
 
     private fun fetchMembershipPlans(root: View) {
@@ -153,7 +182,7 @@ class MembershipFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val plans = response.body()!!
-                        val planAdapter = PlanAdapter(plans) { plan ->
+                        val planAdapter = PlanAdapter(plans, !hasActivePlan) { plan ->
                             showConfirmationSheet(plan.id, plan.name, plan.price, plan.durationDays)
                         }
                         rvPlanSelection.adapter = planAdapter
@@ -168,8 +197,7 @@ class MembershipFragment : Fragment() {
     private fun showConfirmationSheet(id: Int, name: String, price: Double, days: Int) {
         val sheet = MembershipSheet.newInstance(id, name, price, days)
         sheet.onSubscriptionCreated = {
-            view?.let { fetchActiveMembership(it) }
-            fetchHistory()
+            view?.let { fetchData(it) }
         }
         sheet.show(parentFragmentManager, "membership_sheet")
     }
@@ -224,9 +252,23 @@ class MembershipFragment : Fragment() {
                 view.findViewById<ProgressBar>(R.id.membershipLoading)?.indeterminateTintList = 
                     ColorStateList.valueOf(themeColor)
                 
-                // 3. Days Remaining Accent & Active Card Stroke
+                // 3. Days Remaining Accent & Active Card Stroke/Surface
                 view.findViewById<TextView>(R.id.tvDaysRemaining)?.setTextColor(themeColor)
-                view.findViewById<MaterialCardView>(R.id.cardActiveMembership)?.setStrokeColor(themeColor)
+                val cardActive = view.findViewById<MaterialCardView>(R.id.cardActiveMembership)
+                cardActive?.setStrokeColor(themeColor)
+                
+                // Active Card Surface Sync
+                val cardColorStr = GymManager.getCardColor(ctx)
+                val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
+                val cardColor = if (isAutoCard) {
+                    val r = Color.red(themeColor)
+                    val g = Color.green(themeColor)
+                    val b = Color.blue(themeColor)
+                    Color.argb(13, r, g, b)
+                } else {
+                    try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
+                }
+                cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
 
                 // 4. Initial filter state
                 val btnAll = view.findViewById<View>(R.id.btnFilterAll)

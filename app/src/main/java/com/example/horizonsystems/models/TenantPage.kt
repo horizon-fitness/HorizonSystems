@@ -13,6 +13,8 @@ data class TenantPage(
     @SerializedName("bg_color") val bgColor: String?,
     @SerializedName("font_family") val fontFamily: String?,
     @SerializedName("about_text") val aboutText: String?,
+    @SerializedName("card_color") val cardColor: String?,
+    @SerializedName("auto_card_theme") val autoCardTheme: String?,
 
     @SerializedName("contact_text") val contactText: String?,
     @SerializedName("app_download_link") val appDownloadLink: String?,

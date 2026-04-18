@@ -370,7 +370,9 @@ class LandingActivity : AppCompatActivity() {
                                     it.gymName ?: "Unknown",
                                     it.logoPath,
                                     it.themeColor,
-                                    it.bgColor
+                                    it.bgColor,
+                                    it.cardColor,
+                                    it.autoCardTheme
                                 )
                                 updateUIWithBranding(it)
                                 applyDynamicColors(it)
@@ -404,7 +406,8 @@ class LandingActivity : AppCompatActivity() {
         GymManager.saveGymData(
             this,
             "horizon", 1, "000", "HORIZON SYSTEMS",
-            "assests/horizon logo.png", "#8c2bee", "#0a090d"
+            "assests/horizon logo.png", "#8c2bee", "#0a090d",
+            "#141216", "1"
         )
         // 3. Refresh UI to default
         prefillUIFromCache()
