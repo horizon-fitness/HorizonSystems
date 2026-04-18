@@ -181,8 +181,62 @@ class BookingSheet : BottomSheetDialogFragment() {
         updatePrice()
         
         ThemeUtils.applyThemeToView(view)
+        applyBranding(view)
 
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
+            it.setBackgroundResource(android.R.color.transparent)
+        }
+    }
+
+    private fun applyBranding(view: View) {
+        val ctx = context ?: return
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        val cardColorStr = GymManager.getCardColor(ctx)
+        val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
+
+        try {
+            val themeColor = if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
+            
+            // 1. Titles & Buttons
+            view.findViewById<TextView>(R.id.sheetSubTitle)?.setTextColor(themeColor)
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSubmitBooking)?.let {
+                it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+            }
+
+            // 2. Card Appearance Synchronization
+            val cardColor = if (isAutoCard) {
+                val r = android.graphics.Color.red(themeColor)
+                val g = android.graphics.Color.green(themeColor)
+                val b = android.graphics.Color.blue(themeColor)
+                android.graphics.Color.argb(13, r, g, b) 
+            } else {
+                try { android.graphics.Color.parseColor(cardColorStr) } catch(e: Exception) { android.graphics.Color.parseColor("#141216") }
+            }
+
+            // 2a. Apply to Root Modal Background
+            view.findViewById<android.widget.LinearLayout>(R.id.rootSheetContainer)?.let { root ->
+                val shape = android.graphics.drawable.GradientDrawable()
+                shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                shape.setColor(cardColor)
+                val radius = (28 * ctx.resources.displayMetrics.density)
+                shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+                root.background = shape
+            }
+
+            // 2b. Apply to internal card
+            view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardPriceSummary)?.apply {
+                setCardBackgroundColor(cardColor)
+                setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
+            }
+
+        } catch (e: Exception) {
+            Log.e("BookingSheet", "Branding Error: ${e.message}")
+        }
     }
 
     private fun updatePrice() {
@@ -192,12 +246,12 @@ class BookingSheet : BottomSheetDialogFragment() {
         val total = (currentBasePrice + currentCoachFee) * hours
         if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "₱%.2f".format(total)
         
+        val themeColorStr = context?.let { GymManager.getThemeColor(it) }
+        val themeColor = try {
+            if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
+        } catch (e: Exception) { android.graphics.Color.parseColor("#8c2bee") }
+
         if (currentCoachFee > 0) {
-            val themeColorStr = context?.let { GymManager.getThemeColor(it) }
-            val themeColor = try {
-                if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#A855F7")
-            } catch (e: Exception) { android.graphics.Color.parseColor("#A855F7") }
-            
             if (::txtCoachFeeInfo.isInitialized) {
                 txtCoachFeeInfo.text = "+₱120.00 COACH FEE / HR"
                 txtCoachFeeInfo.setTextColor(themeColor)

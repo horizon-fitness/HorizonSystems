@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -22,132 +23,98 @@ class PlanAdapter(
 ) : RecyclerView.Adapter<PlanAdapter.PlanViewHolder>() {
 
     class PlanViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val cardPlan: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardPlan)
-        val tvPlanName: TextView = view.findViewById(R.id.tvPlanName)
-        val tvBillingCycle: TextView = view.findViewById(R.id.tvBillingCycle)
-        val tvPlanPrice: TextView = view.findViewById(R.id.tvPlanPrice)
-        val layoutFeatures: LinearLayout = view.findViewById(R.id.layoutPlanFeatures)
-        val btnChoosePlan: MaterialButton = view.findViewById(R.id.btnChoosePlan)
-        val planDivider: View = view.findViewById(R.id.planDivider)
-        val tvPlanBadge: TextView = view.findViewById(R.id.tvPlanBadge)
+        val cardHomePlan: MaterialCardView = view.findViewById(R.id.cardHomePlan)
+        val cvHomePlanBadge: MaterialCardView = view.findViewById(R.id.cvHomePlanBadge)
+        val tvHomePlanBadge: TextView = view.findViewById(R.id.tvHomePlanBadge)
+        val tvHomePlanName: TextView = view.findViewById(R.id.tvHomePlanName)
+        val tvHomePlanPrice: TextView = view.findViewById(R.id.tvHomePlanPrice)
+        val tvHomePlanCycle: TextView = view.findViewById(R.id.tvHomePlanCycle)
+        val tvHomePlanDesc: TextView = view.findViewById(R.id.tvHomePlanDesc)
+        val layoutFeatures: LinearLayout = view.findViewById(R.id.layoutHomePlanFeatures)
+        val btnSelectPlan: MaterialButton = view.findViewById(R.id.btnHomeSelectPlan)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlanViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_membership_plan, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_plan_horizontal, parent, false)
         return PlanViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PlanViewHolder, position: Int) {
         val plan = plans[position]
         val context = holder.itemView.context
-        val themeColorStr = GymManager.getThemeColor(context)
-        val themeColor = try { Color.parseColor(themeColorStr) } catch (e: Exception) { Color.parseColor("#A855F7") }
-
-        holder.tvPlanName.text = plan.name
-        holder.tvBillingCycle.text = plan.billingCycle ?: "Recurring Billing"
-        holder.tvBillingCycle.setTextColor(themeColor)
         
-        val formatter = NumberFormat.getInstance(Locale.US)
-        holder.tvPlanPrice.text = formatter.format(plan.price)
-
-        // Card Appearance Synchronization
+        // Dynamic Branding Fetch
+        val themeColorStr = GymManager.getThemeColor(context)
+        val iconColorStr = GymManager.getIconColor(context)
+        val textColorStr = GymManager.getTextColor(context)
         val cardColorStr = GymManager.getCardColor(context)
         val isAutoCard = GymManager.getAutoCardTheme(context) == "1"
+
+        val themeColor = try { Color.parseColor(themeColorStr) } catch (e: Exception) { Color.parseColor("#8c2bee") }
+        val iconColor = try { Color.parseColor(iconColorStr) } catch (e: Exception) { Color.parseColor("#A1A1AA") }
+        val textColor = try { Color.parseColor(textColorStr) } catch (e: Exception) { Color.parseColor("#D1D5DB") }
         
-        val cardColor = if (isAutoCard) {
-            // Replicate web logic: themeColor with 5% alpha
-            val r = Color.red(themeColor)
-            val g = Color.green(themeColor)
-            val b = Color.blue(themeColor)
-            Color.argb(13, r, g, b)
+        val cardSurface = if (isAutoCard) {
+            Color.argb(13, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor))
         } else {
-            try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
+            try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#141216") }
         }
 
-        // Featured Card Styling (No Scaling to prevent clipping & ensure mobile feel)
+        // 1. Surfacing
+        holder.cardHomePlan.setCardBackgroundColor(cardSurface)
+        holder.cardHomePlan.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))
+
+        // 2. Plan Info
+        holder.tvHomePlanName.text = plan.name
+        holder.tvHomePlanPrice.text = NumberFormat.getInstance(Locale.US).format(plan.price)
+        holder.tvHomePlanCycle.text = plan.billingCycle ?: "/term"
+        holder.tvHomePlanDesc.text = plan.description ?: "Unlock premium gym access."
+        
+        // 3. Badge Logic
         if (!plan.badgeText.isNullOrEmpty()) {
-            holder.tvPlanBadge.text = plan.badgeText
-            holder.tvPlanBadge.visibility = View.VISIBLE
-            holder.tvPlanBadge.setBackgroundTintList(ColorStateList.valueOf(themeColor))
-            
-            holder.cardPlan.setStrokeColor(ColorStateList.valueOf(themeColor))
-            holder.cardPlan.setStrokeWidth(4) // Thicker border for featured
-            
-            // For featured cards, we still use the synchronized background
-            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+            holder.cvHomePlanBadge.visibility = View.VISIBLE
+            holder.tvHomePlanBadge.text = plan.badgeText
+            holder.cvHomePlanBadge.setCardBackgroundColor(ColorStateList.valueOf(themeColor).withAlpha(40))
         } else {
-            holder.tvPlanBadge.visibility = View.GONE
-            holder.cardPlan.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
-            holder.cardPlan.setStrokeWidth(2)
-            holder.cardPlan.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+            holder.cvHomePlanBadge.visibility = View.GONE
         }
 
-        // Branding
-        holder.planDivider.setBackgroundColor(themeColor)
-        holder.btnChoosePlan.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
-        
-        // Features
+        // 4. Features
         holder.layoutFeatures.removeAllViews()
         val featuresList = plan.features?.split("\n", ",")?.filter { it.isNotBlank() } ?: emptyList()
-        featuresList.forEach { feature ->
-            val tvFeature = TextView(context).apply {
+        featuresList.take(4).forEach { feature -> // Limited list for horizontal cleanliness
+            val featuredRow = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null) as TextView
+            featuredRow.apply {
                 text = feature.trim()
-                setTextColor(Color.parseColor("#9CA3AF")) // Gray 400
+                setTextColor(textColor)
+                alpha = 0.8f
                 textSize = 12f
-                alpha = 1.0f
-                setPadding(0, 0, 0, 10)
-                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, 12, 0, 12)
                 
-                // Add Check Circle Icon
+                // Check Icon
                 val checkIcon = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.ic_check_circle)
-                checkIcon?.setTint(themeColor)
-                checkIcon?.setBounds(0, 0, 42, 42) // Approx 16dp
+                checkIcon?.setTint(iconColor)
+                checkIcon?.setBounds(0, 0, 42, 42)
                 setCompoundDrawablesRelative(checkIcon, null, null, null)
-                compoundDrawablePadding = 16
+                compoundDrawablePadding = 20
             }
-            holder.layoutFeatures.addView(tvFeature)
+            holder.layoutFeatures.addView(featuredRow)
         }
 
-        holder.btnChoosePlan.setOnClickListener { 
-            if (canPurchase) onPlanSelected(plan) 
-        }
+        // 5. Action Button
+        holder.btnSelectPlan.text = "Select ${plan.name}"
+        holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(themeColor)
         
-        if (!canPurchase) {
-            holder.btnChoosePlan.isEnabled = false
-            holder.btnChoosePlan.text = "PLAN ALREADY ACTIVE"
-            holder.btnChoosePlan.alpha = 0.5f
-            holder.btnChoosePlan.setIconResource(0) // Hide icon
+        if (canPurchase) {
+            holder.btnSelectPlan.isEnabled = true
+            holder.btnSelectPlan.alpha = 1.0f
         } else {
-            holder.btnChoosePlan.isEnabled = true
-            holder.btnChoosePlan.alpha = 1.0f
-            holder.btnChoosePlan.text = "SELECT THIS PLAN"
-            holder.btnChoosePlan.setIconResource(R.drawable.ic_check_circle)
+            holder.btnSelectPlan.isEnabled = false
+            holder.btnSelectPlan.alpha = 0.5f
         }
 
-        // Button Hover/Click Effect Simulation via State
-        holder.btnChoosePlan.setIconTint(ColorStateList.valueOf(themeColor))
-        if (canPurchase) {
-            holder.btnChoosePlan.setOnTouchListener { v, event ->
-                when (event.action) {
-                    android.view.MotionEvent.ACTION_DOWN -> {
-                        v.setBackgroundColor(themeColor)
-                        (v as MaterialButton).setIconTint(ColorStateList.valueOf(Color.WHITE))
-                        v.setStrokeColor(ColorStateList.valueOf(themeColor))
-                        v.setTextColor(Color.WHITE)
-                    }
-                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
-                        v.setBackgroundColor(Color.parseColor("#1AFFFFFF"))
-                        (v as MaterialButton).setIconTint(ColorStateList.valueOf(themeColor))
-                        v.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#1AFFFFFF")))
-                        v.setTextColor(Color.WHITE)
-                    }
-                }
-                false
-            }
-        } else {
-            holder.btnChoosePlan.setOnTouchListener(null)
-        }
+        holder.btnSelectPlan.setOnClickListener { onPlanSelected(plan) }
     }
 
-    override fun getItemCount() = plans.size
+    override fun getItemCount(): Int = plans.size
 }

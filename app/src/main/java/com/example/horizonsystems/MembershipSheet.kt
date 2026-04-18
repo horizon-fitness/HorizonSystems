@@ -57,6 +57,7 @@ class MembershipSheet : BottomSheetDialogFragment() {
             dismiss()
         } else {
             Toast.makeText(ctx, "Payment Cancelled or Failed", Toast.LENGTH_SHORT).show()
+            dismiss()
         }
     }
 
@@ -79,7 +80,16 @@ class MembershipSheet : BottomSheetDialogFragment() {
         
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val startDate = Calendar.getInstance()
-        val endDate = Calendar.getInstance().apply { add(Calendar.DATE, durationDays) }
+        val tvDuration = view.findViewById<TextView>(R.id.sheetDuration)
+        val endDate = Calendar.getInstance()
+        val durationLabel = if (durationDays < 28) {
+            endDate.add(Calendar.MONTH, durationDays)
+            if (durationDays == 1) "1 month" else "$durationDays months"
+        } else {
+            endDate.add(Calendar.DATE, durationDays)
+            "$durationDays days"
+        }
+        tvDuration?.text = "Starts today, ends in $durationLabel"
         
         val btnConfirm = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConfirmSheet)
         val cbAgreement = view.findViewById<android.widget.CheckBox>(R.id.cbAgreement)
@@ -88,27 +98,23 @@ class MembershipSheet : BottomSheetDialogFragment() {
         val tvPaymentModeHeader = view.findViewById<View>(R.id.tvPaymentModeHeader)
         val tvPrice = view.findViewById<TextView>(R.id.sheetPrice)
 
-        // Rule: No monthly installments for 1-month plans (<= 30 days)
-        if (durationDays <= 30) {
-            chipMonthly?.visibility = View.GONE
-            cgPaymentMode?.visibility = View.GONE
-            tvPaymentModeHeader?.visibility = View.GONE
-        }
+        // PAYMENT OPTION selection is no longer needed per user request
+        chipMonthly?.visibility = View.GONE
+        cgPaymentMode?.visibility = View.GONE
+        tvPaymentModeHeader?.visibility = View.GONE
 
-        cgPaymentMode?.setOnCheckedStateChangeListener { _, checkedIds ->
-            val formatter = java.text.NumberFormat.getInstance(java.util.Locale.US)
-            if (checkedIds.contains(R.id.chipMonthlyPayment)) {
-                val months = (durationDays / 30).coerceAtLeast(1)
-                val monthlyPrice = price / months
-                tvPrice?.text = "₱${formatter.format(monthlyPrice)} / mo"
-            } else {
-                tvPrice?.text = "₱${formatter.format(price)}"
-            }
-        }
+        // Force Full Payment choice
+        view.findViewById<com.google.android.material.chip.Chip>(R.id.chipFullPayment)?.isChecked = true
+
+        // Price remains static as Full Payment
+        tvPrice?.text = "₱${formatter.format(price)}"
+
+        btnConfirm?.alpha = 0.3f
+        btnConfirm?.isEnabled = false
 
         cbAgreement?.setOnCheckedChangeListener { _, isChecked ->
             btnConfirm?.isEnabled = isChecked
-            btnConfirm?.alpha = if (isChecked) 1.0f else 0.5f
+            btnConfirm?.alpha = if (isChecked) 1.0f else 0.3f
         }
 
         view.findViewById<View>(R.id.btnCancelSheet)?.setOnClickListener { dismiss() }
@@ -116,8 +122,9 @@ class MembershipSheet : BottomSheetDialogFragment() {
         btnConfirm?.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
             Toast.makeText(ctx, "Processing Payment...", Toast.LENGTH_SHORT).show()
-            val selectedMode = if (cgPaymentMode?.checkedChipId == R.id.chipMonthlyPayment) "Monthly" else "Full"
-            submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time), selectedMode)
+            
+            // Always use Full Payment and total price
+            submitSubscription(sdf.format(startDate.time), sdf.format(endDate.time), "Full", price)
         }
 
         applyBranding(view)
@@ -167,11 +174,14 @@ class MembershipSheet : BottomSheetDialogFragment() {
                     android.graphics.Color.parseColor(cardColorStr)
                 }
 
-                // 4a. Apply to Root Modal Background
+                // 4a. Apply to Root Modal Background (Solid to prevent bleed-through)
                 view.findViewById<android.widget.LinearLayout>(R.id.rootSheetContainer)?.let { root ->
                     val shape = android.graphics.drawable.GradientDrawable()
                     shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                    shape.setColor(cardColor)
+                    // Use a solid background for the main sheet to ensure readability
+                    val solidBg = try { android.graphics.Color.parseColor(com.example.horizonsystems.utils.GymManager.getBgColor(ctx)) } 
+                                  catch(e: Exception) { android.graphics.Color.parseColor("#151518") }
+                    shape.setColor(solidBg)
                     val radius = (28 * ctx.resources.displayMetrics.density)
                     shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
                     root.background = shape
@@ -196,15 +206,16 @@ class MembershipSheet : BottomSheetDialogFragment() {
     }
 
 
-    private fun submitSubscription(start: String, end: String, mode: String = "Full") {
+    private fun submitSubscription(start: String, end: String, mode: String = "Full", finalPrice: Double? = null) {
         val ctx = context ?: return
+        val effectivePrice = finalPrice ?: price
         val intent = activity?.intent
         val userEmail = intent?.getStringExtra("email") ?: "customer@horizonsystems.com"
         val userName = (intent?.getStringExtra("first_name") ?: "") + " " + (intent?.getStringExtra("last_name") ?: "")
         val userPhone = intent?.getStringExtra("contact_number") ?: "09170000000"
 
         // Dynamic Amount calculation in centavos for PayMongo
-        val amountCentavos = (price * 100).toInt()
+        val amountCentavos = (effectivePrice * 100).toInt()
 
         val gymId = intent?.getIntExtra("gym_id", 1) ?: 1
         val userId = intent?.getIntExtra("user_id", -1) ?: -1

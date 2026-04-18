@@ -25,26 +25,27 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="bottom">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="CHOOSE YOUR "
                     android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black" />
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
 
                 <TextView
                     android:id="@+id/tv_membership_theme_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="STRENGTH"
-                    android:textColor="#A855F7"
-                    android:textSize="24sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black" />
+                    android:textColor="#8c2bee"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
             </LinearLayout>
 
             <!-- Loading Indicator -->
@@ -194,68 +195,90 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <!-- Membership History Filter -->
+            <!-- Membership History Header (Styled after main header) -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/tvHistoryHeaderPart1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MEMBERSHIP "
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
+
+                <TextView
+                    android:id="@+id/tvHistoryHeaderPart2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HISTORY"
+                    android:textColor="#A855F7"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
+            </LinearLayout>
+
+            <!-- Membership History Filter (Segmented Control Style) -->
+            <LinearLayout
+                android:id="@+id/layoutSegmentedFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_segmented_container"
+                android:orientation="horizontal"
+                android:padding="6dp"
+                android:weightSum="3">
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterAll"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
                     android:text="ALL"
                     android:textColor="@color/white"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1"
-                    android:paddingHorizontal="20dp"
-                    app:backgroundTint="#A855F7"
-                    app:cornerRadius="18dp" />
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.05"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="10dp"
+                    app:rippleColor="#33FFFFFF" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterPending"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
                     android:text="PENDING"
                     android:textColor="#94A3B8"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1"
-                    android:paddingHorizontal="20dp"
-                    app:backgroundTint="#1AFFFFFF"
-                    app:cornerRadius="18dp" />
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.05"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="10dp"
+                    app:rippleColor="#33FFFFFF" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilterApproved"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
                     android:text="APPROVED"
                     android:textColor="#94A3B8"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1"
-                    android:paddingHorizontal="20dp"
-                    app:backgroundTint="#1AFFFFFF"
-                    app:cornerRadius="18dp" />
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.05"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="10dp"
+                    app:rippleColor="#33FFFFFF" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="MEMBERSHIP HISTORY"
-                android:textColor="@color/white"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:alpha="0.5"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMembershipHistory"

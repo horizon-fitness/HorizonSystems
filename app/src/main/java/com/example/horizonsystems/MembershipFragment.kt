@@ -46,6 +46,9 @@ class MembershipFragment : Fragment() {
 
         val rvPlanSelection = view.findViewById<RecyclerView>(R.id.rvPlanSelection)
         rvPlanSelection?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        
+        // Premium Snapping Experience
+        androidx.recyclerview.widget.PagerSnapHelper().attachToRecyclerView(rvPlanSelection)
 
         // Filter Buttons
         val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterAll)
@@ -63,6 +66,7 @@ class MembershipFragment : Fragment() {
         fetchData(view)
 
         ThemeUtils.applyThemeToView(view)
+        applyBranding(view)
 
         return view
     }
@@ -255,59 +259,64 @@ class MembershipFragment : Fragment() {
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
-        val iconColorStr = GymManager.getIconColor(ctx)
         val textColorStr = GymManager.getTextColor(ctx)
         val bgColorStr = GymManager.getBgColor(ctx)
         val cardColorStr = GymManager.getCardColor(ctx)
         val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
 
-        if (!themeColorStr.isNullOrEmpty()) {
-            try {
-                val themeColor = Color.parseColor(themeColorStr)
-                val iconColor = try { Color.parseColor(iconColorStr) } catch(e:Exception) { Color.parseColor("#A1A1AA") }
-                val textColor = try { Color.parseColor(textColorStr) } catch(e:Exception) { Color.parseColor("#D1D5DB") }
-                val bgColor = try { Color.parseColor(bgColorStr) } catch(e:Exception) { Color.parseColor("#0a090d") }
+        try {
+            val themeColor = if (!themeColorStr.isNullOrEmpty()) Color.parseColor(themeColorStr) else Color.parseColor("#8c2bee")
+            val textColor = if (!textColorStr.isNullOrEmpty()) Color.parseColor(textColorStr) else Color.parseColor("#D1D5DB")
+            val bgColor = if (!bgColorStr.isNullOrEmpty()) Color.parseColor(bgColorStr) else Color.parseColor("#0a090d")
 
-                // Background Color
-                view.setBackgroundColor(bgColor)
+            // 1. Fragment Background
+            view.setBackgroundColor(bgColor)
 
-                // Main Color (Theme Color)
-                view.findViewById<TextView>(R.id.tv_membership_theme_subtitle)?.setTextColor(themeColor)
-                
-                // 2. Loading Indicator
-                view.findViewById<ProgressBar>(R.id.membershipLoading)?.indeterminateTintList = 
-                    ColorStateList.valueOf(themeColor)
-                
-                // 3. Days Remaining Accent & Active Card Stroke/Surface
-                view.findViewById<TextView>(R.id.tvDaysRemaining)?.setTextColor(themeColor)
-                val cardActive = view.findViewById<MaterialCardView>(R.id.cardActiveMembership)
-                cardActive?.setStrokeColor(themeColor)
-                
-                // Active Card Surface Sync
-                val cardColor = if (isAutoCard) {
-                    val r = Color.red(themeColor)
-                    val g = Color.green(themeColor)
-                    val b = Color.blue(themeColor)
-                    Color.argb(13, r, g, b)
-                } else {
-                    try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
-                }
-                cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
-
-                // Text Colors
-                view.findViewById<TextView>(R.id.tvActivePlanName)?.setTextColor(textColor)
-                view.findViewById<TextView>(R.id.tvActivePlanDuration)?.setTextColor(textColor)
-                
-                // (Note: Icon colors could be applied here if there were any icons in this fragment to color)
-
-                // 4. Initial filter state
-                val btnAll = view.findViewById<View>(R.id.btnFilterAll)
-                val btnPending = view.findViewById<View>(R.id.btnFilterPending)
-                val btnApproved = view.findViewById<View>(R.id.btnFilterApproved)
-                updateFilter("ALL", btnAll, btnPending, btnApproved)
-            } catch (e: Exception) {
-                Log.e("MembershipFragment", "Branding Error: ${e.message}")
+            // 2. Horizontal Headers
+            view.findViewById<TextView>(R.id.tv_membership_theme_subtitle)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvHistoryHeaderPart2)?.setTextColor(themeColor)
+            
+            // 3. Loading Indicator
+            view.findViewById<ProgressBar>(R.id.membershipLoading)?.indeterminateTintList = 
+                ColorStateList.valueOf(themeColor)
+            
+            // 4. Component Appearance (Dynamic Background Sync)
+            val cardColor = if (isAutoCard) {
+                val r = Color.red(themeColor)
+                val g = Color.green(themeColor)
+                val b = Color.blue(themeColor)
+                Color.argb(13, r, g, b)
+            } else {
+                try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#141216") }
             }
+
+            // 4a. Active Membership Card
+            view.findViewById<TextView>(R.id.tvDaysRemaining)?.setTextColor(themeColor)
+            val cardActive = view.findViewById<MaterialCardView>(R.id.cardActiveMembership)
+            cardActive?.setStrokeColor(themeColor)
+            cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+
+            // 4b. Segmented Filter Background
+            view.findViewById<View>(R.id.layoutSegmentedFilter)?.let { container ->
+                val shape = android.graphics.drawable.GradientDrawable()
+                shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                shape.setColor(cardColor)
+                shape.cornerRadius = (14 * ctx.resources.displayMetrics.density)
+                shape.setStroke(1, Color.parseColor("#1AFFFFFF"))
+                container.background = shape
+            }
+
+            // Text Accents
+            view.findViewById<TextView>(R.id.tvActivePlanName)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tvActivePlanDuration)?.setTextColor(textColor)
+            
+            // 5. Initial filter state
+            val btnAll = view.findViewById<View>(R.id.btnFilterAll)
+            val btnPending = view.findViewById<View>(R.id.btnFilterPending)
+            val btnApproved = view.findViewById<View>(R.id.btnFilterApproved)
+            updateFilter(currentFilter, btnAll, btnPending, btnApproved)
+        } catch (e: Exception) {
+            Log.e("MembershipFragment", "Branding Error: ${e.message}")
         }
     }
 
@@ -323,11 +332,11 @@ class MembershipFragment : Fragment() {
             (btn as? com.google.android.material.button.MaterialButton)?.let {
                 if (isActive) {
                     it.backgroundTintList = ColorStateList.valueOf(themeColor)
-                    it.setTextColor(Color.WHITE)
+                    it.setTextColor(Color.BLACK) // Contrast for solid theme color
                     it.alpha = 1.0f
                 } else {
-                    it.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
-                    it.setTextColor(Color.parseColor("#94A3B8"))
+                    it.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+                    it.setTextColor(Color.parseColor("#94A3B8")) // Muted secondary text
                     it.alpha = 1.0f
                 }
             }

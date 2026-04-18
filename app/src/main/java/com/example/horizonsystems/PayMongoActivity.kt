@@ -74,8 +74,9 @@ class PayMongoActivity : AppCompatActivity() {
                     return true
                 }
 
-                // Handle Cancel Redirect
-                if (url.contains("status=cancel") || url.contains("payment_status=failed") || url.contains("https://horizonsystems.com/cancel")) {
+                // Handle Cancel Redirect (Specifically detecting the production cancel URL)
+                if (url.contains("status=cancel") || url.contains("payment_status=failed") || 
+                    url.contains("payment_cancel.php") || url.contains("status=failed")) {
                     android.util.Log.d("PayMongo", "Payment Cancel URL Detected: $url")
                     setResult(RESULT_CANCELED)
                     finish()
@@ -92,5 +93,16 @@ class PayMongoActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        setResult(RESULT_CANCELED)
+        finish()
+        return true
+    }
+
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        super.onBackPressed()
     }
 }

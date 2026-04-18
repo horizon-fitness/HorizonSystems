@@ -221,19 +221,29 @@ class BookingFragment : Fragment() {
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
-        if (!themeColorStr.isNullOrEmpty()) {
-            try {
-                val themeColor = android.graphics.Color.parseColor(themeColorStr)
-                // Main Booking Button
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)?.let {
-                    it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
-                }
-                // Accent Title
-                view.findViewById<TextView>(R.id.tv_booking_theme_title)?.setTextColor(themeColor)
-                
-                // Date Details Card
-                view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.setCardBackgroundColor(themeColor)
-            } catch (e: Exception) {}
+        val textColorStr = GymManager.getTextColor(ctx)
+        val bgColorStr = GymManager.getBgColor(ctx)
+
+        try {
+            val themeColor = if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
+            val textColor = if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
+            val bgColor = if (!bgColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(bgColorStr) else android.graphics.Color.parseColor("#0a090d")
+
+            // 1. Fragment Background
+            view.setBackgroundColor(bgColor)
+
+            // 2. Buttons & Titles
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)?.let {
+                it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+            }
+            view.findViewById<TextView>(R.id.tv_booking_theme_title)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tv_book_and_pay)?.setTextColor(textColor)
+            
+            // 3. Status Accents
+            view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.setCardBackgroundColor(themeColor)
+            view.findViewById<TextView>(R.id.tv_active_training_logs)?.setTextColor(textColor)
+        } catch (e: Exception) {
+            Log.e("BookingFragment", "Branding Error: ${e.message}")
         }
     }
 
@@ -241,16 +251,16 @@ class BookingFragment : Fragment() {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
         val themeColor = try {
-            if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#A855F7")
+            if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
         } catch (e: Exception) {
-            android.graphics.Color.parseColor("#A855F7")
+            android.graphics.Color.parseColor("#8c2bee")
         }
         
         active?.apply {
-            backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(40)
-            setTextColor(themeColor)
+            backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+            setTextColor(android.graphics.Color.WHITE)
             strokeColor = android.content.res.ColorStateList.valueOf(themeColor)
-            strokeWidth = 2
+            strokeWidth = 0
             alpha = 1.0f
         }
 

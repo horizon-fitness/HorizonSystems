@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardHomePlan"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="20dp"
+    app:cardBackgroundColor="#141216"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#1AFFFFFF"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="28dp">
+
+        <!-- Badge (e.g. RECOMMENDED) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvHomePlanBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/white"
+                    android:layout_marginEnd="6dp" />
+                <TextView
+                    android:id="@+id/tvHomePlanBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RECOMMENDED"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Plan Name -->
+        <TextView
+            android:id="@+id/tvHomePlanName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Optimal"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-black"
+            app:layout_constraintTop_toBottomOf="@id/cvHomePlanBadge"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvHomePlanPricePrefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₱"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/tvHomePlanPrice"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvHomePlanPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="1,500"
+            android:textColor="@color/white"
+            android:textSize="44sp"
+            android:fontFamily="sans-serif-black"
+            app:layout_constraintTop_toBottomOf="@id/tvHomePlanName"
+            app:layout_constraintStart_toEndOf="@id/tvHomePlanPricePrefix" />
+
+        <TextView
+            android:id="@+id/tvHomePlanCycle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="10dp"
+            android:text="/mo"
+            android:textColor="@color/white"
+            android:alpha="0.4"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintBottom_toBottomOf="@id/tvHomePlanPrice"
+            app:layout_constraintStart_toEndOf="@id/tvHomePlanPrice" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvHomePlanDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Enhanced recovery and guided sessions for the dedicated practitioner."
+            android:textColor="@color/white"
+            android:alpha="0.6"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:lineSpacingExtra="4dp"
+            app:layout_constraintTop_toBottomOf="@id/tvHomePlanPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Feature List -->
+        <LinearLayout
+            android:id="@+id/layoutHomePlanFeatures"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvHomePlanDesc">
+            <!-- Dynamically populated -->
+        </LinearLayout>
+
+        <!-- Select Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHomeSelectPlan"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_marginTop="32dp"
+            android:text="Select Optimal"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-black"
+            android:textAllCaps="false"
+            app:cornerRadius="18dp"
+            app:backgroundTint="@color/landing_primary"
+            app:layout_constraintTop_toBottomOf="@id/layoutHomePlanFeatures"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
