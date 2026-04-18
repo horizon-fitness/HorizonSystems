@@ -18,6 +18,7 @@ import java.util.Locale
 
 class HomePlanAdapter(
     private val plans: List<MembershipPlan>,
+    private val canPurchase: Boolean = true,
     private val onPlanSelected: (MembershipPlan) -> Unit
 ) : RecyclerView.Adapter<HomePlanAdapter.HomePlanViewHolder>() {
 
@@ -97,9 +98,19 @@ class HomePlanAdapter(
         }
 
         // 4. Action Button
-        holder.btnSelectPlan.text = "Select ${plan.name}"
-        holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(themeColor)
-        holder.btnSelectPlan.setOnClickListener { onPlanSelected(plan) }
+        if (!canPurchase) {
+            holder.btnSelectPlan.text = "LOCKED (ACTIVE SUB)"
+            holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#333333"))
+            holder.btnSelectPlan.setTextColor(Color.GRAY)
+            holder.btnSelectPlan.setOnClickListener {
+                android.widget.Toast.makeText(context, "You already have an active membership.", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            holder.btnSelectPlan.text = "Select ${plan.name}"
+            holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(themeColor)
+            holder.btnSelectPlan.setTextColor(Color.WHITE)
+            holder.btnSelectPlan.setOnClickListener { onPlanSelected(plan) }
+        }
 
         // 5. Card Surface
         holder.cardHomePlan.setCardBackgroundColor(cardSurface)

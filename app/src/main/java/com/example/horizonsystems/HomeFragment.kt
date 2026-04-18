@@ -28,6 +28,8 @@ import android.util.Log
 import androidx.core.os.bundleOf
 
 class HomeFragment : Fragment() {
+    private var currentPlans: List<MembershipPlan>? = null
+    private var hasActivePlan = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -169,10 +171,11 @@ class HomeFragment : Fragment() {
                     val tvPlansLabel = root.findViewById<View>(R.id.tvPlansLabel)
                     if (response.isSuccessful && response.body() != null && response.body()!!.isNotEmpty()) {
                         val plans = response.body()!!
+                        currentPlans = plans
                         tvPlansLabel?.visibility = View.VISIBLE
                         rvPreview.visibility = View.VISIBLE
 
-                        val adapter = HomePlanAdapter(plans) { plan ->
+                        val adapter = HomePlanAdapter(plans, !hasActivePlan) { plan ->
                             // Redirect to Membership Fragment
                             parentFragmentManager.setFragmentResult("plan_selection", bundleOf(
                                 "id" to plan.id,
@@ -292,17 +295,33 @@ class HomeFragment : Fragment() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val active = response.body()!!
                         
-                        // Update Membership Status Text
+                        // Update Membership Status Text & Button
                         val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
                         val planText = root.findViewById<TextView>(R.id.membershipPlan)
+                        val btnManage = root.findViewById<TextView>(R.id.btnManageMembership)
                         
+                        hasActivePlan = true
+
                         if (active.subscriptionStatus == "Pending Approval") {
-                            statusText?.text = "${active.planName} (Pending)"
-                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFC107"))
+                            statusText?.text = active.planName ?: "Plan"
+                            statusText?.setTextColor(android.graphics.Color.WHITE)
+                            btnManage?.text = "PENDING"
+                            btnManage?.setTextColor(android.graphics.Color.parseColor("#FFC107"))
                         } else {
                             statusText?.text = active.planName ?: "Active Member"
                             statusText?.setTextColor(android.graphics.Color.WHITE)
+                            btnManage?.text = "ACTIVE"
+                            btnManage?.setTextColor(android.graphics.Color.parseColor("#34D399")) // Emerald color for active
                         }
+                        
+                        // Rebuild adapter if plans already fetched
+                        if (currentPlans != null) {
+                            val rvPreview = root.findViewById<RecyclerView>(R.id.rvMembershipPreview)
+                            rvPreview?.adapter = HomePlanAdapter(currentPlans!!, false) { plan ->
+                                // (Won't execute since canPurchase is false, but required by lambda)
+                            }
+                        }
+
                         val logoUrl = activity?.intent?.getStringExtra("gym_logo")
                         val gymLogoContainer = root.findViewById<View>(R.id.gymLogoContainer)
                         val gymLogoHeader = root.findViewById<View>(R.id.gymLogoHeader)
@@ -314,16 +333,28 @@ class HomeFragment : Fragment() {
                     } else {
                         val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
                         val planText = root.findViewById<TextView>(R.id.membershipPlan)
-                        statusText?.text = "No Active Membership"
+                        val btnManage = root.findViewById<TextView>(R.id.btnManageMembership)
+                        
+                        hasActivePlan = false
+
+                        statusText?.text = "No Active Plan"
                         statusText?.setTextColor(android.graphics.Color.WHITE)
+                        btnManage?.text = "Manage"
+                        
+                        val themeColorStr = GymManager.getThemeColor(requireContext())
+                        if (!themeColorStr.isNullOrEmpty()) {
+                            btnManage?.setTextColor(android.graphics.Color.parseColor(themeColorStr))
+                        }
+                        
                         planText?.visibility = View.GONE
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    hasActivePlan = false
                     val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
                     val planText = root.findViewById<TextView>(R.id.membershipPlan)
-                    statusText?.text = "No Active Membership"
+                    statusText?.text = "No Active Plan"
                     statusText?.setTextColor(android.graphics.Color.WHITE)
                     planText?.visibility = View.GONE
                 }

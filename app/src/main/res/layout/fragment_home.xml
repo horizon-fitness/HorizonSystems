@@ -237,56 +237,33 @@
                     android:layout_height="wrap_content"
                     android:padding="20dp">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cvMembershipIcon"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        app:cardBackgroundColor="#0DFFFFFF"
-                        app:cardCornerRadius="30dp"
-                        app:cardElevation="0dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent">
-                        
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_membership"
-                            app:tint="@color/white"
-                            android:alpha="0.4" />
-                    </com.google.android.material.card.MaterialCardView>
-
                     <TextView
                         android:id="@+id/tvMembershipLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
                         android:text="MEMBERSHIP"
                         android:textColor="@color/text_secondary"
                         android:alpha="0.6"
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05"
-                        app:layout_constraintTop_toTopOf="@id/cvMembershipIcon"
-                        app:layout_constraintStart_toEndOf="@id/cvMembershipIcon"
-                        app:layout_constraintVertical_chainStyle="packed"
-                        app:layout_constraintBottom_toTopOf="@id/membershipStatusText"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/membershipStatusText"
+                        app:layout_constraintVertical_chainStyle="packed"/>
 
                     <TextView
                         android:id="@+id/membershipStatusText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="No Active Membership"
+                        android:text="No Active Plan"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:fontFamily="sans-serif-black"
                         android:letterSpacing="-0.01"
                         app:layout_constraintTop_toBottomOf="@id/tvMembershipLabel"
-                        app:layout_constraintStart_toEndOf="@id/cvMembershipIcon"
-                        app:layout_constraintBottom_toBottomOf="@id/cvMembershipIcon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/btnManageMembership"/>
 
                     <TextView

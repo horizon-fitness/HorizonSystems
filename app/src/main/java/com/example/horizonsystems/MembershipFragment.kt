@@ -129,24 +129,22 @@ class MembershipFragment : Fragment() {
         
         if (active != null && active.success == true) {
             root.findViewById<TextView>(R.id.tvActivePlanName)?.text = active.planName ?: "Plan"
-            val tvStatus = root.findViewById<TextView>(R.id.tvActivePlanStatus)
-            val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
-            val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
+            val tvStart = root.findViewById<TextView>(R.id.tvActivePlanStart)
+            val tvEnd = root.findViewById<TextView>(R.id.tvActivePlanDuration)
+            val tvBadgeStatus = root.findViewById<TextView>(R.id.tvActivePlanStatusBadge)
+            
+            tvStart?.text = active.formattedStart ?: "N/A"
+            tvEnd?.text = active.formattedEnd ?: "N/A"
             
             if (active.subscriptionStatus == "Pending Approval") {
-                tvStatus?.text = "(Pending Approval)"
-                tvStatus?.visibility = View.VISIBLE
-                tvDuration?.text = "Awaiting Staff Verification"
-                tvRemaining?.text = "Payment verified by PayMongo"
+                tvBadgeStatus?.text = "PENDING"
             } else {
-                tvStatus?.visibility = View.GONE
-                tvDuration?.text = "Until: ${active.formattedEnd ?: "N/A"}"
-                tvRemaining?.text = "${active.daysRemaining ?: 0} Days Remaining"
+                tvBadgeStatus?.text = "ACTIVE"
             }
 
             cardActive?.visibility = View.VISIBLE
             
-            // Apply Sync Card Color
+            // Apply Dynamic Card Background
             val ctx = root.context
             val themeColorStr = GymManager.getThemeColor(ctx)
             val cardColorStr = GymManager.getCardColor(ctx)
@@ -290,25 +288,25 @@ class MembershipFragment : Fragment() {
                 try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#141216") }
             }
 
-            // 4a. Active Membership Card
-            view.findViewById<TextView>(R.id.tvDaysRemaining)?.setTextColor(themeColor)
+            // 4a. Active Membership Card (Professional Reference Design)
             val cardActive = view.findViewById<MaterialCardView>(R.id.cardActiveMembership)
-            cardActive?.setStrokeColor(themeColor)
             cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+            cardActive?.setStrokeColor(Color.parseColor("#1AFFFFFF")) // Keep subtle border
 
-            // 4b. Segmented Filter Background
-            view.findViewById<View>(R.id.layoutSegmentedFilter)?.let { container ->
-                val shape = android.graphics.drawable.GradientDrawable()
-                shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                shape.setColor(cardColor)
-                shape.cornerRadius = (14 * ctx.resources.displayMetrics.density)
-                shape.setStroke(1, Color.parseColor("#1AFFFFFF"))
-                container.background = shape
+            // Theme Accents (Matching Reference Image)
+            view.findViewById<TextView>(R.id.tvStatusLabel)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvActivePlanStatusBadge)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvActivePlanDuration)?.setTextColor(themeColor)
+            
+            view.findViewById<MaterialCardView>(R.id.cvActiveBadge)?.let { badge ->
+                badge.setStrokeColor(themeColor)
+                // Subtle tinted background for the badge
+                badge.setCardBackgroundColor(Color.argb(20, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor)))
             }
 
             // Text Accents
             view.findViewById<TextView>(R.id.tvActivePlanName)?.setTextColor(textColor)
-            view.findViewById<TextView>(R.id.tvActivePlanDuration)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tvActivePlanStart)?.setTextColor(textColor)
             
             // 5. Initial filter state
             val btnAll = view.findViewById<View>(R.id.btnFilterAll)
@@ -332,7 +330,7 @@ class MembershipFragment : Fragment() {
             (btn as? com.google.android.material.button.MaterialButton)?.let {
                 if (isActive) {
                     it.backgroundTintList = ColorStateList.valueOf(themeColor)
-                    it.setTextColor(Color.BLACK) // Contrast for solid theme color
+                    it.setTextColor(Color.WHITE) // User requested white text for current tab
                     it.alpha = 1.0f
                 } else {
                     it.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)

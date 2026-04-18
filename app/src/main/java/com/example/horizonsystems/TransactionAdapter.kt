@@ -17,6 +17,7 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
     RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val card: com.google.android.material.card.MaterialCardView = view as com.google.android.material.card.MaterialCardView
         val tvTxnMonth: TextView = view.findViewById(R.id.tvTxnMonth)
         val tvTxnDay: TextView = view.findViewById(R.id.tvTxnDay)
         val service: TextView = view.findViewById(R.id.txnService)
@@ -40,23 +41,42 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
         val themeColorStr = GymManager.getThemeColor(context)
         val themeColor = try { Color.parseColor(themeColorStr) } catch (e: Exception) { Color.parseColor("#8c2bee") }
 
-        // 2. Date Parsing (Modern Date Block)
+        // 2. Dynamic Card Sync
+        val cardColorStr = GymManager.getCardColor(context)
+        val isAutoCard = GymManager.getAutoCardTheme(context) == "1"
+        val cardColor = if (isAutoCard) {
+            val r = Color.red(themeColor)
+            val g = Color.green(themeColor)
+            val b = Color.blue(themeColor)
+            Color.argb(13, r, g, b)
+        } else {
+            try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#141216") }
+        }
+        holder.card.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+
+        // 3. Date Parsing (Modern Date Block)
         parseAndSetDate(txn.date, holder.tvTxnMonth, holder.tvTxnDay)
         holder.tvTxnDay.setTextColor(themeColor)
+        holder.tvTxnMonth.setTextColor(Color.WHITE) // User requested white month
+        holder.tvTxnMonth.alpha = 1.0f
 
-        // 3. Content
+        // 4. Content
         holder.service.text = txn.service ?: "Membership Plan"
         holder.dateTime.text = txn.time ?: "Subscription Payment"
         holder.amount.text = "₱${txn.amount ?: "0.00"}"
         holder.reference.text = "Ref: ${txn.reference ?: "N/A"}"
+        holder.reference.setTextColor(Color.WHITE) // User requested white reference
+        holder.reference.alpha = 1.0f
         
         holder.status.text = txn.status ?: "Pending"
         
-        // 4. Status Badge Branding
+        // 4. Status Badge Branding (Match Tenant Theme for positive states)
         val statusStr = txn.status ?: "Pending"
-        if (statusStr.contains("Approved", ignoreCase = true) || statusStr.contains("Completed", ignoreCase = true)) {
-            holder.status.setTextColor(Color.parseColor("#34D399")) // Emerald 400
-            holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#34D399")).withAlpha(30)
+        if (statusStr.contains("Approved", ignoreCase = true) || 
+            statusStr.contains("Completed", ignoreCase = true) || 
+            statusStr.contains("Paid", ignoreCase = true)) {
+            holder.status.setTextColor(themeColor)
+            holder.status.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(30)
         } else if (statusStr.contains("Rejected", ignoreCase = true) || statusStr.contains("Cancelled", ignoreCase = true)) {
             holder.status.setTextColor(Color.parseColor("#F87171")) // Red 400
             holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F87171")).withAlpha(30)

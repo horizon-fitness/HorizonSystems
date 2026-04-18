@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="#141216"
+    app:cardBackgroundColor="#0D0D10"
     app:cardCornerRadius="24dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
@@ -13,18 +13,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <!-- Date Block (Left) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDateBlock"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            app:cardBackgroundColor="#0D0B0E"
-            app:cardCornerRadius="16dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardBackgroundColor="#0DFFFFFF"
+            app:cardCornerRadius="14dp"
             app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,8 +38,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="OCT"
-                    android:textColor="#94A3B8"
-                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:alpha="0.4"
+                    android:textSize="9sp"
                     android:fontFamily="sans-serif-black"
                     android:textAllCaps="true"
                     android:letterSpacing="0.1" />
@@ -48,110 +50,83 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="16"
-                    android:textColor="#BC8CF2"
-                    android:textSize="22sp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
                     android:fontFamily="sans-serif-black" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Service & Details -->
-        <TextView
-            android:id="@+id/txnService"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="Strength &amp; Conditioning"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-black"
-            android:ellipsize="end"
-            android:maxLines="2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cardDateBlock"
-            app:layout_constraintTop_toTopOf="@id/cardDateBlock" />
-
+        <!-- Plan Info (Center) -->
         <LinearLayout
-            android:id="@+id/layoutTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/txnService"
-            app:layout_constraintStart_toStartOf="@id/txnService"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:src="@drawable/ic_clock"
-                app:tint="#4DFFFFFF" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="@id/cardDateBlock"
+            app:layout_constraintBottom_toBottomOf="@id/cardDateBlock"
+            app:layout_constraintStart_toEndOf="@id/cardDateBlock"
+            app:layout_constraintEnd_toStartOf="@id/layoutPaymentInfo">
 
             <TextView
-                android:id="@+id/txnDateTime"
+                android:id="@+id/txnService"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="08:00 AM - 09:30 AM"
-                android:textColor="#80FFFFFF"
-                android:textSize="13sp"
-                android:fontFamily="sans-serif-medium" />
+                android:text="Optimal Plan"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.01" />
+
+            <TextView
+                android:id="@+id/txnReference"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="ID: #MS-77420"
+                android:textColor="@color/text_secondary"
+                android:alpha="0.4"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.05" />
         </LinearLayout>
 
-        <!-- Subtitle/Reference (Secondary Info) -->
-        <TextView
-            android:id="@+id/txnReference"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Ref: TRANS-123456"
-            android:textColor="#4DFFFFFF"
-            android:textSize="10sp"
-            android:fontFamily="sans-serif-medium"
-            android:textAllCaps="true"
-            android:letterSpacing="0.05"
-            app:layout_constraintTop_toBottomOf="@id/layoutTime"
-            app:layout_constraintStart_toStartOf="@id/txnService" />
-
-        <!-- Status Badge -->
-        <TextView
-            android:id="@+id/txnStatus"
+        <!-- Payment Info (Right) -->
+        <LinearLayout
+            android:id="@+id/layoutPaymentInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/badge_status_bg"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="6dp"
-            android:text="Approved"
-            android:textColor="#34D399"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-black"
-            app:layout_constraintTop_toBottomOf="@id/cardDateBlock"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:orientation="vertical"
+            android:gravity="end"
+            app:layout_constraintTop_toTopOf="@id/cardDateBlock"
+            app:layout_constraintBottom_toBottomOf="@id/cardDateBlock"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- More Options -->
-        <ImageView
-            android:id="@+id/btnTxnMore"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_more_vert"
-            app:tint="#4DFFFFFF"
-            app:layout_constraintBottom_toBottomOf="@id/txnStatus"
-            app:layout_constraintTop_toTopOf="@id/txnStatus"
-            app:layout_constraintStart_toEndOf="@id/txnStatus"
-            android:layout_marginStart="20dp" />
+            <TextView
+                android:id="@+id/txnAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₱150.00"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.01" />
 
-        <!-- Price (Optional align right) -->
-        <TextView
-            android:id="@+id/txnAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₱1,500"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/txnStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="PAID"
+                android:textColor="#34D399"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.05"
+                android:textAllCaps="true" />
+        </LinearLayout>
+
+        <!-- Hidden old fields were kept for code compatibility if needed, but not in visual layout -->
+        <TextView android:id="@+id/txnDateTime" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
