@@ -92,7 +92,7 @@ object GymManager {
     }
 
     fun getThemeColor(context: Context): String {
-        return getPrefs(context).getString(KEY_THEME_COLOR, "#8c2bee") ?: "#8c2bee"
+        return getPrefs(context).getString(KEY_THEME_COLOR, "#FFFFFF") ?: "#FFFFFF"
     }
 
     fun getBgColor(context: Context): String {

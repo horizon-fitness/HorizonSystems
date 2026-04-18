@@ -42,6 +42,12 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.LoginResponse>
 
+    @POST("api/forgot_password.php")
+    suspend fun forgotPasswordAction(
+        @Body body: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
     @GET("api/get_gym_services.php")
     suspend fun getGymServices(
         @Query("gym_id") gymId: Int,

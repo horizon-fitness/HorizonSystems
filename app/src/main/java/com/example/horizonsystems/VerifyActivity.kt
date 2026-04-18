@@ -7,25 +7,27 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.horizonsystems.models.LoginResponse
+import com.example.horizonsystems.models.RegisterRequest
 import com.example.horizonsystems.network.RetrofitClient
 import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class VerifyActivity : AppCompatActivity() {
 
+    private var registrationData: RegisterRequest? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_verify)
 
-        val userId = intent.getIntExtra("user_id", -1)
-        if (userId == -1) {
-            Toast.makeText(this, "Invalid User Session", Toast.LENGTH_SHORT).show()
+        registrationData = intent.getSerializableExtra("registration_data") as? RegisterRequest
+        
+        if (registrationData == null) {
+            Toast.makeText(this, "Session Expired. Please try again.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -43,13 +45,13 @@ class VerifyActivity : AppCompatActivity() {
         setupOtpInputs(otpBoxes)
 
         btnVerify.setOnClickListener {
-            val pin = otpBoxes.joinToString("") { it.text.toString() }
-            if (pin.length != 6) {
+            val pinInput = otpBoxes.joinToString("") { it.text.toString() }
+            if (pinInput.length != 6) {
                 Toast.makeText(this, "Enter 6-digit PIN", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            verifyPin(userId, pin)
+            verifyAndRegister(pinInput)
         }
     }
 
@@ -77,34 +79,44 @@ class VerifyActivity : AppCompatActivity() {
         }
     }
 
-    private fun verifyPin(userId: Int, pin: String) {
-        val payload = mapOf(
-            "action" to "verify_pin",
-            "user_id" to userId,
-            "pin" to pin
-        )
+    private fun verifyAndRegister(pin: String) {
+        val finalPayload = registrationData?.copy(
+            action = "register",
+            pin = pin
+        ) ?: return
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val cookie = GymManager.getBypassCookie(this@VerifyActivity)
-                val ua = GymManager.getBypassUA(this@VerifyActivity)
-                val api = RetrofitClient.getApi(cookie, ua)
+                val api = RetrofitClient.getApi(
+                    GymManager.getBypassCookie(this@VerifyActivity), 
+                    GymManager.getBypassUA(this@VerifyActivity)
+                )
                 
-                val response = api.verifyUser(payload)
+                // Use register call as it now handles the final creation with pin
+                val response = api.register(finalPayload)
+                
                 withContext(Dispatchers.Main) {
-                    if (response.success == true) {
-                        Toast.makeText(this@VerifyActivity, "Verified Successfully!", Toast.LENGTH_LONG).show()
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(this@VerifyActivity, "Welcome to the Family!", Toast.LENGTH_LONG).show()
+                        
+                        // Clear registration cache
+                        getSharedPreferences("reg_cache", MODE_PRIVATE).edit().clear().apply()
+                        
                         startActivity(Intent(this@VerifyActivity, LandingActivity::class.java).apply {
                             putExtra("SKIP_AUTO_LOGIN", true)
                         })
                         finish()
                     } else {
-                        Toast.makeText(this@VerifyActivity, response.message ?: "Verification Failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@VerifyActivity, 
+                            response.body()?.message ?: "Verification Failed", 
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@VerifyActivity, "Network Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@VerifyActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

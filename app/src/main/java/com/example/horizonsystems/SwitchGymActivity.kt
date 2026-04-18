@@ -112,7 +112,7 @@ class SwitchGymActivity : AppCompatActivity() {
                 "000", 
                 "HORIZON SYSTEMS", 
                 null,
-                "#8c2bee", // Default Purple
+                "#FFFFFF", // Default White
                 "#0a090d"  // Default Dark BG
             )
             Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
@@ -152,12 +152,17 @@ class SwitchGymActivity : AppCompatActivity() {
 
     private fun applyDynamicColors() {
         val themeColor = GymManager.getThemeColor(this)
+        val bgColor = GymManager.getBgColor(this)
         try {
             val color = android.graphics.Color.parseColor(themeColor)
+            val bg = android.graphics.Color.parseColor(bgColor)
             val colorStateList = android.content.res.ColorStateList.valueOf(color)
             
+            findViewById<View>(R.id.rootLayout)?.setBackgroundColor(bg)
             findViewById<ImageView>(R.id.statusIcon)?.imageTintList = colorStateList
             findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDisconnectGym)?.setTextColor(color)
+            findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConnectCode)?.setTextColor(color)
+            findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConnectLink)?.setTextColor(color)
         } catch (e: Exception) {
             Log.e("SwitchGymActivity", "Error applying theme color: $themeColor", e)
         }
