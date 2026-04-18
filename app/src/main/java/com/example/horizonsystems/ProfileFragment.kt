@@ -118,7 +118,10 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.profileMemberCode)?.text = memberCode.ifEmpty { "---" }
         
         // Contact
-        view.findViewById<TextView>(R.id.profileEmail)?.text = userEmail.ifEmpty { "---" }
+        val finalEmail = if (userEmail.isNotEmpty()) {
+            if (gymName.isNotEmpty() && gymName != "Horizon Gym") "$userEmail ($gymName)" else userEmail
+        } else "---"
+        view.findViewById<TextView>(R.id.profileEmail)?.text = finalEmail
         view.findViewById<TextView>(R.id.profilePhone)?.text = phone.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileAddress)?.text = address.ifEmpty { "---" }
         

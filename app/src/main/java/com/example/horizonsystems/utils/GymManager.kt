@@ -15,6 +15,8 @@ object GymManager {
     private const val KEY_GYM_NAME = "selected_gym_name"
     private const val KEY_GYM_LOGO = "selected_gym_logo"
     private const val KEY_THEME_COLOR = "selected_theme_color"
+    private const val KEY_ICON_COLOR = "selected_icon_color"
+    private const val KEY_TEXT_COLOR = "selected_text_color"
     private const val KEY_BG_COLOR = "selected_bg_color"
     private const val KEY_CARD_COLOR = "selected_card_color"
     private const val KEY_AUTO_CARD_THEME = "selected_auto_card_theme"
@@ -44,6 +46,8 @@ object GymManager {
         name: String, 
         logo: String? = null,
         themeColor: String? = null,
+        iconColor: String? = null,
+        textColor: String? = null,
         bgColor: String? = null,
         cardColor: String? = null,
         autoCardTheme: String? = null
@@ -55,6 +59,8 @@ object GymManager {
             putString(KEY_GYM_NAME, name)
             putString(KEY_GYM_LOGO, logo)
             putString(KEY_THEME_COLOR, themeColor)
+            putString(KEY_ICON_COLOR, iconColor)
+            putString(KEY_TEXT_COLOR, textColor)
             putString(KEY_BG_COLOR, bgColor)
             putString(KEY_CARD_COLOR, cardColor)
             putString(KEY_AUTO_CARD_THEME, autoCardTheme)
@@ -64,12 +70,16 @@ object GymManager {
     fun updateBranding(
         context: Context,
         themeColor: String?,
+        iconColor: String?,
+        textColor: String?,
         bgColor: String?,
         cardColor: String?,
         autoCardTheme: String?
     ) {
         getPrefs(context).edit().apply {
             putString(KEY_THEME_COLOR, themeColor)
+            putString(KEY_ICON_COLOR, iconColor)
+            putString(KEY_TEXT_COLOR, textColor)
             putString(KEY_BG_COLOR, bgColor)
             putString(KEY_CARD_COLOR, cardColor)
             putString(KEY_AUTO_CARD_THEME, autoCardTheme)
@@ -114,6 +124,14 @@ object GymManager {
 
     fun getThemeColor(context: Context): String {
         return getPrefs(context).getString(KEY_THEME_COLOR, "#FFFFFF") ?: "#FFFFFF"
+    }
+
+    fun getIconColor(context: Context): String {
+        return getPrefs(context).getString(KEY_ICON_COLOR, "#A1A1AA") ?: "#A1A1AA"
+    }
+
+    fun getTextColor(context: Context): String {
+        return getPrefs(context).getString(KEY_TEXT_COLOR, "#D1D5DB") ?: "#D1D5DB"
     }
 
     fun getBgColor(context: Context): String {

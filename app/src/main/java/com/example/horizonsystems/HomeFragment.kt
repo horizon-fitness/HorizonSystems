@@ -20,6 +20,12 @@ import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.horizonsystems.models.MembershipPlan
+import com.example.horizonsystems.network.RetrofitClient
+import android.util.Log
+import androidx.core.os.bundleOf
 
 class HomeFragment : Fragment() {
 
@@ -33,8 +39,8 @@ class HomeFragment : Fragment() {
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
         val dashGreeting = view.findViewById<TextView>(R.id.dashGreeting)
         
-        // Dynamic Time-based Greeting
-        dashGreeting?.text = getDynamicGreeting()
+        // Use "WELCOME" to support the two-tone horizontal design [WELCOME] [NAME]
+        dashGreeting?.text = "WELCOME "
         
         val shortName = if (userName.length > 12) userName.trim().split(" ").first() else userName
         dashUserName?.text = shortName.uppercase()
@@ -44,39 +50,7 @@ class HomeFragment : Fragment() {
         val profileBanner = view.findViewById<ImageView>(R.id.memberProfilePic)
         val profileCard = profileBanner?.parent?.let { it.parent as? MaterialCardView }
         
-        val themeColorStr = GymManager.getThemeColor(requireContext())
-        if (!themeColorStr.isNullOrEmpty()) {
-            try {
-                val themeColor = android.graphics.Color.parseColor(themeColorStr)
-                
-                // 1. Avatar background (with subtle alpha)
-                profileCard?.setCardBackgroundColor(themeColor)
-                profileCard?.setStrokeColor(android.content.res.ColorStateList.valueOf(themeColor).withAlpha(100))
-                
-                // 2. Greeting Name color (Glow Effect)
-                dashUserName?.setTextColor(themeColor)
-                
-                // 3. Quick Action Link color
-                view.findViewById<TextView>(R.id.btnBookNow)?.setTextColor(themeColor)
-                
-                // 4. Service Grid Icon Tints (Silent mapping)
-                val iconButtons = listOf(R.id.btnNavBookSession, R.id.btnNavPayment, R.id.btnNavMembership, R.id.btnNavProfile)
-                iconButtons.forEach { id ->
-                    val card = view.findViewById<MaterialCardView>(id)
-                    val layout = card?.getChildAt(0) as? ViewGroup
-                    layout?.let {
-                        for (i in 0 until it.childCount) {
-                            val child = it.getChildAt(i)
-                            if (child is ImageView) {
-                                child.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                profileCard?.setCardBackgroundColor(android.graphics.Color.parseColor("#1AFFFFFF"))
-            }
-        }
+        applyBranding(view)
 
         // Initialize Initials
         val initials = userName.trim().split(" ")
@@ -86,17 +60,13 @@ class HomeFragment : Fragment() {
             .joinToString("")
         initialsText?.text = if (initials.isNotEmpty()) initials else "U"
 
-        // Navigation Handlers (Safe transition)
-        val setupNav = { id: Int, navId: Int ->
-            view.findViewById<View>(id)?.setOnClickListener {
-                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = navId
-            }
-        }
-        
-        setupNav(R.id.btnNavBookSession, R.id.nav_booking)
-        setupNav(R.id.btnNavPayment, R.id.nav_payment)
-        setupNav(R.id.btnNavMembership, R.id.nav_membership)
-        setupNav(R.id.btnNavProfile, R.id.nav_profile)
+        // Membership Plan Preview Setup
+        val rvPreview = view.findViewById<RecyclerView>(R.id.rvMembershipPreview)
+        rvPreview?.layoutManager = LinearLayoutManager(context)
+        fetchMembershipPlans(view)
+
+        // Status Card Clicks (Restricted to Booking)
+
 
         // Status Card Clicks
         val bookClick = View.OnClickListener {
@@ -110,6 +80,122 @@ class HomeFragment : Fragment() {
         
         ThemeUtils.applyThemeToView(view)
         return view
+    }
+
+    private fun applyBranding(view: View) {
+        val ctx = context ?: return
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        val iconColorStr = GymManager.getIconColor(ctx)
+        val textColorStr = GymManager.getTextColor(ctx)
+        val bgColorStr = GymManager.getBgColor(ctx)
+        val cardColorStr = GymManager.getCardColor(ctx)
+        val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
+
+        try {
+            val themeColor = if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
+            val iconColor = if (!iconColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(iconColorStr) else android.graphics.Color.parseColor("#A1A1AA")
+            val textColor = if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
+            val bgColor = if (!bgColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(bgColorStr) else android.graphics.Color.parseColor("#0a090d")
+
+            // 1. Fragment Background
+            view.findViewById<View>(R.id.homeRoot)?.setBackgroundColor(bgColor)
+
+            // 2. Header & User Greeting
+            view.findViewById<TextView>(R.id.dashGreeting)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.dashUserName)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.dashSubGreeting)?.setTextColor(textColor)
+            
+            val profileCard = view.findViewById<View>(R.id.cvProfileImage) as? MaterialCardView
+            profileCard?.setCardBackgroundColor(themeColor)
+            profileCard?.setStrokeColor(android.content.res.ColorStateList.valueOf(themeColor).withAlpha(100))
+
+            // 3. Card Surfaces
+            val cardSurface = if (isAutoCard) {
+                android.graphics.Color.argb(13, android.graphics.Color.red(themeColor), android.graphics.Color.green(themeColor), android.graphics.Color.blue(themeColor))
+            } else {
+                try { android.graphics.Color.parseColor(cardColorStr) } catch(e: Exception) { android.graphics.Color.parseColor("#141216") }
+            }
+
+            val cards = listOf(R.id.todayStatusCard, R.id.cardMembership)
+            cards.forEach { id ->
+                val card = view.findViewById<MaterialCardView>(id)
+                card?.setCardBackgroundColor(cardSurface)
+            }
+
+            // 4. Labels & Buttons
+            view.findViewById<TextView>(R.id.tvUpcomingLabel)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvPlansLabel)?.setTextColor(textColor)
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBookNow)?.let {
+                it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+            }
+            view.findViewById<TextView>(R.id.btnManageMembership)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvMembershipLabel)?.setTextColor(textColor)
+
+            // 5. Icons & Tints (Removed grid icons, but keeping logic for sub-card icons)
+
+            
+            // Sub-card icons
+            val subLayout = view.findViewById<View>(R.id.layoutSessionInfo) as? ViewGroup
+            subLayout?.let {
+                for (i in 0 until it.childCount) {
+                    val child = it.getChildAt(i)
+                    if (child is ImageView) {
+                        child.imageTintList = android.content.res.ColorStateList.valueOf(iconColor)
+                    }
+                }
+            }
+
+            // 6. Refresh RecyclerView if it exists
+            view.findViewById<RecyclerView>(R.id.rvMembershipPreview)?.adapter?.notifyDataSetChanged()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun fetchMembershipPlans(root: View) {
+        val ctx = context ?: return
+        val rvPreview = root.findViewById<RecyclerView>(R.id.rvMembershipPreview) ?: return
+        val tenantId = GymManager.getTenantId(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.getMembershipPlans(tenantId)
+                
+                withContext(Dispatchers.Main) {
+                    val tvPlansLabel = root.findViewById<View>(R.id.tvPlansLabel)
+                    if (response.isSuccessful && response.body() != null && response.body()!!.isNotEmpty()) {
+                        val plans = response.body()!!
+                        tvPlansLabel?.visibility = View.VISIBLE
+                        rvPreview.visibility = View.VISIBLE
+
+                        val adapter = HomePlanAdapter(plans) { plan ->
+                            // Redirect to Membership Fragment
+                            parentFragmentManager.setFragmentResult("plan_selection", bundleOf(
+                                "id" to plan.id,
+                                "name" to plan.name,
+                                "price" to plan.price,
+                                "days" to plan.durationDays
+                            ))
+                            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
+                        }
+                        rvPreview.adapter = adapter
+                    } else {
+                        tvPlansLabel?.visibility = View.GONE
+                        rvPreview.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Plans Fetch Error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    root.findViewById<View>(R.id.tvPlansLabel)?.visibility = View.GONE
+                    root.findViewById<View>(R.id.rvMembershipPreview)?.visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun fetchUpcomingSession(root: View) {
@@ -159,23 +245,31 @@ class HomeFragment : Fragment() {
                             } catch (e: Exception) {
                                 upcoming.time.substringBeforeLast(":") // Fallback
                             }
-                            sessionStatus?.text = "${upcoming.service} at $timeFormatted ($dateLabel)"
+                            sessionStatus?.text = upcoming.service ?: "Session"
+                            
+                            val tvSessionTime = root.findViewById<TextView>(R.id.tvSessionTime)
+                            val tvSessionLocation = root.findViewById<TextView>(R.id.tvSessionLocation)
+                            
+                            tvSessionTime?.text = "$dateLabel, $timeFormatted"
+                            tvSessionLocation?.text = "Studio A" // Placeholder as API doesn't return floor/room yet
+                            
+                            val tvUpcomingLabel = root.findViewById<TextView>(R.id.tvUpcomingLabel)
                             val tColor = GymManager.getThemeColor(requireContext())
-                            sessionStatus?.setTextColor(android.graphics.Color.parseColor(tColor))
+                            tvUpcomingLabel?.setTextColor(android.graphics.Color.parseColor(tColor))
                         } else {
                             sessionStatus?.text = "No Active Bookings"
-                            sessionStatus?.setTextColor(android.graphics.Color.WHITE)
+                            root.findViewById<TextView>(R.id.tvSessionTime)?.text = "Stay productive!"
+                            root.findViewById<TextView>(R.id.tvSessionLocation)?.text = "---"
                         }
                     } else {
                         sessionStatus?.text = "No Active Bookings"
-                        sessionStatus?.setTextColor(android.graphics.Color.WHITE)
+                        root.findViewById<TextView>(R.id.tvSessionTime)?.text = "Stay productive!"
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     val sessionStatus = root.findViewById<TextView>(R.id.sessionStatus)
                     sessionStatus?.text = "No Active Bookings"
-                    sessionStatus?.setTextColor(android.graphics.Color.WHITE)
                 }
             }
         }
@@ -184,6 +278,8 @@ class HomeFragment : Fragment() {
     private fun fetchActiveStatus(root: View) {
         val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         if (userId == -1) return
+        
+        val tvUpcomingLabel = root.findViewById<TextView>(R.id.tvUpcomingLabel) // Reference for color update
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -201,14 +297,12 @@ class HomeFragment : Fragment() {
                         val planText = root.findViewById<TextView>(R.id.membershipPlan)
                         
                         if (active.subscriptionStatus == "Pending Approval") {
-                            statusText?.text = "Pending Approval"
-                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFC107")) // Warning/Amber color
+                            statusText?.text = "${active.planName} (Pending)"
+                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFC107"))
                         } else {
-                            statusText?.text = "Active Member"
-                            statusText?.setTextColor(android.graphics.Color.parseColor("#FFD700")) // Gold color
+                            statusText?.text = active.planName ?: "Active Member"
+                            statusText?.setTextColor(android.graphics.Color.WHITE)
                         }
-                        
-                        planText?.text = "Plan: ${active.planName}"
                         val logoUrl = activity?.intent?.getStringExtra("gym_logo")
                         val gymLogoContainer = root.findViewById<View>(R.id.gymLogoContainer)
                         val gymLogoHeader = root.findViewById<View>(R.id.gymLogoHeader)
@@ -234,15 +328,6 @@ class HomeFragment : Fragment() {
                     planText?.visibility = View.GONE
                 }
             }
-        }
-    }
-
-    private fun getDynamicGreeting(): String {
-        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return when (hour) {
-            in 5..11 -> "Good morning,"
-            in 12..17 -> "Good afternoon,"
-            else -> "Good evening,"
         }
     }
 

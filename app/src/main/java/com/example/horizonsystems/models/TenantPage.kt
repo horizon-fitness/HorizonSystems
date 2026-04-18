@@ -10,6 +10,8 @@ data class TenantPage(
     @SerializedName("page_title") val pageTitle: String?,
     @SerializedName("logo_path") val logoPath: String?,
     @SerializedName("theme_color") val themeColor: String?,
+    @SerializedName("icon_color") val iconColor: String?,
+    @SerializedName("text_color") val textColor: String?,
     @SerializedName("bg_color") val bgColor: String?,
     @SerializedName("font_family") val fontFamily: String?,
     @SerializedName("about_text") val aboutText: String?,

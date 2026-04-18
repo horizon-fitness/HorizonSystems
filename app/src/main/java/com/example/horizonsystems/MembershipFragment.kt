@@ -93,6 +93,8 @@ class MembershipFragment : Fragment() {
                         com.example.horizonsystems.utils.GymManager.updateBranding(
                             ctx,
                             tenant?.themeColor,
+                            tenant?.iconColor,
+                            tenant?.textColor,
                             tenant?.bgColor,
                             tenant?.cardColor,
                             tenant?.autoCardTheme
@@ -236,16 +238,40 @@ class MembershipFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         applyBranding(view)
+
+        // Listen for plan selection from HomeFragment
+        parentFragmentManager.setFragmentResultListener("plan_selection", viewLifecycleOwner) { _, bundle ->
+            val id = bundle.getInt("id")
+            val name = bundle.getString("name") ?: ""
+            val price = bundle.getDouble("price")
+            val days = bundle.getInt("days")
+            
+            if (id != 0) {
+                showConfirmationSheet(id, name, price, days)
+            }
+        }
     }
 
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
+        val iconColorStr = GymManager.getIconColor(ctx)
+        val textColorStr = GymManager.getTextColor(ctx)
+        val bgColorStr = GymManager.getBgColor(ctx)
+        val cardColorStr = GymManager.getCardColor(ctx)
+        val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
+
         if (!themeColorStr.isNullOrEmpty()) {
             try {
                 val themeColor = Color.parseColor(themeColorStr)
-                
-                // 1. Title Accent
+                val iconColor = try { Color.parseColor(iconColorStr) } catch(e:Exception) { Color.parseColor("#A1A1AA") }
+                val textColor = try { Color.parseColor(textColorStr) } catch(e:Exception) { Color.parseColor("#D1D5DB") }
+                val bgColor = try { Color.parseColor(bgColorStr) } catch(e:Exception) { Color.parseColor("#0a090d") }
+
+                // Background Color
+                view.setBackgroundColor(bgColor)
+
+                // Main Color (Theme Color)
                 view.findViewById<TextView>(R.id.tv_membership_theme_subtitle)?.setTextColor(themeColor)
                 
                 // 2. Loading Indicator
@@ -258,8 +284,6 @@ class MembershipFragment : Fragment() {
                 cardActive?.setStrokeColor(themeColor)
                 
                 // Active Card Surface Sync
-                val cardColorStr = GymManager.getCardColor(ctx)
-                val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
                 val cardColor = if (isAutoCard) {
                     val r = Color.red(themeColor)
                     val g = Color.green(themeColor)
@@ -269,6 +293,12 @@ class MembershipFragment : Fragment() {
                     try { Color.parseColor(cardColorStr) } catch(e: Exception) { Color.parseColor("#0D0D10") }
                 }
                 cardActive?.setCardBackgroundColor(ColorStateList.valueOf(cardColor))
+
+                // Text Colors
+                view.findViewById<TextView>(R.id.tvActivePlanName)?.setTextColor(textColor)
+                view.findViewById<TextView>(R.id.tvActivePlanDuration)?.setTextColor(textColor)
+                
+                // (Note: Icon colors could be applied here if there were any icons in this fragment to color)
 
                 // 4. Initial filter state
                 val btnAll = view.findViewById<View>(R.id.btnFilterAll)
