@@ -3,6 +3,7 @@ package com.example.horizonsystems
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.Selection
 import android.text.TextWatcher
 import android.view.View
 import android.widget.ArrayAdapter
@@ -118,6 +119,7 @@ class RegisterActivity : AppCompatActivity() {
             ThemeUtils.applyThemeToView(findViewById(android.R.id.content))
             applyDynamicColors()
             restoreRegistrationData()
+            loadGymContext()
             updateWizardUI()
             setupBackNavigation()
         } catch (e: Exception) {
@@ -193,18 +195,58 @@ class RegisterActivity : AppCompatActivity() {
             if (currentStep > 1) { currentStep--; updateWizardUI() } else finish()
         }
 
+        gymIdEdit.filters = arrayOf(android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            if (start == end) return@InputFilter null
+            
+            val added = source.subSequence(start, end).toString().uppercase()
+            val currentDest = java.lang.StringBuilder(dest.subSequence(0, dstart))
+            val sb = java.lang.StringBuilder()
+            
+            for (i in added.indices) {
+                val c = added[i]
+                val len = currentDest.length
+                if (len < 3) {
+                    if (c.isLetter()) {
+                        currentDest.append(c)
+                        sb.append(c)
+                    }
+                } else if (len == 3) {
+                    if (c == '-') {
+                        currentDest.append(c)
+                        sb.append(c)
+                    } else if (c.isDigit()) {
+                        currentDest.append("-").append(c)
+                        sb.append("-").append(c)
+                    }
+                } else {
+                    if (c.isDigit() && currentDest.length < 8) {
+                        currentDest.append(c)
+                        sb.append(c)
+                    }
+                }
+            }
+            
+            val suffix = dest.subSequence(dend, dest.length)
+            val finalStr = currentDest.toString() + suffix
+            
+            if (finalStr.matches(Regex("^([A-Z]{0,3}|[A-Z]{3}-\\d{0,4})$"))) {
+                sb.toString()
+            } else {
+                ""
+            }
+        })
+        
+        // Fix for the blinking cursor (Selection) jumping to the start
         gymIdEdit.addTextChangedListener(object : TextWatcher {
-            private var isInternal = false
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                if (isInternal) return
-                isInternal = true
-                val original = s.toString().uppercase()
-                val cleaned = original.replace(Regex("[^A-Z0-9]"), "")
-                val f = if (cleaned.length > 3) cleaned.substring(0, 3) + "-" + cleaned.substring(3) else cleaned
-                if (original != f) s?.replace(0, s.length, f)
-                isInternal = false
+                if (s != null && s.isNotEmpty()) {
+                    val sel = Selection.getSelectionEnd(s)
+                    if (sel < s.length) {
+                        Selection.setSelection(s, s.length)
+                    }
+                }
             }
         })
 
@@ -246,7 +288,11 @@ class RegisterActivity : AppCompatActivity() {
     private fun loadGymContext() {
         val code = GymManager.getTenantCode(this)
         val logo = GymManager.getGymLogo(this)
-        if (!code.isNullOrEmpty() && code != "000" && code != "default") {
+        
+        // Strictly empty unless connected to a real gym (not 000, default, or horizon)
+        val isRealGym = !code.isNullOrEmpty() && code != "000" && code != "default" && code != "horizon"
+        
+        if (isRealGym) {
             gymIdEdit.setText(code)
             gymIdEdit.isEnabled = false
             gymIdEdit.alpha = 0.7f
@@ -256,6 +302,12 @@ class RegisterActivity : AppCompatActivity() {
                 findViewById<View>(R.id.gymLogoContainer)?.visibility = View.VISIBLE
                 GymManager.loadLogo(this, logo, logoImg)
             }
+        } else {
+            // If not connected to a gym, ensure it's empty so they can type
+            gymIdEdit.setText("")
+            gymIdEdit.isEnabled = true
+            gymIdEdit.alpha = 1.0f
+            isGymLocked = false
         }
     }
 
@@ -465,15 +517,28 @@ class RegisterActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 if (isRunning || s == null) return
                 isRunning = true
-                val d = s.toString().replace(Regex("\\D"), ""); val f = StringBuilder()
-                for (i in d.indices) {
-                    if (i == 4 || i == 7) f.append("-")
-                    f.append(d[i]); if (f.length >= 13) break
+                
+                val raw = s.toString().replace(Regex("\\D"), "")
+                val formatted = StringBuilder()
+                for (i in raw.indices) {
+                    // PH Format: 09XX-XXX-XXXX
+                    if (i == 4 || i == 7) formatted.append("-")
+                    formatted.append(raw[i])
+                    if (formatted.length >= 13) break
                 }
-                s.replace(0, s.length, f.toString()); isRunning = false
+                
+                val result = formatted.toString()
+                if (s.toString() != result) {
+                    val sel = Selection.getSelectionEnd(s)
+                    s.replace(0, s.length, result)
+                    if (sel <= s.length) Selection.setSelection(s, sel) else Selection.setSelection(s, s.length)
+                }
+                isRunning = false
             }
         }
-        phoneEdit.addTextChangedListener(watcher); parentPhoneEdit.addTextChangedListener(watcher); emergencyPhoneEdit.addTextChangedListener(watcher)
+        phoneEdit.addTextChangedListener(watcher)
+        parentPhoneEdit.addTextChangedListener(watcher)
+        emergencyPhoneEdit.addTextChangedListener(watcher)
     }
 
     private fun setupBackNavigation() {

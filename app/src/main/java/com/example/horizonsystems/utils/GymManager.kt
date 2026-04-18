@@ -153,7 +153,7 @@ object GymManager {
     fun loadLogo(context: Context, logoPath: String?, imageView: ImageView?) {
         if (imageView == null || logoPath.isNullOrEmpty()) return
 
-        val baseUrl = "https://horizonfitnesscorp.gt.tc/horizon/"
+        val baseUrl = "https://horizonfitnesscorp.gt.tc/"
         val fullLogoUrl = when {
             logoPath.startsWith("http") -> logoPath
             logoPath.startsWith("data:image") -> logoPath

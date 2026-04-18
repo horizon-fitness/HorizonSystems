@@ -21,5 +21,8 @@ data class TenantPage(
     @SerializedName("gym_email") val gymEmail: String?,
     @SerializedName("gym_contact") val gymContact: String?,
     @SerializedName("success") val success: Boolean?,
-    @SerializedName("message") val message: String?
+    @SerializedName("message") val message: String?,
+    @SerializedName("status") val status: String?,
+    @SerializedName("is_suspended") val isSuspended: Boolean?,
+    @SerializedName("is_fallback") val isFallback: Boolean?
 )

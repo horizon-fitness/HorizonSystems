@@ -1,6 +1,7 @@
 package com.example.horizonsystems
 
 import android.os.Bundle
+import android.text.Selection
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
@@ -57,29 +58,58 @@ class SwitchGymActivity : AppCompatActivity() {
 
         // Strictly Fixed Formatting (LLL-NNNN)
         tenantCodeEdit.hint = "COR-9820"
-        tenantCodeEdit.filters = arrayOf(android.text.InputFilter.AllCaps(), android.text.InputFilter.LengthFilter(8))
+        tenantCodeEdit.filters = arrayOf(android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            if (start == end) return@InputFilter null
+            
+            val added = source.subSequence(start, end).toString().uppercase()
+            val currentDest = java.lang.StringBuilder(dest.subSequence(0, dstart))
+            val sb = java.lang.StringBuilder()
+            
+            for (i in added.indices) {
+                val c = added[i]
+                val len = currentDest.length
+                if (len < 3) {
+                    if (c.isLetter()) {
+                        currentDest.append(c)
+                        sb.append(c)
+                    }
+                } else if (len == 3) {
+                    if (c == '-') {
+                        currentDest.append(c)
+                        sb.append(c)
+                    } else if (c.isDigit()) {
+                        currentDest.append("-").append(c)
+                        sb.append("-").append(c)
+                    }
+                } else {
+                    if (c.isDigit() && currentDest.length < 8) {
+                        currentDest.append(c)
+                        sb.append(c)
+                    }
+                }
+            }
+            
+            val suffix = dest.subSequence(dend, dest.length)
+            val finalStr = currentDest.toString() + suffix
+            
+            if (finalStr.matches(Regex("^([A-Z]{0,3}|[A-Z]{3}-\\d{0,4})$"))) {
+                sb.toString()
+            } else {
+                ""
+            }
+        })
+        
+        // Fix for the blinking cursor (Selection) jumping to the start
         tenantCodeEdit.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            private var isInternal = false
             override fun afterTextChanged(s: android.text.Editable?) {
-                if (isInternal) return
-                isInternal = true
-                val original = s.toString()
-                val cleaned = original.replace("-", "")
-                
-                var formatted = ""
-                for (i in cleaned.indices) {
-                    formatted += cleaned[i]
-                    if (i == 2 && cleaned.length > 3) {
-                        formatted += "-"
+                if (s != null && s.isNotEmpty()) {
+                    val sel = Selection.getSelectionEnd(s)
+                    if (sel < s.length) {
+                        Selection.setSelection(s, s.length)
                     }
                 }
-                
-                if (original != formatted) {
-                    s?.replace(0, s.length, formatted)
-                }
-                isInternal = false
             }
         })
 
@@ -117,7 +147,6 @@ class SwitchGymActivity : AppCompatActivity() {
             )
             Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
             updateCurrentGymUI()
-            // Card will auto-hide since isDefault becomes true
         }
 
         checkCameraPermission()
@@ -268,7 +297,6 @@ class SwitchGymActivity : AppCompatActivity() {
         if (targetCode != null) {
             isScanning = false // Stop processing new frames
             runOnUiThread {
-                Toast.makeText(this, "Code Detected: $targetCode", Toast.LENGTH_SHORT).show()
                 switchGym(targetCode)
             }
         }
@@ -317,7 +345,14 @@ class SwitchGymActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val tenant = response.body()
                         if (tenant != null && tenant.success != false) {
-                            // Persist selection for global app use
+                            // 1. Handle Automatic Fallback Notification
+                            if (tenant.isFallback == true) {
+                                Toast.makeText(this@SwitchGymActivity, "Gym not found. Connected to Horizon Default.", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(this@SwitchGymActivity, "Connected to ${tenant.gymName ?: "Gym"}", Toast.LENGTH_SHORT).show()
+                            }
+
+                            // 2. Persist selection for global app use
                             GymManager.saveGymData(
                                 this@SwitchGymActivity,
                                 tenant.pageSlug ?: slug,
@@ -328,7 +363,6 @@ class SwitchGymActivity : AppCompatActivity() {
                                 tenant.themeColor,
                                 tenant.bgColor
                             )
-                            Toast.makeText(this@SwitchGymActivity, "Connected to ${tenant.gymName ?: "Gym"}", Toast.LENGTH_SHORT).show()
                             updateCurrentGymUI()
                             
                             // Delay slightly so the user sees the "Connected" state and branding
@@ -339,6 +373,16 @@ class SwitchGymActivity : AppCompatActivity() {
                                 startActivity(intent)
                                 finish()
                             }, 1500)
+                        } else if (tenant?.isSuspended == true || tenant?.success == false) {
+                             // 3. Handle Restricted Connection (Suspended, Deactivated, Unpaid, Pending)
+                             isScanning = true
+                             val failureMsg = tenant?.message ?: "This gym is currently restricted. Please contact support."
+                             
+                             com.google.android.material.dialog.MaterialAlertDialogBuilder(this@SwitchGymActivity)
+                                 .setTitle("Connection Restricted")
+                                 .setMessage(failureMsg)
+                                 .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                 .show()
                         } else {
                             isScanning = true
                             val msg = tenant?.message ?: "Gym not found. Please verify the code."

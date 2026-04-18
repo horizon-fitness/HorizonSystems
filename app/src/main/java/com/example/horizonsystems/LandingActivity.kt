@@ -37,6 +37,8 @@ class LandingActivity : AppCompatActivity() {
     private var loginScrollView: NestedScrollView? = null
     private var dashContainer: LinearLayout? = null
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Temporarily disabled to rule out API level issues
@@ -240,7 +242,7 @@ class LandingActivity : AppCompatActivity() {
         if (!logoUrl.isNullOrEmpty()) {
             gymLogoContainer?.visibility = android.view.View.VISIBLE
             
-            val baseUrl = "https://horizonfitnesscorp.gt.tc/horizon/"
+            val baseUrl = "https://horizonfitnesscorp.gt.tc/"
             val fullLogoUrl = when {
                 logoUrl.startsWith("http") -> logoUrl
                 logoUrl.startsWith("data:image") -> logoUrl
@@ -313,11 +315,6 @@ class LandingActivity : AppCompatActivity() {
         super.onResume()
         // Always refresh branding from cache to show changes after switching gyms
         prefillUIFromCache()
-        
-        if (isBypassed) {
-            val slug = GymManager.getGymSlug(this)
-            fetchTenantBranding(slug)
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -365,20 +362,25 @@ class LandingActivity : AppCompatActivity() {
                     val tenant = response.body()
                     Log.d("LandingActivity", "Branding Fetch Success: ${tenant?.pageTitle}")
                     withContext(Dispatchers.Main) {
-                        tenant?.let {
-                            // Persist all data
-                            GymManager.saveGymData(
-                                this@LandingActivity, 
-                                it.pageSlug ?: "default", 
-                                it.gymId ?: 0, 
-                                it.tenantCode ?: "000", 
-                                it.gymName ?: "Unknown",
-                                it.logoPath,
-                                it.themeColor,
-                                it.bgColor
-                            )
-                            updateUIWithBranding(it)
-                            applyDynamicColors(it)
+                        if (tenant != null && (tenant.success == false || tenant.isSuspended == true)) {
+                            // Enforce Restriction: Auto-Disconnect
+                            handleRestrictedGym(tenant.message ?: "This gym is currently restricted.")
+                        } else {
+                            tenant?.let {
+                                // Persist all data
+                                GymManager.saveGymData(
+                                    this@LandingActivity, 
+                                    it.pageSlug ?: "default", 
+                                    it.gymId ?: 0, 
+                                    it.tenantCode ?: "000", 
+                                    it.gymName ?: "Unknown",
+                                    it.logoPath,
+                                    it.themeColor,
+                                    it.bgColor
+                                )
+                                updateUIWithBranding(it)
+                                applyDynamicColors(it)
+                            }
                         }
                     }
                 } else {
@@ -388,6 +390,34 @@ class LandingActivity : AppCompatActivity() {
                 Log.e("LandingActivity", "Error fetching branding: ${e.message}")
             }
         }
+    }
+
+    private fun handleRestrictedGym(message: String) {
+        // 1. Show Blocking Alert
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle("Connection Terminated")
+            .setMessage(message + "\n\nYou have been automatically disconnected.")
+            .setCancelable(false)
+            .setPositiveButton("OK") { d, _ -> 
+                d.dismiss()
+                disconnectGym()
+            }
+            .show()
+    }
+
+    private fun disconnectGym() {
+        // 2. Clear Gym Data (Revert to Horizon Systems)
+        GymManager.saveGymData(
+            this,
+            "horizon", 1, "000", "HORIZON SYSTEMS",
+            "assests/horizon logo.png", "#8c2bee", "#0a090d"
+        )
+        // 3. Refresh UI to default
+        prefillUIFromCache()
+        applyDynamicColors("#8c2bee")
+        findViewById<android.view.View>(R.id.rootLayout)?.setBackgroundColor(android.graphics.Color.parseColor("#0a090d"))
+        
+        Toast.makeText(this, "Disconnected from gym due to account restrictions.", Toast.LENGTH_LONG).show()
     }
 
     private fun prefillUIFromCache() {
