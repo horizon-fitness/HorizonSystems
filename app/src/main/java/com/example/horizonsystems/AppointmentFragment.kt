@@ -1,6 +1,7 @@
 package com.example.horizonsystems
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,11 @@ import com.example.horizonsystems.utils.ThemeUtils
 
 class AppointmentFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_appointment, container, false)
+        val view = try {
+            inflater.inflate(R.layout.fragment_appointment, container, false)
+        } catch (e: Exception) {
+            null
+        } ?: return null
 
         val rvMeetingRequests = view.findViewById<RecyclerView>(R.id.rvMeetingRequests)
 
@@ -22,8 +27,10 @@ class AppointmentFragment : Fragment() {
             Appointment("2", "Personal Trainer Meetup", "Mar 25, 2024", "02:00 PM", "Initial consultation", "Approved")
         )
 
-        rvMeetingRequests.layoutManager = LinearLayoutManager(requireContext())
-        rvMeetingRequests.adapter = AppointmentAdapter(sampleAppointments)
+        rvMeetingRequests?.let {
+            it.layoutManager = LinearLayoutManager(context ?: return@let)
+            it.adapter = AppointmentAdapter(sampleAppointments)
+        }
 
         ThemeUtils.applyThemeToView(view)
 

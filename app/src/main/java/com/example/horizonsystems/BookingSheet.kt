@@ -47,12 +47,13 @@ class BookingSheet : BottomSheetDialogFragment() {
     private val paymentResultLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        val ctx = context ?: return@registerForActivityResult
         if (result.resultCode == android.app.Activity.RESULT_OK) {
-            Toast.makeText(requireContext(), "Payment Successful! Booking Confirmed.", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, "Payment Successful! Booking Confirmed.", Toast.LENGTH_LONG).show()
             onBookingCreated?.invoke()
             dismiss()
         } else {
-            Toast.makeText(requireContext(), "Payment Cancelled or Failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "Payment Cancelled or Failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -61,7 +62,12 @@ class BookingSheet : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.sheet_booking, container, false)
+        val view = try {
+            inflater.inflate(R.layout.sheet_booking, container, false)
+        } catch (e: Exception) {
+            Log.e("BookingSheet", "Inflation error: ${e.message}")
+            null
+        } ?: return null
 
         val editService = view.findViewById<MaterialAutoCompleteTextView>(R.id.bookService)
         val editCoach = view.findViewById<MaterialAutoCompleteTextView>(R.id.bookCoach)
@@ -71,9 +77,9 @@ class BookingSheet : BottomSheetDialogFragment() {
         txtCoachFeeInfo = view.findViewById(R.id.txtCoachFeeInfo)
 
         // Force dropdown on click
-        editService.setOnClickListener { editService.showDropDown() }
-        editCoach.setOnClickListener { editCoach.showDropDown() }
-        editDuration.setOnClickListener { editDuration.showDropDown() }
+        editService?.setOnClickListener { editService.showDropDown() }
+        editCoach?.setOnClickListener { editCoach.showDropDown() }
+        editDuration?.setOnClickListener { editDuration.showDropDown() }
 
         val editDate = view.findViewById<TextInputEditText>(R.id.bookDate)
         val editTime = view.findViewById<TextInputEditText>(R.id.bookTime)
@@ -81,16 +87,17 @@ class BookingSheet : BottomSheetDialogFragment() {
 
         // Duration Setup
         val durations = listOf("1 Hour", "2 Hours", "3 Hours")
-        editDuration.setAdapter(ArrayAdapter(requireContext(), R.layout.item_dropdown, durations))
-        editDuration.setText("1 Hour", false)
-        editDuration.addTextChangedListener(object: TextWatcher {
+        val ctx = context ?: return view
+        editDuration?.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, durations))
+        editDuration?.setText("1 Hour", false)
+        editDuration?.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) { updatePrice() }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
         // Date Picker
-        editDate.setOnClickListener {
+        editDate?.setOnClickListener {
             val constraintsBuilder = CalendarConstraints.Builder()
                 .setValidator(DateValidatorPointForward.now())
             val datePicker = MaterialDatePicker.Builder.datePicker()
@@ -108,12 +115,12 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
 
         // Time Picker
-        editTime.setOnClickListener {
+        editTime?.setOnClickListener {
             val calendar = Calendar.getInstance()
-            TimePickerDialog(requireContext(), { _, hour, minute ->
+            TimePickerDialog(context ?: return@setOnClickListener, { _, hour, minute ->
                 // Rule: 7 AM (07:00) to 10 PM (22:00)
                 if (hour < 7 || hour > 22 || (hour == 22 && minute > 0)) {
-                    Toast.makeText(requireContext(), "Bookings are only available from 7 AM to 10 PM", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context ?: return@TimePickerDialog, "Bookings are only available from 7 AM to 10 PM", Toast.LENGTH_LONG).show()
                     return@TimePickerDialog
                 }
                 
@@ -127,18 +134,18 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
 
         // Service Selection Logic
-        editService.addTextChangedListener(object : TextWatcher {
+        editService?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val serviceName = s?.toString() ?: ""
                 val isPT = serviceName.contains("Personal Training", ignoreCase = true)
                 
                 if (isPT) {
-                    editCoach.text.clear()
-                    fetchCoaches(editCoach, skipSelfTrain = true)
+                    editCoach?.text?.clear()
+                    if (editCoach != null) fetchCoaches(editCoach, skipSelfTrain = true)
                 } else {
                     selectedCoachId = null
-                    editCoach.setText("General Workout (Self-Train)", false)
+                    editCoach?.setText("General Workout (Self-Train)", false)
                     currentCoachFee = 0.0
                     updatePrice()
                 }
@@ -146,7 +153,7 @@ class BookingSheet : BottomSheetDialogFragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        editCoach.setOnItemClickListener { parent, _, position, _ ->
+        editCoach?.setOnItemClickListener { parent, _, position, _ ->
             val coachName = parent.getItemAtPosition(position) as String
             if (coachName.contains("Self-Train", ignoreCase = true)) {
                 selectedCoachId = null
@@ -158,19 +165,19 @@ class BookingSheet : BottomSheetDialogFragment() {
             updatePrice()
         }
 
-        btnSubmit.setOnClickListener {
-            val date = editDate.text.toString()
-            val time = editTime.tag?.toString() ?: ""
-            val serviceName = editService.text.toString()
+        btnSubmit?.setOnClickListener {
+            val date = editDate?.text.toString()
+            val time = editTime?.tag?.toString() ?: ""
+            val serviceName = editService?.text.toString()
             if (serviceName.isEmpty() || date.isEmpty() || time.isEmpty()) {
-                Toast.makeText(requireContext(), "Fill all booking details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context ?: return@setOnClickListener, "Fill all booking details", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val service = services.find { it.serviceName == serviceName } ?: GymService(1, serviceName, 100.0, 60)
             checkAvailabilityAndPay(service, date, time)
         }
         
-        fetchServices(editService)
+        if (editService != null) fetchServices(editService)
         updatePrice()
         
         ThemeUtils.applyThemeToView(view)
@@ -179,28 +186,36 @@ class BookingSheet : BottomSheetDialogFragment() {
     }
 
     private fun updatePrice() {
-        val durationText = editDuration.text.toString()
+        val durationText = if (::editDuration.isInitialized) editDuration.text.toString() else "1 Hour"
         val hours = durationText.filter { it.isDigit() }.toIntOrNull() ?: 1
         
         val total = (currentBasePrice + currentCoachFee) * hours
-        txtTotalPrice.text = "₱%.2f".format(total)
+        if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "₱%.2f".format(total)
         
         if (currentCoachFee > 0) {
-            val themeColor = GymManager.getThemeColor(requireContext())
-            txtCoachFeeInfo.text = "+₱120.00 COACH FEE / HR"
-            txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor(themeColor))
+            val themeColorStr = context?.let { GymManager.getThemeColor(it) }
+            val themeColor = try {
+                if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#A855F7")
+            } catch (e: Exception) { android.graphics.Color.parseColor("#A855F7") }
+            
+            if (::txtCoachFeeInfo.isInitialized) {
+                txtCoachFeeInfo.text = "+₱120.00 COACH FEE / HR"
+                txtCoachFeeInfo.setTextColor(themeColor)
+            }
         } else {
-            txtCoachFeeInfo.text = "NO COACH FEE"
-            txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor("#10B981"))
+            if (::txtCoachFeeInfo.isInitialized) {
+                txtCoachFeeInfo.text = "NO COACH FEE"
+                txtCoachFeeInfo.setTextColor(android.graphics.Color.parseColor("#10B981"))
+            }
         }
     }
 
     private fun checkAvailabilityAndPay(service: GymService, date: String, time: String) {
-        val context = requireContext()
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(context)
-        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
-        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
-        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+        val ctx = context ?: return
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
+        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
+        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
+        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -210,7 +225,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                     if (response.isSuccessful && response.body()?.available == true) {
                         initiatePayment(service, date, time)
                     } else {
-                        Toast.makeText(context, response.body()?.message ?: "Session unavailable.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, response.body()?.message ?: "Session unavailable.", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
@@ -220,10 +235,10 @@ class BookingSheet : BottomSheetDialogFragment() {
     }
 
     private fun fetchCoaches(spinner: MaterialAutoCompleteTextView, skipSelfTrain: Boolean = false) {
-        val context = requireContext()
-        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
-        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
-        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+        val ctx = context ?: return
+        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
+        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
+        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -240,17 +255,17 @@ class BookingSheet : BottomSheetDialogFragment() {
                             names.addAll(it.map { c -> "${c.firstName} ${c.lastName}" })
                         }
                     }
-                    spinner.setAdapter(ArrayAdapter(context, R.layout.item_dropdown, names))
+                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, names))
                 }
             } catch (e: Exception) { Log.e("Booking", "Coach error: ${e.message}") }
         }
     }
 
     private fun fetchServices(spinner: MaterialAutoCompleteTextView) {
-        val context = requireContext()
-        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
-        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
-        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+        val ctx = context ?: return
+        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
+        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
+        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -264,24 +279,24 @@ class BookingSheet : BottomSheetDialogFragment() {
                         services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
                         services.add(GymService(2, "Personal Training", 150.0, 60))
                     }
-                    spinner.setAdapter(ArrayAdapter(context, R.layout.item_dropdown, services.map { it.serviceName }))
+                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
                     services.add(GymService(2, "Personal Training", 150.0, 60))
-                    spinner.setAdapter(ArrayAdapter(context, R.layout.item_dropdown, services.map { it.serviceName }))
+                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
                 }
             }
         }
     }
 
     private fun initiatePayment(service: GymService, date: String, time: String) {
-        val context = requireContext()
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(context)
-        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
+        val ctx = context ?: return
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
+        val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
         
-        val durationText = editDuration.text.toString()
+        val durationText = if (::editDuration.isInitialized) editDuration.text.toString() else "1 Hour"
         val hours = durationText.filter { it.isDigit() }.toIntOrNull() ?: 1
         val amountPesos = (currentBasePrice + currentCoachFee) * hours
         val amountCentavos = (amountPesos * 100).toInt()
@@ -317,13 +332,13 @@ class BookingSheet : BottomSheetDialogFragment() {
                 val res = payApi.createCheckoutSession(PayMongoApi.getAuthHeader(), checkoutRequest)
                 withContext(Dispatchers.Main) {
                     if (res.isSuccessful && res.body()?.data != null) {
-                        val intentPayMongo = Intent(requireContext(), PayMongoActivity::class.java).apply {
+                        val intentPayMongo = Intent(ctx, PayMongoActivity::class.java).apply {
                             putExtra("checkout_url", res.body()!!.data!!.attributes.checkoutUrl)
                         }
                         paymentResultLauncher.launch(intentPayMongo)
-                    } else { Toast.makeText(requireContext(), "Payment Error", Toast.LENGTH_LONG).show() }
+                    } else { Toast.makeText(ctx, "Payment Error", Toast.LENGTH_LONG).show() }
                 }
-            } catch (e: Exception) { withContext(Dispatchers.Main) { Toast.makeText(requireContext(), "Network Error", Toast.LENGTH_SHORT).show() } }
+            } catch (e: Exception) { withContext(Dispatchers.Main) { Toast.makeText(ctx, "Network Error", Toast.LENGTH_SHORT).show() } }
         }
     }
 

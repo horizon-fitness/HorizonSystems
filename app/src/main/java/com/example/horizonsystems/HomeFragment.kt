@@ -31,10 +31,15 @@ class HomeFragment : Fragment() {
 
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
-        val shortName = if (userName.length > 6) userName.take(3).uppercase() else userName.uppercase()
-        dashUserName?.text = shortName
+        val dashGreeting = view.findViewById<TextView>(R.id.dashGreeting)
         
-        // Profile Avatar & Theme Setup (Hardened)
+        // Dynamic Time-based Greeting
+        dashGreeting?.text = getDynamicGreeting()
+        
+        val shortName = if (userName.length > 12) userName.trim().split(" ").first() else userName
+        dashUserName?.text = shortName.uppercase()
+        
+        // Profile Avatar & Theme Setup (Ultra-Modern Glass)
         val initialsText = view.findViewById<TextView>(R.id.memberInitials)
         val profileBanner = view.findViewById<ImageView>(R.id.memberProfilePic)
         val profileCard = profileBanner?.parent?.let { it.parent as? MaterialCardView }
@@ -44,37 +49,32 @@ class HomeFragment : Fragment() {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
                 
-                // 1. Avatar background
+                // 1. Avatar background (with subtle alpha)
                 profileCard?.setCardBackgroundColor(themeColor)
+                profileCard?.setStrokeColor(android.content.res.ColorStateList.valueOf(themeColor).withAlpha(100))
                 
-                // 2. Greeting Name color
+                // 2. Greeting Name color (Glow Effect)
                 dashUserName?.setTextColor(themeColor)
                 
-                // 3. Quick Action "BOOK" link
+                // 3. Quick Action Link color
                 view.findViewById<TextView>(R.id.btnBookNow)?.setTextColor(themeColor)
                 
-                // 4. Service Grid Icon Tints (Safe Mapping)
-                val serviceIcons = mapOf(
-                    R.id.btnNavBookSession to R.drawable.ic_booking,
-                    R.id.btnNavPayment to R.drawable.ic_payment,
-                    R.id.btnNavMembership to R.drawable.ic_membership,
-                    R.id.btnNavProfile to R.drawable.ic_profile
-                )
-                
-                serviceIcons.forEach { (cardId, _) ->
-                    val card = view.findViewById<MaterialCardView>(cardId)
-                    // Traverse hierarchy safely: CardView -> LinearLayout -> ImageView
+                // 4. Service Grid Icon Tints (Silent mapping)
+                val iconButtons = listOf(R.id.btnNavBookSession, R.id.btnNavPayment, R.id.btnNavMembership, R.id.btnNavProfile)
+                iconButtons.forEach { id ->
+                    val card = view.findViewById<MaterialCardView>(id)
                     val layout = card?.getChildAt(0) as? ViewGroup
-                    for (i in 0 until (layout?.childCount ?: 0)) {
-                        val child = layout?.getChildAt(i)
-                        if (child is ImageView) {
-                            child.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
-                            break
+                    layout?.let {
+                        for (i in 0 until it.childCount) {
+                            val child = it.getChildAt(i)
+                            if (child is ImageView) {
+                                child.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                            }
                         }
                     }
                 }
             } catch (e: Exception) {
-                profileCard?.setCardBackgroundColor(android.graphics.Color.parseColor("#7f13ec"))
+                profileCard?.setCardBackgroundColor(android.graphics.Color.parseColor("#1AFFFFFF"))
             }
         }
 
@@ -234,6 +234,15 @@ class HomeFragment : Fragment() {
                     planText?.visibility = View.GONE
                 }
             }
+        }
+    }
+
+    private fun getDynamicGreeting(): String {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return when (hour) {
+            in 5..11 -> "Good morning,"
+            in 12..17 -> "Good afternoon,"
+            else -> "Good evening,"
         }
     }
 

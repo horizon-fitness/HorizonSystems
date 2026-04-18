@@ -26,36 +26,41 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val log = logs[position]
-        holder.date.text = log.date
-        // Format Time to 12h: hh:mm AM/PM
+        val log = logs.getOrNull(position) ?: return
+        
+        holder.date.text = log.date ?: "N/A"
+        
+        // Format Time to 12h: hh:mm AM/PM (Null-Safe)
         val timeFormatted = try {
+            val sessionTime = log.time ?: "00:00:00"
             val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
             val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
-            val dateObj = sdf24.parse(log.time)
+            val dateObj = sdf24.parse(sessionTime)
             sdf12.format(dateObj!!)
         } catch (e: Exception) {
-            log.time.substringBeforeLast(":") // Fallback
+            (log.time ?: "00:00").substringBeforeLast(":") // Fallback
         }
-        holder.time.text = "$timeFormatted - ${log.duration}"
-        holder.service.text = log.service
+        holder.time.text = "$timeFormatted - ${log.duration ?: "0m"}"
+        holder.service.text = log.service ?: "Service"
         
         // Smart Trainer Label: "Self" vs "Trainer: Name"
-        holder.trainer.text = if (log.trainer.equals("Self", ignoreCase = true)) "Self" else "Trainer: ${log.trainer}"
+        val trainerName = log.trainer ?: "Self"
+        holder.trainer.text = if (trainerName.equals("Self", ignoreCase = true)) "Self" else "Trainer: $trainerName"
         
-        // Status Mapping: "CANCELLED" -> "REJECTED" for clearer donor/member communication
-        val displayStatus = if (log.status.equals("CANCELLED", ignoreCase = true)) "REJECTED" else log.status.uppercase()
+        // Status Mapping: "CANCELLED" -> "REJECTED" for clearer communication
+        val rawStatus = log.status?.uppercase() ?: "PENDING"
+        val displayStatus = if (rawStatus == "CANCELLED") "REJECTED" else rawStatus
         holder.status.text = displayStatus
 
-        // Status coloring
-        val tintColor: String = when (log.status.uppercase()) {
+        // Status coloring (Robust)
+        val tintColor: String = when (rawStatus) {
             "APPROVED", "CONFIRMED", "ACTIVE" -> "#1A10B981"
             "PENDING" -> "#1AF59E0B"
             "REJECTED", "CANCELLED" -> "#1AEF4444"
             "COMPLETED" -> "#1AFFFFFF"
             else -> "#0DFFFFFF"
         }
-        val textColor: String = when (log.status.uppercase()) {
+        val textColor: String = when (rawStatus) {
             "APPROVED", "CONFIRMED", "ACTIVE" -> "#10B981"
             "PENDING" -> "#F59E0B"
             "REJECTED", "CANCELLED" -> "#EF4444"
@@ -63,8 +68,12 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
             else -> "#9CA3AF"
         }
 
-        holder.status.setTextColor(android.graphics.Color.parseColor(textColor))
-        holder.status.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(tintColor))
+        try {
+            holder.status.setTextColor(android.graphics.Color.parseColor(textColor))
+            holder.status.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(tintColor))
+        } catch (e: Exception) {
+            holder.status.setTextColor(android.graphics.Color.WHITE)
+        }
     }
 
     fun updateLogs(newLogs: List<TrainingLog>) {

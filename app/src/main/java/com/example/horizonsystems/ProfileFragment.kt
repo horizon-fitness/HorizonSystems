@@ -5,8 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.ImageView
+import android.content.res.ColorStateList
+import android.graphics.Color
 import androidx.fragment.app.Fragment
 import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class ProfileFragment : Fragment() {
 
@@ -16,7 +20,7 @@ class ProfileFragment : Fragment() {
         // Hide top notifications icon when on Profile screen
         (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
-        ThemeUtils.applyThemeToView(view)
+        applyBranding(view)
         refreshUI()
 
         // Sign Out Logic
@@ -29,7 +33,6 @@ class ProfileFragment : Fragment() {
             try {
                 NotificationSheet().show(parentFragmentManager, "notifications")
             } catch (e: Exception) {
-                // Handle fragment state errors
             }
         }
 
@@ -42,7 +45,6 @@ class ProfileFragment : Fragment() {
                 }
                 sheet.show(parentFragmentManager, "edit_profile_full")
             } catch (e: Exception) {
-                // Handle fragment state errors
             }
         }
         // Change Password
@@ -50,10 +52,37 @@ class ProfileFragment : Fragment() {
             try {
                 ChangePasswordSheet().show(parentFragmentManager, "change_password")
             } catch (e: Exception) {
-                // Handle fragment state errors
             }
         }
+    }
 
+    private fun applyBranding(view: View) {
+        val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(requireContext())
+        if (!themeColorStr.isNullOrEmpty()) {
+            try {
+                val themeColor = android.graphics.Color.parseColor(themeColorStr)
+                val themeList = android.content.res.ColorStateList.valueOf(themeColor)
+                
+                // 1. Name Highlight
+                view.findViewById<TextView>(R.id.profileName)?.setTextColor(themeColor)
+                
+                // 2. Avatar Edit Icon
+                view.findViewById<ImageView>(R.id.iv_profile_edit_icon)?.imageTintList = themeList
+                
+                // 3. Hub Icons
+                val icons = listOf(
+                    R.id.iconUsername, R.id.iconMemberCode, R.id.iconPhone, 
+                    R.id.iconAddress, R.id.iconMenuNotify, R.id.iconMenuInfo, R.id.iconMenuSecure
+                )
+                icons.forEach { iconId ->
+                    view.findViewById<ImageView>(iconId)?.imageTintList = themeList
+                }
+
+                // 4. Role Accent 
+                view.findViewById<TextView>(R.id.profileRole)?.setTextColor(themeColor)
+                
+            } catch (e: Exception) {}
+        }
     }
 
     fun refreshUI() {

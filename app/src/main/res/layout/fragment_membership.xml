@@ -3,541 +3,266 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark">
+    android:background="@android:color/transparent"
+    android:fillViewport="true"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="24dp"
-        android:paddingHorizontal="24dp"
-        android:paddingBottom="24dp">
+        android:paddingTop="32dp"
+        android:paddingBottom="48dp"
+        android:clipChildren="false">
 
-        <!-- Header -->
+        <!-- Header Padding Container -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CHOOSE YOUR "
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="STRENGTH"
-                android:textColor="#A855F7"
-                android:textSize="24sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="sans-serif-black" />
-        </LinearLayout>
-
-        <!-- Loading Indicator -->
-        <ProgressBar
-            android:id="@+id/membershipLoading"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:indeterminateTint="#A855F7"
-            android:visibility="visible" />
-
-        <!-- Active Membership Card (Dynamic) -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardActiveMembership"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/surface_dark"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:strokeColor="#A855F7"
-            app:strokeWidth="2dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="24dp">
-
-                <TextView
-                    android:id="@+id/tvActivePlanBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/badge_premium"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="ACTIVE PLAN"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvActivePlanName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:text="MONTHLY PASS"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:fontFamily="sans-serif-black"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/tvActivePlanBadge" />
-
-                <TextView
-                    android:id="@+id/tvActivePlanStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="12dp"
-                    android:text="Pending Approval"
-                    android:textColor="#FFC107"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanName"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/tvActivePlanName" />
-
-                <TextView
-                    android:id="@+id/tvActivePlanDuration"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="12dp"
-                    android:text="Ends on: Apr 30, 2026"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanStatus"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/tvActivePlanName" />
-
-                <View
-                    android:id="@+id/activePlanDivider"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
-                    android:background="#1AFFFFFF"
-                    app:layout_constraintTop_toBottomOf="@id/tvActivePlanDuration"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvDaysRemaining"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="30 Days Remaining"
-                    android:textColor="#A855F7"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@id/activePlanDivider"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:id="@+id/layoutPlanSelectionHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
+            android:paddingHorizontal="24dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CHOOSE YOUR "
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:id="@+id/tv_membership_theme_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STRENGTH"
+                    android:textColor="#A855F7"
+                    android:textSize="24sp"
+                    android:textStyle="bold|italic"
+                    android:fontFamily="sans-serif-black" />
+            </LinearLayout>
+
+            <!-- Loading Indicator -->
+            <ProgressBar
+                android:id="@+id/membershipLoading"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:visibility="visible" />
+
+            <!-- Active Membership Card (Dynamic) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardActiveMembership"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#A855F7"
+                app:strokeWidth="2dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/tvActivePlanBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/badge_premium"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="ACTIVE PLAN"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvActivePlanName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:text="MONTHLY PASS"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif-black"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvActivePlanBadge" />
+
+                    <TextView
+                        android:id="@+id/tvActivePlanStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Pending Approval"
+                        android:textColor="#FFC107"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/tvActivePlanName"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvActivePlanDuration"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Ends on: Apr 30, 2026"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvActivePlanStatus"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <View
+                        android:id="@+id/activePlanDivider"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="20dp"
+                        android:background="#1AFFFFFF"
+                        app:layout_constraintTop_toBottomOf="@id/tvActivePlanDuration"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvDaysRemaining"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="30 Days Remaining"
+                        android:textColor="#A855F7"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/activePlanDivider"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/layoutPlanSelectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="SELECT A PLAN TO UNLOCK FULL ACCESS"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.05" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Dynamic Plan Selection (Fixed Clipping) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPlanSelection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <!-- Membership History Filter -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilterAll"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="ALL"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:paddingHorizontal="20dp"
+                    app:backgroundTint="#A855F7"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilterPending"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="12dp"
+                    android:text="PENDING"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:paddingHorizontal="20dp"
+                    app:backgroundTint="#1AFFFFFF"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilterApproved"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="12dp"
+                    android:text="APPROVED"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:paddingHorizontal="20dp"
+                    app:backgroundTint="#1AFFFFFF"
+                    app:cornerRadius="18dp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="SELECT A PLAN TO UNLOCK FULL ACCESS"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
-                android:letterSpacing="0.05" />
-        </LinearLayout>
-
-        <!-- Plan Cards -->
-        <HorizontalScrollView
-            android:id="@+id/layoutPlanSelectionScroll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:clipToPadding="false"
-            android:scrollbars="none"
-            android:visibility="gone">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="16dp">
-
-                <!-- Monthly Pass -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardMonthly"
-                    android:layout_width="300dp"
-                    android:layout_height="460dp"
-                    android:layout_marginEnd="20dp"
-                    app:cardBackgroundColor="@color/surface_dark"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeColor="#1AFFFFFF"
-                    app:strokeWidth="1dp">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="28dp">
-                        <TextView
-                            android:id="@+id/monthlyLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="MONTHLY PASS"
-                            android:textColor="@color/white"
-                            android:textSize="22sp"
-                            android:fontFamily="sans-serif-black"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <TextView
-                            android:id="@+id/monthlyDesc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="30 Days Unlimited Access"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            app:layout_constraintTop_toBottomOf="@id/monthlyLabel"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <View
-                            android:id="@+id/monthlyDivider"
-                            android:layout_width="40dp"
-                            android:layout_height="3dp"
-                            android:layout_marginTop="20dp"
-                            android:background="#BC8CF2"
-                            app:layout_constraintTop_toBottomOf="@id/monthlyDesc"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <LinearLayout
-                            android:id="@+id/monthlyPrice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:orientation="horizontal"
-                            android:gravity="bottom"
-                            app:layout_constraintTop_toBottomOf="@id/monthlyDivider"
-                            app:layout_constraintStart_toStartOf="parent">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₱"
-                                android:textColor="@color/white"
-                                android:textSize="24sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="6dp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="1,500"
-                                android:textColor="@color/white"
-                                android:textSize="48sp"
-                                android:fontFamily="sans-serif-black" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="32dp"
-                            android:orientation="vertical"
-                            app:layout_constraintTop_toBottomOf="@id/monthlyPrice">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• Full gym equipment access" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Locker Room &amp; Shower" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Free Wi-Fi" android:textColor="@color/white" android:alpha="0.8" />
-                        </LinearLayout>
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSelectMonthly"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="Choose Plan"
-                            android:textStyle="bold"
-                            app:cornerRadius="16dp"
-                            app:backgroundTint="@color/surface_dark"
-                            app:strokeColor="#BC8CF2"
-                            app:strokeWidth="1dp"
-                            app:layout_constraintBottom_toBottomOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Quarterly Elite -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardQuarterly"
-                    android:layout_width="300dp"
-                    android:layout_height="460dp"
-                    android:layout_marginEnd="20dp"
-                    app:cardBackgroundColor="@color/surface_dark"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="8dp"
-                    app:strokeColor="#BC8CF2"
-                    app:strokeWidth="2dp">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="28dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/badge_premium"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="4dp"
-                            android:text="POPULAR"
-                            android:textColor="@color/white"
-                            android:textSize="10sp"
-                            android:textStyle="bold"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
-                        <TextView
-                            android:id="@+id/quarterlyLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="QUARTERLY ELITE"
-                            android:textColor="@color/white"
-                            android:textSize="22sp"
-                            android:fontFamily="sans-serif-black"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <TextView
-                            android:id="@+id/quarterlyDesc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="90 Days Unlimited Access"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            app:layout_constraintTop_toBottomOf="@id/quarterlyLabel"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <View
-                            android:id="@+id/quarterlyDivider"
-                            android:layout_width="40dp"
-                            android:layout_height="3dp"
-                            android:layout_marginTop="20dp"
-                            android:background="#BC8CF2"
-                            app:layout_constraintTop_toBottomOf="@id/quarterlyDesc"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <LinearLayout
-                            android:id="@+id/quarterlyPrice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:orientation="horizontal"
-                            android:gravity="bottom"
-                            app:layout_constraintTop_toBottomOf="@id/quarterlyDivider"
-                            app:layout_constraintStart_toStartOf="parent">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₱"
-                                android:textColor="@color/white"
-                                android:textSize="24sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="6dp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="4,000"
-                                android:textColor="@color/white"
-                                android:textSize="48sp"
-                                android:fontFamily="sans-serif-black" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="32dp"
-                            android:orientation="vertical"
-                            app:layout_constraintTop_toBottomOf="@id/quarterlyPrice">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• All Monthly Features" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• 1 Free PT Session" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Membership Card Included" android:textColor="@color/white" android:alpha="0.8" />
-                        </LinearLayout>
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSelectQuarterly"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="Choose Plan"
-                            android:textStyle="bold"
-                            app:backgroundTint="#BC8CF2"
-                            app:cornerRadius="16dp"
-                            app:layout_constraintBottom_toBottomOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- VIP Annual -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardAnnual"
-                    android:layout_width="300dp"
-                    android:layout_height="460dp"
-                    app:cardBackgroundColor="@color/surface_dark"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeColor="#1AFFFFFF"
-                    app:strokeWidth="1dp">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="28dp">
-                        <TextView
-                            android:id="@+id/annualLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="VIP ANNUAL"
-                            android:textColor="@color/white"
-                            android:textSize="22sp"
-                            android:fontFamily="sans-serif-black"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <TextView
-                            android:id="@+id/annualDesc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="365 Days Unlimited Access"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            app:layout_constraintTop_toBottomOf="@id/annualLabel"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <View
-                            android:id="@+id/annualDivider"
-                            android:layout_width="40dp"
-                            android:layout_height="3dp"
-                            android:layout_marginTop="20dp"
-                            android:background="#BC8CF2"
-                            app:layout_constraintTop_toBottomOf="@id/annualDesc"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <LinearLayout
-                            android:id="@+id/annualPrice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:orientation="horizontal"
-                            android:gravity="bottom"
-                            app:layout_constraintTop_toBottomOf="@id/annualDivider"
-                            app:layout_constraintStart_toStartOf="parent">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₱"
-                                android:textColor="@color/white"
-                                android:textSize="24sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="6dp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="14,000"
-                                android:textColor="@color/white"
-                                android:textSize="48sp"
-                                android:fontFamily="sans-serif-black" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="32dp"
-                            android:orientation="vertical"
-                            app:layout_constraintTop_toBottomOf="@id/annualPrice">
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="• Best Value — Save ₱4k!" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• Full access to all services" android:textColor="@color/white" android:alpha="0.8" />
-                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="• VIP lounge access" android:textColor="@color/white" android:alpha="0.8" />
-                        </LinearLayout>
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSelectAnnual"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:text="Choose Plan"
-                            android:textStyle="bold"
-                            app:cornerRadius="16dp"
-                            app:backgroundTint="@color/surface_dark"
-                            app:strokeColor="#BC8CF2"
-                            app:strokeWidth="1dp"
-                            app:layout_constraintBottom_toBottomOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Membership History Filter -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFilterAll"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="ALL"
+                android:layout_marginTop="16dp"
+                android:text="MEMBERSHIP HISTORY"
                 android:textColor="@color/white"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.1"
-                android:paddingHorizontal="20dp"
-                app:backgroundTint="#A855F7"
-                app:cornerRadius="18dp" />
+                android:alpha="0.5"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFilterPending"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="12dp"
-                android:text="PENDING"
-                android:textColor="#94A3B8"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:paddingHorizontal="20dp"
-                app:backgroundTint="#1AFFFFFF"
-                app:cornerRadius="18dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFilterApproved"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginStart="12dp"
-                android:text="APPROVED"
-                android:textColor="#94A3B8"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"
-                android:paddingHorizontal="20dp"
-                app:backgroundTint="#1AFFFFFF"
-                app:cornerRadius="18dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMembershipHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                android:clipToPadding="false" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="MEMBERSHIP HISTORY"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:alpha="0.5"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMembershipHistory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
-            android:clipToPadding="false" />
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

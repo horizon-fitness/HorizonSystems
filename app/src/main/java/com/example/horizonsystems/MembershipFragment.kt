@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.TextView
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import com.google.android.material.card.MaterialCardView
+import android.graphics.Color
+import android.content.res.ColorStateList
 
 class MembershipFragment : Fragment() {
     private lateinit var adapter: TransactionAdapter
@@ -26,32 +30,34 @@ class MembershipFragment : Fragment() {
     private var currentFilter = "ALL"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_membership, container, false)
+        val view = try {
+            inflater.inflate(R.layout.fragment_membership, container, false)
+        } catch (e: Exception) {
+            Log.e("MembershipFragment", "Inflation error: ${e.message}")
+            null
+        } ?: return null
 
         val rvMembershipHistory = view.findViewById<RecyclerView>(R.id.rvMembershipHistory)
-        rvMembershipHistory.layoutManager = LinearLayoutManager(requireContext())
         adapter = TransactionAdapter(historyList)
-        rvMembershipHistory.adapter = adapter
+        rvMembershipHistory?.let {
+            it.layoutManager = LinearLayoutManager(context ?: return@let)
+            it.adapter = adapter
+        }
+
+        val rvPlanSelection = view.findViewById<RecyclerView>(R.id.rvPlanSelection)
+        rvPlanSelection?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         // Filter Buttons
         val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterAll)
         val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterPending)
         val btnApproved = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnFilterApproved)
 
-        btnAll.setOnClickListener { updateFilter("ALL", btnAll, btnPending, btnApproved) }
-        btnPending.setOnClickListener { updateFilter("Pending", btnAll, btnPending, btnApproved) }
-        btnApproved.setOnClickListener { updateFilter("Approved", btnAll, btnPending, btnApproved) }
+        btnAll?.setOnClickListener { updateFilter("ALL", btnAll, btnPending, btnApproved) }
+        btnPending?.setOnClickListener { updateFilter("Pending", btnAll, btnPending, btnApproved) }
+        btnApproved?.setOnClickListener { updateFilter("Approved", btnAll, btnPending, btnApproved) }
 
-        // Plan Selection Listeners
-        view.findViewById<View>(R.id.btnSelectMonthly).setOnClickListener {
-            showConfirmationSheet(1, "MONTHLY PASS", "₱1,500.00", 30)
-        }
-        view.findViewById<View>(R.id.btnSelectQuarterly).setOnClickListener {
-            showConfirmationSheet(2, "QUARTERLY ELITE", "₱4,000.00", 90)
-        }
-        view.findViewById<View>(R.id.btnSelectAnnual).setOnClickListener {
-            showConfirmationSheet(3, "VIP ANNUAL", "₱14,000.00", 365)
-        }
+        // Fetch dynamic plans
+        fetchMembershipPlans(view)
 
         // Initial fetch
         fetchActiveMembership(view)
@@ -66,96 +72,117 @@ class MembershipFragment : Fragment() {
         val loader = root.findViewById<View>(R.id.membershipLoading)
         val cardActive = root.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardActiveMembership)
         val selectionHeader = root.findViewById<View>(R.id.layoutPlanSelectionHeader)
-        val selectionScroll = root.findViewById<View>(R.id.layoutPlanSelectionScroll)
+        val rvPlanSelection = root.findViewById<View>(R.id.rvPlanSelection)
 
-        // Reset state to Neutral/Loading
-        loader.visibility = View.VISIBLE
-        cardActive.visibility = View.GONE
-        selectionHeader.visibility = View.GONE
-        selectionScroll.visibility = View.GONE
+        // Reset state (Safe Access)
+        loader?.visibility = View.VISIBLE
+        cardActive?.visibility = View.GONE
+        selectionHeader?.visibility = View.GONE
+        rvPlanSelection?.visibility = View.GONE
 
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
+        val ctx = context ?: return
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
         if (userId == -1) {
-            loader.visibility = View.GONE
-            selectionHeader.visibility = View.VISIBLE
-            selectionScroll.visibility = View.VISIBLE
+            loader?.visibility = View.GONE
+            selectionHeader?.visibility = View.VISIBLE
+            rvPlanSelection?.visibility = View.VISIBLE
             return
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val context = requireContext()
-                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
-                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getActiveMembership(userId)
                 withContext(Dispatchers.Main) {
-                    loader.visibility = View.GONE
+                    loader?.visibility = View.GONE
                     if (response.isSuccessful && response.body()?.success == true) {
                         val active = response.body()!!
 
-                        // Show active card
-                        val tvName = root.findViewById<TextView>(R.id.tvActivePlanName)
+                        // Show active card (Safe Access)
+                        root.findViewById<TextView>(R.id.tvActivePlanName)?.text = active.planName ?: "Plan"
                         val tvStatus = root.findViewById<TextView>(R.id.tvActivePlanStatus)
                         val tvDuration = root.findViewById<TextView>(R.id.tvActivePlanDuration)
                         val tvRemaining = root.findViewById<TextView>(R.id.tvDaysRemaining)
                         
                         if (active.subscriptionStatus == "Pending Approval") {
-                            tvName.text = active.planName
-                            tvStatus.text = "(Pending Approval)"
-                            tvStatus.visibility = View.VISIBLE
-                            tvDuration.text = "Awaiting Staff Verification"
-                            tvRemaining.text = "Payment verified by PayMongo"
-                            tvName.setTextColor(android.graphics.Color.WHITE)
+                            tvStatus?.text = "(Pending Approval)"
+                            tvStatus?.visibility = View.VISIBLE
+                            tvDuration?.text = "Awaiting Staff Verification"
+                            tvRemaining?.text = "Payment verified by PayMongo"
                         } else {
-                            tvName.text = active.planName
-                            tvStatus.visibility = View.GONE
-                            tvDuration.text = "Until: ${active.formattedEnd}"
-                            tvRemaining.text = "${active.daysRemaining} Days Remaining"
-                            tvName.setTextColor(android.graphics.Color.WHITE)
+                            tvStatus?.visibility = View.GONE
+                            tvDuration?.text = "Until: ${active.formattedEnd ?: "N/A"}"
+                            tvRemaining?.text = "${active.daysRemaining ?: 0} Days Remaining"
                         }
 
-                        cardActive.visibility = View.VISIBLE
-                        selectionHeader.visibility = View.GONE
-                        selectionScroll.visibility = View.GONE
+                        cardActive?.visibility = View.VISIBLE
+                        selectionHeader?.visibility = View.GONE
+                        rvPlanSelection?.visibility = View.GONE
                     } else {
-                        cardActive.visibility = View.GONE
-                        selectionHeader.visibility = View.VISIBLE
-                        selectionScroll.visibility = View.VISIBLE
+                        cardActive?.visibility = View.GONE
+                        selectionHeader?.visibility = View.VISIBLE
+                        rvPlanSelection?.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {
                 Log.e("MembershipFragment", "Active Fetch Error: ${e.message}")
                 withContext(Dispatchers.Main) {
-                    loader.visibility = View.GONE
-                    cardActive.visibility = View.GONE
-                    selectionHeader.visibility = View.VISIBLE
-                    selectionScroll.visibility = View.VISIBLE
+                    loader?.visibility = View.GONE
+                    cardActive?.visibility = View.GONE
+                    selectionHeader?.visibility = View.VISIBLE
+                    rvPlanSelection?.visibility = View.VISIBLE
                 }
             }
         }
     }
 
-    private fun showConfirmationSheet(id: Int, name: String, price: String, days: Int) {
+    private fun fetchMembershipPlans(root: View) {
+        val ctx = context ?: return
+        val rvPlanSelection = root.findViewById<RecyclerView>(R.id.rvPlanSelection) ?: return
+        val tenantId = GymManager.getTenantId(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.getMembershipPlans(tenantId)
+                
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val plans = response.body()!!
+                        val planAdapter = PlanAdapter(plans) { plan ->
+                            showConfirmationSheet(plan.id, plan.name, plan.price, plan.durationDays)
+                        }
+                        rvPlanSelection.adapter = planAdapter
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MembershipFragment", "Plans Fetch Error: ${e.message}")
+            }
+        }
+    }
+
+    private fun showConfirmationSheet(id: Int, name: String, price: Double, days: Int) {
         val sheet = MembershipSheet.newInstance(id, name, price, days)
         sheet.onSubscriptionCreated = {
-            fetchActiveMembership(requireView())
+            view?.let { fetchActiveMembership(it) }
             fetchHistory()
         }
         sheet.show(parentFragmentManager, "membership_sheet")
     }
 
     private fun fetchHistory() {
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(requireContext())
-        if (userId == -1) {
-            return
-        }
+        val ctx = context ?: return
+        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
+        if (userId == -1) return
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val context = requireContext()
-                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
-                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
+                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
+                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getMembershipHistory(userId)
                 withContext(Dispatchers.Main) {
@@ -178,28 +205,65 @@ class MembershipFragment : Fragment() {
         }
     }
 
-    private fun updateFilter(filter: String, btnAll: View, btnPending: View, btnApproved: View) {
-        currentFilter = filter
-        
-        // UI Visual Update (Dynamic for Active, Semi-transparent for Inactive)
-        val activeColor = android.graphics.Color.WHITE
-        val inactiveColor = android.graphics.Color.parseColor("#94A3B8")
-        val themeColor = GymManager.getThemeColor(requireContext())
-        val activeBg = android.graphics.Color.parseColor(themeColor)
-        val inactiveBg = android.graphics.Color.parseColor("#1AFFFFFF")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        applyBranding(view)
+    }
 
-        (btnAll as? com.google.android.material.button.MaterialButton)?.let {
-            it.setTextColor(if (filter == "ALL") activeColor else inactiveColor)
-            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "ALL") activeBg else inactiveBg)
+    private fun applyBranding(view: View) {
+        val ctx = context ?: return
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        if (!themeColorStr.isNullOrEmpty()) {
+            try {
+                val themeColor = Color.parseColor(themeColorStr)
+                
+                // 1. Title Accent
+                view.findViewById<TextView>(R.id.tv_membership_theme_subtitle)?.setTextColor(themeColor)
+                
+                // 2. Loading Indicator
+                view.findViewById<ProgressBar>(R.id.membershipLoading)?.indeterminateTintList = 
+                    ColorStateList.valueOf(themeColor)
+                
+                // 3. Days Remaining Accent & Active Card Stroke
+                view.findViewById<TextView>(R.id.tvDaysRemaining)?.setTextColor(themeColor)
+                view.findViewById<MaterialCardView>(R.id.cardActiveMembership)?.setStrokeColor(themeColor)
+
+                // 4. Initial filter state
+                val btnAll = view.findViewById<View>(R.id.btnFilterAll)
+                val btnPending = view.findViewById<View>(R.id.btnFilterPending)
+                val btnApproved = view.findViewById<View>(R.id.btnFilterApproved)
+                updateFilter("ALL", btnAll, btnPending, btnApproved)
+            } catch (e: Exception) {
+                Log.e("MembershipFragment", "Branding Error: ${e.message}")
+            }
         }
-        (btnPending as? com.google.android.material.button.MaterialButton)?.let {
-            it.setTextColor(if (filter == "Pending") activeColor else inactiveColor)
-            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "Pending") activeBg else inactiveBg)
+    }
+
+    private fun updateFilter(filter: String, btnAll: View?, btnPending: View?, btnApproved: View?) {
+        currentFilter = filter
+        val ctx = context ?: return
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        val themeColor = try {
+            if (!themeColorStr.isNullOrEmpty()) Color.parseColor(themeColorStr) else Color.parseColor("#A855F7")
+        } catch (e: Exception) { Color.parseColor("#A855F7") }
+        
+        fun styleButton(btn: View?, isActive: Boolean) {
+            (btn as? com.google.android.material.button.MaterialButton)?.let {
+                if (isActive) {
+                    it.backgroundTintList = ColorStateList.valueOf(themeColor)
+                    it.setTextColor(Color.WHITE)
+                    it.alpha = 1.0f
+                } else {
+                    it.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
+                    it.setTextColor(Color.parseColor("#94A3B8"))
+                    it.alpha = 1.0f
+                }
+            }
         }
-        (btnApproved as? com.google.android.material.button.MaterialButton)?.let {
-            it.setTextColor(if (filter == "Approved") activeColor else inactiveColor)
-            it.backgroundTintList = android.content.res.ColorStateList.valueOf(if (filter == "Approved") activeBg else inactiveBg)
-        }
+
+        styleButton(btnAll, filter == "ALL")
+        styleButton(btnPending, filter == "Pending")
+        styleButton(btnApproved, filter == "Approved")
 
         applyFilter()
     }
@@ -211,7 +275,8 @@ class MembershipFragment : Fragment() {
         } else {
             historyList.addAll(fullHistoryList.filter { it.status == currentFilter })
         }
-        adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.notifyDataSetChanged()
+        }
     }
-
 }

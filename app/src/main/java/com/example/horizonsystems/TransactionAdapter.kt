@@ -25,22 +25,28 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val txn = transactions[position]
-        holder.service.text = txn.service
-        holder.dateTime.text = txn.date
-        holder.amount.text = "₱${txn.amount}"
-        holder.status.text = txn.status.uppercase()
+        val txn = transactions.getOrNull(position) ?: return
+        
+        holder.service.text = txn.service ?: "Service"
+        holder.dateTime.text = txn.date ?: "N/A"
+        holder.amount.text = "₱${txn.amount ?: "0.00"}"
+        holder.status.text = txn.status?.uppercase() ?: "PENDING"
         
         // Bind Reference
         val referenceText = holder.itemView.findViewById<TextView>(R.id.txnReference)
-        referenceText?.text = "Ref: ${txn.reference}"
+        referenceText?.text = "Ref: ${txn.reference ?: "N/A"}"
         referenceText?.visibility = if (txn.reference.isNullOrEmpty()) View.GONE else View.VISIBLE
         
-        val context = holder.itemView.context
-        if (txn.status.equals("Completed", ignoreCase = true) || txn.status.equals("Approved", ignoreCase = true)) {
-            holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))
-        } else {
-            holder.status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+        val context = holder.itemView.context ?: return
+        try {
+            val statusStr = txn.status ?: "Pending"
+            if (statusStr.equals("Completed", ignoreCase = true) || statusStr.equals("Approved", ignoreCase = true)) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.emerald_400))
+            } else {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+            }
+        } catch (e: Exception) {
+            holder.status.setTextColor(android.graphics.Color.WHITE)
         }
     }
 

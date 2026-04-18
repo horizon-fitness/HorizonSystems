@@ -105,4 +105,10 @@ interface HorizonApi {
         @Query("time") time: String,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AvailabilityResponse>
+
+    @GET("api/get_membership_plans.php")
+    suspend fun getMembershipPlans(
+        @Query("gym_id") gymId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<List<com.example.horizonsystems.models.MembershipPlan>>
 }

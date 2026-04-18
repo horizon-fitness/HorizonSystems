@@ -5,40 +5,47 @@
     android:layout_height="wrap_content"
     android:background="@color/surface_dark"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="28dp">
 
     <View
-        android:layout_width="40dp"
+        android:layout_width="48dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="28dp"
         android:background="#33FFFFFF" />
 
     <TextView
         android:id="@+id/sheetTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Confirm Subscription"
+        android:text="CHECKOUT DETAILS"
         android:textColor="@color/white"
         android:textSize="22sp"
-        android:fontFamily="sans-serif-black" />
+        android:fontFamily="sans-serif-black"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:letterSpacing="-0.02" />
 
     <TextView
         android:id="@+id/sheetPlanName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="VIP Annual Membership"
-        android:textColor="#BC8CF2"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="4dp"
+        android:text="MONTHLY PASS"
+        android:textColor="#A855F7"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.2" />
 
+    <!-- Summary Card -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         app:cardBackgroundColor="#0DFFFFFF"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
         app:strokeColor="#1AFFFFFF"
         app:strokeWidth="1dp">
         <LinearLayout
@@ -50,47 +57,99 @@
                 android:id="@+id/sheetPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₱14,000.00"
+                android:text="₱1,500.00"
                 android:textColor="@color/white"
-                android:textSize="24sp"
-                android:fontFamily="sans-serif-black" />
+                android:textSize="28sp"
+                android:fontFamily="sans-serif-black"
+                android:textStyle="bold|italic" />
             <TextView
                 android:id="@+id/sheetDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Starts today, ends in 365 days"
+                android:layout_marginTop="6dp"
+                android:text="Starts today, ends in 30 days"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:letterSpacing="0.02" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Terms Summary -->
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="SUMMARY &amp; TERMS"
+        android:textColor="#A855F7"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.2" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#05FFFFFF"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#0DFFFFFF"
+        app:strokeWidth="1dp">
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. AUTHORIZATION: By clicking Confirm, you authorize the gym to process your payment for the selected membership.\n\n2. CANCELLATION: Memberships are non-refundable and non-transferable unless verified as a technical error.\n\n3. PROCESSING: Your status will remain 'Pending Approval' until the staff verifies the transaction receipt."
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:lineSpacingExtra="6dp" />
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Agreement -->
+    <CheckBox
+        android:id="@+id/cbAgreement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Payment is processed in-gym. Your status will be 'Pending' until confirmed by staff."
+        android:layout_marginTop="20dp"
+        android:text="I have read and understood the summary and authorize this transaction."
         android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:alpha="0.8" />
+        android:textSize="11sp"
+        android:buttonTint="#A855F7"
+        android:paddingStart="12dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnConfirmSheet"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_marginTop="32dp"
-        android:text="Confirm &amp; Proceed"
-        android:textStyle="bold"
+        android:layout_marginTop="28dp"
+        android:text="CONFIRM &amp; PROCEED"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"
+        android:letterSpacing="0.1"
+        android:enabled="false"
         app:cornerRadius="16dp"
-        app:backgroundTint="#BC8CF2" />
+        app:backgroundTint="#A855F7"
+        app:icon="@drawable/ic_check_circle"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCancelSheet"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Cancel"
-        android:textColor="@color/text_secondary" />
+        android:layout_marginTop="12dp"
+        android:text="CANCEL TRANSACTION"
+        android:textColor="@color/text_secondary"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.15" />
 
 </LinearLayout>

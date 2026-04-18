@@ -69,36 +69,33 @@ class LandingActivity : AppCompatActivity() {
             handleIntent(intent) // Try to fetch branding anyway
         }
         
-        // 1. Show overlay ONLY if we don't have a cached session to avoid "not opening" feel
-        if (GymManager.getBypassCookie(this).isEmpty()) {
-            loadingOverlay.visibility = android.view.View.VISIBLE
-        }
-
+        // 1. Initial UI Setup & Handle Intent immediately (Zero-Wait)
+        handleIntent(intent)
+        
+        // 2. Refresh Security Cookie silently in the background
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
             cachedCookie = cookie
             cachedUserAgent = userAgent
             isBypassed = true
             
-            // Persist for other activities (RegisterActivity)
+            // Persist for other activities
             GymManager.saveBypassCredentials(this, cookie, userAgent)
             
             runOnUiThread {
                 handler.removeCallbacks(showManualBypassRunnable)
-                loadingOverlay.visibility = android.view.View.GONE
-                handleIntent(intent)
+                // Silent update - just refresh branding if needed
+                if (GymManager.getGymSlug(this@LandingActivity) != "horizon") {
+                    fetchTenantBranding(GymManager.getGymSlug(this@LandingActivity))
+                }
                 
-                // Auto-login only if Remember Me is on AND we're NOT coming from a fresh registration/verification
+                // Auto-login logic (if enabled)
                 val skipAutoLogin = intent.getBooleanExtra("SKIP_AUTO_LOGIN", false)
                 if (GymManager.isRememberMeEnabled(this@LandingActivity) && !skipAutoLogin) {
                     val savedUser = GymManager.getSavedUsername(this@LandingActivity)
                     val savedPass = GymManager.getSavedPassword(this@LandingActivity)
                     if (savedUser.isNotEmpty() && savedPass.isNotEmpty()) {
-                        loadingOverlay.visibility = android.view.View.VISIBLE
                         performLogin(savedUser, savedPass)
                     }
-                } else if (skipAutoLogin) {
-                    // Clear password field to ensure manual entry after verification
-                    findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.passwordEdit)?.setText("")
                 }
             }
         }
@@ -145,7 +142,7 @@ class LandingActivity : AppCompatActivity() {
         // Remember Me initialization
         val rememberMeCheck = findViewById<android.widget.CheckBox>(R.id.rememberMe)
         if (GymManager.isRememberMeEnabled(this)) {
-            rememberMeCheck.isChecked = true
+            rememberMeCheck?.isChecked = true
             usernameEdit.setText(GymManager.getSavedUsername(this))
             passwordEdit.setText(GymManager.getSavedPassword(this))
         }
