@@ -43,6 +43,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnRegister: MaterialButton
     private lateinit var btnNext: MaterialButton
     private lateinit var btnPrev: MaterialButton
+    private lateinit var btnClearAll: TextView
     private lateinit var btnSpace: View
 
     // Layouts
@@ -188,6 +189,7 @@ class RegisterActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btnNext)
         btnSpace = findViewById(R.id.btnSpace)
         btnRegister = findViewById(R.id.btnRegister)
+        btnClearAll = findViewById(R.id.btnClearAll)
     }
 
     private fun setupListeners() {
@@ -274,9 +276,39 @@ class RegisterActivity : AppCompatActivity() {
 
         birthDateEdit.setOnClickListener { showDatePicker() }
         
+        btnClearAll.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Clear All Inputs?")
+                .setMessage("This will remove all your typed information and reset to Step 1. Are you sure?")
+                .setPositiveButton("Clear Everything") { _, _ -> clearAllInputs() }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
         findViewById<View>(R.id.btnSignBack).setOnClickListener { 
              if (currentStep > 1) { currentStep--; updateWizardUI() } else finish()
         }
+    }
+
+    private fun clearAllInputs() {
+        val edits = listOf(
+            userRegEdit, passRegEdit, confirmPassRegEdit,
+            firstNameEdit, lastNameEdit, middleNameEdit, birthDateEdit,
+            parentNameEdit, parentPhoneEdit, emailEdit, phoneEdit,
+            addressLineEdit, barangayEdit, cityEdit, provinceEdit, regionEdit,
+            occupationEdit, medicalHistoryEdit, emergencyNameEdit, emergencyPhoneEdit
+        )
+        
+        edits.forEach { it.setText("") }
+        sexSpinner.setText("", false)
+        
+        if (!isGymLocked) {
+            gymIdEdit.setText("")
+        }
+
+        clearRegistrationCache()
+        currentStep = 1
+        updateWizardUI()
     }
 
     private fun setupDropdowns() {

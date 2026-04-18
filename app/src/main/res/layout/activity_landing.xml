@@ -115,7 +115,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Username:"
+                    android:text="Username or Email:"
                     android:textColor="#CCFFFFFF"
                     android:textSize="14sp"
                     android:layout_marginBottom="8dp"
@@ -139,7 +139,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="16dp"
                         android:background="@null"
-                        android:hint="Enter username"
+                        android:hint="Username or Email"
                         android:textColor="@color/white"
                         android:textColorHint="#40FFFFFF"
                         android:textSize="15sp"

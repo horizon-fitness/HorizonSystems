@@ -237,32 +237,29 @@ class LandingActivity : AppCompatActivity() {
         } else {
             gymNameHeader?.text = rawGymName
         }
+
+        // Apply Dynamic Background to Dashboard (Matching Login Screen)
+        val bgColorStr = GymManager.getBgColor(this)
+        try {
+            val bgColor = android.graphics.Color.parseColor(bgColorStr)
+            dashContainer?.setBackgroundColor(bgColor)
+            // Also ensure the root layout is set
+            findViewById<android.view.View>(R.id.rootLayout)?.setBackgroundColor(bgColor)
+        } catch (e: Exception) {
+            dashContainer?.setBackgroundColor(android.graphics.Color.parseColor("#050505"))
+        }
         
-        val logoUrl = branding?.logoPath
+        // Optimized Logo Loading with reliable fallback
+        val logoUrl = if (!branding?.logoPath.isNullOrEmpty()) branding?.logoPath else GymManager.getGymLogo(this)
+        
         if (!logoUrl.isNullOrEmpty()) {
             gymLogoContainer?.visibility = android.view.View.VISIBLE
-            
-            val baseUrl = "https://horizonfitnesscorp.gt.tc/"
-            val fullLogoUrl = when {
-                logoUrl.startsWith("http") -> logoUrl
-                logoUrl.startsWith("data:image") -> logoUrl
-                else -> baseUrl + logoUrl.removePrefix("../").removePrefix("/")
-            }
-            
-            Log.d("LandingActivity", "Loading Gym Logo from DB Path: $logoUrl -> $fullLogoUrl")
-            
-            gymLogoHeader?.let {
-                Glide.with(this)
-                    .load(fullLogoUrl)
-                    .into(it)
-            }
-            
-            gymLogoHeader?.imageTintList = null 
-        } else if (branding != null) {
-            gymLogoContainer?.visibility = android.view.View.VISIBLE
-            gymLogoHeader?.setImageDrawable(null)
+            GymManager.loadLogo(this, logoUrl, gymLogoHeader)
         } else {
-            gymLogoContainer?.visibility = android.view.View.GONE
+            // Last resort: Show default logo if no gym logo is set
+            gymLogoContainer?.visibility = android.view.View.VISIBLE
+            gymLogoHeader?.setImageResource(R.drawable.horizon_logo)
+            gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.GRAY)
         }
         
         // Handle Member Profile Pic Placeholder in HomeFragment (via Intent/Mock)
@@ -436,6 +433,8 @@ class LandingActivity : AppCompatActivity() {
         
         if (!savedLogo.isNullOrEmpty()) {
             GymManager.loadLogo(this, savedLogo, gymLogo)
+        } else {
+            gymLogo?.setImageResource(R.drawable.horizon_logo)
         }
         
         // Pre-emptively apply the theme color from cache so it stays on restart
@@ -454,8 +453,10 @@ class LandingActivity : AppCompatActivity() {
         
         tenantTitle?.text = gymName.uppercase()
         
-        tenant.logoPath?.let {
-            GymManager.loadLogo(this, it, gymLogo)
+        if (!tenant.logoPath.isNullOrEmpty()) {
+            GymManager.loadLogo(this, tenant.logoPath!!, gymLogo)
+        } else {
+            gymLogo?.setImageResource(R.drawable.horizon_logo)
         }
     }
 
@@ -474,6 +475,29 @@ class LandingActivity : AppCompatActivity() {
             
             btnForgotPassword?.setTextColor(color)
             btnCreateAccount?.setTextColor(color)
+
+            // 5. Update Bottom Navigation (Active Tint & Background)
+            val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
+            if (bottomNav != null) {
+                // Dynamic StateList for icons
+                val states = arrayOf(
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf()
+                )
+                val colors = intArrayOf(
+                    color,
+                    android.graphics.Color.parseColor("#80FFFFFF") // 50% White for inactive
+                )
+                bottomNav.itemIconTintList = android.content.res.ColorStateList(states, colors)
+                
+                // Match Navigation Background
+                val bColor = try {
+                    android.graphics.Color.parseColor(GymManager.getBgColor(this))
+                } catch (e: Exception) {
+                    android.graphics.Color.parseColor("#050505")
+                }
+                bottomNav.setBackgroundColor(bColor)
+            }
         } catch (e: Exception) {
             Log.e("LandingActivity", "Error parsing color: $themeColor")
         }

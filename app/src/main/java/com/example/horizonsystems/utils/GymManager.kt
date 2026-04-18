@@ -184,7 +184,6 @@ object GymManager {
 
         Glide.with(context)
             .load(glideUrl)
-            .circleCrop()
             .into(imageView)
     }
 }

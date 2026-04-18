@@ -132,21 +132,31 @@ class SwitchGymActivity : AppCompatActivity() {
             }
         }
 
-        // Disconnect button
+        // Disconnect button with Confirmation
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDisconnectGym)?.setOnClickListener {
-            // Reset to global default (no gym)
-            GymManager.saveGymData(
-                this, 
-                "horizon", 
-                1, 
-                "000", 
-                "HORIZON SYSTEMS", 
-                null,
-                "#FFFFFF", // Default White
-                "#0a090d"  // Default Dark BG
-            )
-            Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
-            updateCurrentGymUI()
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Disconnect Gym")
+                .setMessage("Are you sure you want to disconnect from your current gym? You will be returned to the default Horizon Systems view.")
+                .setPositiveButton("Disconnect") { dialog, _ ->
+                    // Reset to global default (no gym)
+                    GymManager.saveGymData(
+                        this, 
+                        "horizon", 
+                        1, 
+                        "000", 
+                        "HORIZON SYSTEMS", 
+                        null,
+                        "#7f13ec", // Specific Brand Purple
+                        "#0a090d"  // Default Dark BG
+                    )
+                    Toast.makeText(this, "Disconnected from gym", Toast.LENGTH_SHORT).show()
+                    updateCurrentGymUI()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         checkCameraPermission()
@@ -170,12 +180,12 @@ class SwitchGymActivity : AppCompatActivity() {
             GymManager.loadLogo(this, currentLogo, gymLogoImg)
             applyDynamicColors()
         } else {
-            gymLogoImg.setImageDrawable(null)
+            // Fix: Force default logo immediately on disconnect
+            gymLogoImg.setImageResource(R.drawable.horizon_logo)
             gymLogoImg.setPadding(0, 0, 0, 0)
             gymLogoImg.scaleType = ImageView.ScaleType.CENTER_INSIDE
-            gymLogoImg.imageTintList = android.content.res.ColorStateList.valueOf(
-                ContextCompat.getColor(this, R.color.white)
-            )
+            gymLogoImg.imageTintList = null // Remove any tint
+            applyDynamicColors()
         }
     }
 

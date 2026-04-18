@@ -30,68 +30,85 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
-        val userRole = activity?.intent?.getStringExtra("user_role") ?: "Member"
-        val gymName = activity?.intent?.getStringExtra("gym_name") ?: "Horizon Gym"
-        
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
         val shortName = if (userName.length > 6) userName.take(3).uppercase() else userName.uppercase()
         dashUserName?.text = shortName
         
-        // Profile Picture Placeholder with Initials
-        val profilePic = view.findViewById<ImageView>(R.id.memberProfilePic)
+        // Profile Avatar & Theme Setup (Hardened)
         val initialsText = view.findViewById<TextView>(R.id.memberInitials)
-        val profileCard = profilePic?.parent?.let { it.parent as? com.google.android.material.card.MaterialCardView }
+        val profileBanner = view.findViewById<ImageView>(R.id.memberProfilePic)
+        val profileCard = profileBanner?.parent?.let { it.parent as? MaterialCardView }
         
-        if (profileCard != null) {
-            val themeColor = GymManager.getThemeColor(requireContext())
-            profileCard.setCardBackgroundColor(android.graphics.Color.parseColor(themeColor))
-            
-            // Calculate Initials
-            val initials = userName.trim().split(" ")
-                .filter { it.isNotEmpty() }
-                .take(2)
-                .map { it.first().uppercase() }
-                .joinToString("")
-            
-            initialsText?.text = if (initials.isNotEmpty()) initials else "U"
-            initialsText?.visibility = View.VISIBLE
-            profilePic?.visibility = View.GONE
+        val themeColorStr = GymManager.getThemeColor(requireContext())
+        if (!themeColorStr.isNullOrEmpty()) {
+            try {
+                val themeColor = android.graphics.Color.parseColor(themeColorStr)
+                
+                // 1. Avatar background
+                profileCard?.setCardBackgroundColor(themeColor)
+                
+                // 2. Greeting Name color
+                dashUserName?.setTextColor(themeColor)
+                
+                // 3. Quick Action "BOOK" link
+                view.findViewById<TextView>(R.id.btnBookNow)?.setTextColor(themeColor)
+                
+                // 4. Service Grid Icon Tints (Safe Mapping)
+                val serviceIcons = mapOf(
+                    R.id.btnNavBookSession to R.drawable.ic_booking,
+                    R.id.btnNavPayment to R.drawable.ic_payment,
+                    R.id.btnNavMembership to R.drawable.ic_membership,
+                    R.id.btnNavProfile to R.drawable.ic_profile
+                )
+                
+                serviceIcons.forEach { (cardId, _) ->
+                    val card = view.findViewById<MaterialCardView>(cardId)
+                    // Traverse hierarchy safely: CardView -> LinearLayout -> ImageView
+                    val layout = card?.getChildAt(0) as? ViewGroup
+                    for (i in 0 until (layout?.childCount ?: 0)) {
+                        val child = layout?.getChildAt(i)
+                        if (child is ImageView) {
+                            child.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                            break
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                profileCard?.setCardBackgroundColor(android.graphics.Color.parseColor("#7f13ec"))
+            }
         }
 
-        // Handle Quick Action Navigation
-        view.findViewById<View>(R.id.btnNavBookSession)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
-        }
+        // Initialize Initials
+        val initials = userName.trim().split(" ")
+            .filter { it.isNotEmpty() }
+            .take(2)
+            .map { it.first().uppercase() }
+            .joinToString("")
+        initialsText?.text = if (initials.isNotEmpty()) initials else "U"
 
-        view.findViewById<View>(R.id.btnNavPayment)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_payment
+        // Navigation Handlers (Safe transition)
+        val setupNav = { id: Int, navId: Int ->
+            view.findViewById<View>(id)?.setOnClickListener {
+                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = navId
+            }
         }
+        
+        setupNav(R.id.btnNavBookSession, R.id.nav_booking)
+        setupNav(R.id.btnNavPayment, R.id.nav_payment)
+        setupNav(R.id.btnNavMembership, R.id.nav_membership)
+        setupNav(R.id.btnNavProfile, R.id.nav_profile)
 
-        view.findViewById<View>(R.id.btnNavMembership)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
-        }
-
-        // Today's Status Card & "Book Now" link
+        // Status Card Clicks
         val bookClick = View.OnClickListener {
             (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
         }
         view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
         view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
 
-        // Membership Status Card
-        view.findViewById<View>(R.id.cardMembership)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
-        }
-
-        view.findViewById<View>(R.id.btnNavProfile)?.setOnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_profile
-        }
-
         fetchActiveStatus(view)
         fetchUpcomingSession(view)
         
         ThemeUtils.applyThemeToView(view)
-
         return view
     }
 
@@ -192,6 +209,13 @@ class HomeFragment : Fragment() {
                         }
                         
                         planText?.text = "Plan: ${active.planName}"
+                        val logoUrl = activity?.intent?.getStringExtra("gym_logo")
+                        val gymLogoContainer = root.findViewById<View>(R.id.gymLogoContainer)
+                        val gymLogoHeader = root.findViewById<View>(R.id.gymLogoHeader)
+                        if (!logoUrl.isNullOrEmpty()) {
+                            gymLogoContainer?.visibility = android.view.View.VISIBLE
+                            gymLogoHeader?.visibility = android.view.View.VISIBLE
+                        }
                         planText?.visibility = View.VISIBLE
                     } else {
                         val statusText = root.findViewById<TextView>(R.id.membershipStatusText)

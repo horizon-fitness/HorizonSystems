@@ -1,94 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/landing_background"
     android:fitsSystemWindows="true">
 
+    <!-- Premium Ambient Glow -->
     <View
-        android:layout_width="450dp"
-        android:layout_height="450dp"
-        android:alpha="0.25"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:alpha="0.15"
         android:background="@drawable/ambient_glow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="-180dp"
-        android:layout_marginTop="-180dp" />
+        android:layout_marginEnd="-250dp"
+        android:layout_marginTop="-200dp" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="32dp"
-        android:paddingTop="40dp"
-        android:paddingBottom="40dp"
-        android:gravity="center_horizontal"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Verify Account"
-            android:textColor="@color/white"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="-0.02" />
-
-        <TextView
-            android:id="@+id/verifySubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Enter the 6-digit PIN sent to your email."
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:alpha="0.8" />
+        android:fillViewport="true"
+        android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/innerLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="64dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp"
+            android:gravity="center_horizontal">
 
-            <EditText android:id="@+id/otp1" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
-            <EditText android:id="@+id/otp2" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
-            <EditText android:id="@+id/otp3" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
-            <EditText android:id="@+id/otp4" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
-            <EditText android:id="@+id/otp5" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
-            <EditText android:id="@+id/otp6" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_arrow"
+                android:layout_marginStart="-12dp"
+                android:layout_gravity="start"
+                app:tint="@color/white"
+                android:contentDescription="Back" />
+
+            <!-- Verification Sent Message -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/input_field_bg"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="We've sent a verification PIN to"
+                    android:textColor="#A0FFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/txtTargetEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="user@email.com"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black" />
+            </LinearLayout>
+
+            <!-- Gym Logo Header (Shown if connected) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gymLogoContainer"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1AFFFFFF"
+                app:cardCornerRadius="40dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:id="@+id/verifyGymLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/horizon_logo"
+                    android:scaleType="centerInside" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Header -->
+            <TextView
+                android:id="@+id/verifyTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Verify Account"
+                android:textColor="@color/white"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.02" />
+
+            <TextView
+                android:id="@+id/verifySubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Enter the 6-digit PIN sent to your email."
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:alpha="0.8"
+                android:gravity="center" />
+
+            <!-- Section Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:layout_gravity="center_horizontal"
+                android:text="PIN VERIFICATION"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1" />
+
+            <!-- OTP Boxes -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp">
+
+                <EditText android:id="@+id/otp1" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+                <EditText android:id="@+id/otp2" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+                <EditText android:id="@+id/otp3" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+                <EditText android:id="@+id/otp4" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+                <EditText android:id="@+id/otp5" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+                <EditText android:id="@+id/otp6" android:layout_width="48dp" android:layout_height="64dp" android:background="@drawable/otp_box_bg" android:gravity="center" android:inputType="number" android:maxLength="1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" android:layout_marginHorizontal="4dp" android:cursorVisible="false" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerify"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="48dp"
+                android:text="Verify &amp; Continue"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:backgroundTint="@null"
+                android:background="@drawable/button_premium"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:id="@+id/btnResendPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal"
+                android:text="Didn't receive the PIN? Resend"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:alpha="0.3"
+                android:clickable="false" />
+
+            <TextView
+                android:id="@+id/txtResendTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="You can resend in 60s"
+                android:textColor="#40FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium" />
+
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVerify"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="48dp"
-            android:text="Verify &amp; Continue"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/nav_active_color"
-            android:background="@drawable/button_premium"
-            app:cornerRadius="18dp"
-            android:fontFamily="sans-serif-black" />
-
-        <TextView
-            android:id="@+id/btnResendPin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Didn't receive the PIN? Resend"
-            android:textColor="@color/nav_active_color"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium" />
-
-    </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

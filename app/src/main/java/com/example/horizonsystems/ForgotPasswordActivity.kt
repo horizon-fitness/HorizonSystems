@@ -2,6 +2,7 @@ package com.example.horizonsystems
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.Selection
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
@@ -31,6 +32,8 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private lateinit var btnNext: MaterialButton
     private lateinit var btnResetPass: MaterialButton
     private lateinit var otpBoxes: List<EditText>
+    private lateinit var gymLogoContainer: com.google.android.material.card.MaterialCardView
+    private lateinit var forgotGymLogo: android.widget.ImageView
     
     // Layouts (Material TextInputLayout)
     private lateinit var recoveryEmailLayout: TextInputLayout
@@ -38,8 +41,12 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private lateinit var confirmNewPassLayout: TextInputLayout
 
     private lateinit var recoveryEmailEdit: TextInputEditText
+    private lateinit var tenantCodeResetEdit: TextInputEditText
     private lateinit var newPassEdit: TextInputEditText
     private lateinit var confirmNewPassEdit: TextInputEditText
+    
+    private lateinit var tenantCodeResetLayout: TextInputLayout
+    private lateinit var forgotSubtitle: TextView
 
     // Resend UI
     private lateinit var btnResendOtp: TextView
@@ -62,8 +69,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
         // Bind edits
         recoveryEmailEdit = findViewById(R.id.recoveryEmailEdit)
+        tenantCodeResetEdit = findViewById(R.id.tenantCodeResetEdit)
         newPassEdit = findViewById(R.id.newPassEdit)
         confirmNewPassEdit = findViewById(R.id.confirmNewPassEdit)
+        
+        tenantCodeResetLayout = findViewById(R.id.tenantCodeResetLayout)
 
         layoutStepEmail = findViewById(R.id.layoutStepEmail)
         layoutStepOTP = findViewById(R.id.layoutStepOTP)
@@ -71,6 +81,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         stepIndicator = findViewById(R.id.stepIndicator)
         btnNext = findViewById(R.id.btnNext)
         btnResetPass = findViewById(R.id.btnResetPass)
+        forgotSubtitle = findViewById(R.id.forgotSubtitle)
+        
+        gymLogoContainer = findViewById(R.id.gymLogoContainer)
+        forgotGymLogo = findViewById(R.id.forgotGymLogo)
         
         btnResendOtp = findViewById(R.id.btnResendOtp)
         txtResendTimer = findViewById(R.id.txtResendTimer)
@@ -95,7 +109,63 @@ class ForgotPasswordActivity : AppCompatActivity() {
         btnNext.setOnClickListener { handleNextStep() }
         btnResetPass.setOnClickListener { handlePasswordReset() }
 
+        setupTenantCodeFilter()
         applyDynamicColors()
+        checkGymContext()
+    }
+    
+    private fun checkGymContext() {
+        val currentCode = GymManager.getTenantCode(this)
+        val currentLogo = GymManager.getGymLogo(this)
+        
+        // Strictly show only if no valid connection
+        val notConnected = currentCode.isNullOrEmpty() || currentCode == "000" || currentCode == "horizon" || currentCode == "default"
+        tenantCodeResetLayout.visibility = if (notConnected) View.VISIBLE else View.GONE
+        
+        // Header polish
+        if (!notConnected && !currentLogo.isNullOrEmpty()) {
+            gymLogoContainer.visibility = View.VISIBLE
+            forgotSubtitle.visibility = View.GONE // Remove "Experience the difference" when connected
+            GymManager.loadLogo(this, currentLogo, forgotGymLogo)
+        } else {
+            gymLogoContainer.visibility = View.GONE
+            forgotSubtitle.visibility = View.VISIBLE
+        }
+    }
+    
+    private fun setupTenantCodeFilter() {
+        tenantCodeResetEdit.filters = arrayOf(android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            if (start == end) return@InputFilter null
+            val added = source.subSequence(start, end).toString().uppercase()
+            val currentDest = java.lang.StringBuilder(dest.subSequence(0, dstart))
+            val sb = java.lang.StringBuilder()
+            for (i in added.indices) {
+                val c = added[i]
+                val len = currentDest.length
+                if (len < 3) { if (c.isLetter()) { currentDest.append(c); sb.append(c) } }
+                else if (len == 3) {
+                    if (c == '-') { currentDest.append(c); sb.append(c) }
+                    else if (c.isDigit()) { currentDest.append("-").append(c); sb.append("-").append(c) }
+                } else { if (c.isDigit() && currentDest.length < 8) { currentDest.append(c); sb.append(c) } }
+            }
+            val suffix = dest.subSequence(dend, dest.length)
+            val finalStr = currentDest.toString() + suffix
+            if (finalStr.matches(Regex("^([A-Z]{0,3}|[A-Z]{3}-\\d{0,4})$"))) sb.toString() else ""
+        })
+
+        // Fix for the blinking cursor (Selection) jumping to the start
+        tenantCodeResetEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.isNotEmpty()) {
+                    val sel = Selection.getSelectionEnd(s)
+                    if (sel < s.length) {
+                        Selection.setSelection(s, s.length)
+                    }
+                }
+            }
+        })
     }
 
     private fun setupErrorClearing() {
@@ -109,6 +179,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         }
         recoveryEmailEdit.addTextChangedListener(watcher)
+        tenantCodeResetEdit.addTextChangedListener(watcher)
         newPassEdit.addTextChangedListener(watcher)
         confirmNewPassEdit.addTextChangedListener(watcher)
     }
@@ -162,7 +233,24 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     try {
                         val api = RetrofitClient.getApi(GymManager.getBypassCookie(this@ForgotPasswordActivity), GymManager.getBypassUA(this@ForgotPasswordActivity))
-                        val request = mapOf("action" to "request_otp", "email" to email, "tenant_code" to GymManager.getTenantCode(this@ForgotPasswordActivity))
+                        
+                        // Use manual code if visible, else use saved code
+                        val tenantCode = if (tenantCodeResetLayout.visibility == View.VISIBLE) {
+                            tenantCodeResetEdit.text.toString().trim()
+                        } else {
+                            GymManager.getTenantCode(this@ForgotPasswordActivity)
+                        }
+                        
+                        if (tenantCode.isEmpty() && tenantCodeResetLayout.visibility == View.VISIBLE) {
+                            withContext(Dispatchers.Main) {
+                                btnNext.isEnabled = true
+                                btnNext.text = "Next Step"
+                                tenantCodeResetLayout.error = "Gym Code required"
+                            }
+                            return@launch
+                        }
+
+                        val request = mapOf("action" to "request_otp", "email" to email, "tenant_code" to tenantCode)
                         val response = api.forgotPasswordAction(request)
                         withContext(Dispatchers.Main) {
                             btnNext.isEnabled = true
@@ -244,7 +332,14 @@ class ForgotPasswordActivity : AppCompatActivity() {
         layoutStepReset.visibility = if (currentStep == 3) View.VISIBLE else View.GONE
         btnNext.visibility = if (currentStep < 3) View.VISIBLE else View.GONE
         btnResetPass.visibility = if (currentStep == 3) View.VISIBLE else View.GONE
-        stepIndicator.text = "Step $currentStep of 3"
+        
+        val stepName = when(currentStep) {
+            1 -> "Identity Verification"
+            2 -> "PIN Verification"
+            3 -> "Secure Your Account"
+            else -> ""
+        }
+        stepIndicator.text = "Step $currentStep of 3: $stepName"
     }
 
     private fun startResendTimer() {
