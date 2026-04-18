@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> HomeFragment()
                 R.id.nav_booking -> BookingFragment()
                 R.id.nav_membership -> MembershipFragment()
-                R.id.nav_payment -> PaymentFragment()
+                R.id.nav_attendance -> AttendanceFragment()
                 R.id.nav_profile -> ProfileFragment()
                 else -> HomeFragment()
             }
