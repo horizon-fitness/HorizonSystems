@@ -10,7 +10,9 @@ data class Coach(
     @SerializedName("last_name")
     val lastName: String,
     @SerializedName("specialization")
-    val specialization: String
+    val specialization: String,
+    @SerializedName("session_rates")
+    val sessionRates: Double? = null
 )
 
 data class CoachListResponse(

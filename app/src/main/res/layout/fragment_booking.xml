@@ -190,6 +190,7 @@
 
         <!-- Labs Search Header for Upcoming Sessions -->
         <LinearLayout
+            android:id="@+id/labs_search_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -254,7 +255,7 @@
                 android:scaleType="centerInside" />
         </LinearLayout>
 
-        <!-- Pagination (Moved out of filter container for cleaner layout) -->
+        <!-- Pagination -->
         <LinearLayout
             android:id="@+id/pagination_container_booking"
             android:layout_width="wrap_content"
@@ -265,7 +266,7 @@
             android:orientation="horizontal"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/filter_container">
+            app:layout_constraintTop_toBottomOf="@+id/labs_search_header">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_prev_booking"
@@ -309,15 +310,23 @@
                 app:iconTint="#A855F7" />
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#1AFFFFFF"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/labs_search_header" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTrainingLogs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:paddingHorizontal="24dp"
+            android:layout_marginHorizontal="24dp"
             android:paddingTop="8dp"
             android:paddingBottom="40dp"
-            app:layout_constraintTop_toBottomOf="@+id/filter_container" />
+            app:layout_constraintTop_toBottomOf="@+id/labs_search_header" />
 
 
         <LinearLayout
@@ -328,7 +337,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/filter_container">
+            app:layout_constraintTop_toBottomOf="@+id/labs_search_header">
 
             <ImageView
                 android:layout_width="40dp"

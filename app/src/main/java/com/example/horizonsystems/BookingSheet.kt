@@ -219,7 +219,8 @@ class BookingSheet : BottomSheetDialogFragment() {
             val coachName = parent.getItemAtPosition(position) as String
             val coach = coaches.find { "${it.firstName} ${it.lastName}" == coachName }
             selectedCoachId = coach?.coachId
-            currentCoachFee = 0.0 // Reset or add fee if needed
+            // Use the real session_rates from the coach model (0.0 if null/not set)
+            currentCoachFee = coach?.sessionRates ?: 0.0
             updatePrice()
         }
 
@@ -364,7 +365,7 @@ class BookingSheet : BottomSheetDialogFragment() {
 
         if (currentCoachFee > 0) {
             if (::txtCoachFeeInfo.isInitialized) {
-                txtCoachFeeInfo.text = "+₱120.00 COACH FEE / HR"
+                txtCoachFeeInfo.text = "+₱${"%.2f".format(currentCoachFee)} COACH FEE / HR"
                 txtCoachFeeInfo.setTextColor(themeColor)
             }
         } else {
