@@ -54,9 +54,9 @@
                 android:id="@+id/btnEditProfile"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                app:cardBackgroundColor="@android:color/transparent"
+                app:cardBackgroundColor="#BC8CF2"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
+                app:cardElevation="4dp"
                 app:layout_constraintBottom_toBottomOf="@+id/profilePicCard"
                 app:layout_constraintEnd_toEndOf="@+id/profilePicCard">
                 <ImageView

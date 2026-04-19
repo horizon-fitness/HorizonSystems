@@ -15,35 +15,14 @@
         android:layout_marginBottom="16dp"
         android:background="#33FFFFFF" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Notifications"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-black" />
-            
-        <TextView
-            android:id="@+id/btnClearAllNotifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:text="CLEAR ALL"
-            android:textColor="#80FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.05"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless" />
-    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-black" />
 
     <TextView
         android:id="@+id/tvEmptyState"

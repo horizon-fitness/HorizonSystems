@@ -130,35 +130,4 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AttendanceLogsResponse>
-    @FormUrlEncoded
-    @POST("api/update_profile.php")
-    suspend fun updateProfile(
-        @Field("user_id") userId: Int,
-        @FieldMap updates: Map<String, String>
-    ): Response<com.example.horizonsystems.network.CommonResponse>
-
-    @GET("api/get_notifications.php")
-    suspend fun getNotifications(
-        @Query("user_id") userId: Int,
-        @Query("gym_id") gymId: Int? = null
-    ): Response<com.example.horizonsystems.network.NotificationResponse>
-
-    @FormUrlEncoded
-    @POST("api/clear_notification.php")
-    suspend fun clearNotification(
-        @Field("user_id") userId: Int,
-        @Field("notification_id") notificationId: Int = 0,
-        @Field("clear_all") clearAll: Int = 0 // 1 for true, 0 for false
-    ): Response<com.example.horizonsystems.network.CommonResponse>
 }
-
-data class NotificationResponse(
-    val success: Boolean,
-    val notifications: List<com.example.horizonsystems.models.Notification>? = null,
-    val message: String? = null
-)
-
-data class CommonResponse(
-    val success: Boolean,
-    val message: String? = null
-)
