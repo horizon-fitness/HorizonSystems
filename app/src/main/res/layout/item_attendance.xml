@@ -102,15 +102,42 @@
             app:layout_constraintBottom_toBottomOf="@id/cardDateBlock"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/tvCheckInTime"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="09:30 AM"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.01" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvCheckInTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:30 AM"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.01" />
+
+                <TextView
+                    android:id="@+id/tvArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" → "
+                    android:textColor="#555555"
+                    android:textSize="12sp"
+                    android:layout_marginHorizontal="4dp"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:id="@+id/tvCheckOutTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="11:30 AM"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.01" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvStatusBadge"

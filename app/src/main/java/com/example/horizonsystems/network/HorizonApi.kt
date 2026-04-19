@@ -111,4 +111,17 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<List<com.example.horizonsystems.models.MembershipPlan>>
+
+    @POST("api/attendance.php")
+    suspend fun recordAttendance(
+        @Body request: com.example.horizonsystems.models.AttendanceRequest,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.AttendanceResponse>
+
+    @GET("api/get_attendance_logs.php")
+    suspend fun getAttendanceLogs(
+        @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.AttendanceLogsResponse>
 }

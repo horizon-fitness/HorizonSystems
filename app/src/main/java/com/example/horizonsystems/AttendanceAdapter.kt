@@ -15,7 +15,8 @@ import java.util.*
 
 data class GymAttendance(
     val date: String,     // "yyyy-MM-dd"
-    val time: String,     // "HH:mm" or "hh:mm a"
+    val timeIn: String,   // "08:15 AM"
+    val timeOut: String?, // "10:30 AM" or null
     val gymName: String,
     val status: String    // "PRESENT", "ABSENT"
 )
@@ -27,6 +28,8 @@ class AttendanceAdapter(private var logs: List<GymAttendance>) : RecyclerView.Ad
         val tvDay: TextView = view.findViewById(R.id.tvAttendanceDay)
         val tvGymName: TextView = view.findViewById(R.id.tvGymName)
         val tvTime: TextView = view.findViewById(R.id.tvCheckInTime)
+        val tvOutTime: TextView = view.findViewById(R.id.tvCheckOutTime)
+        val tvArrow: TextView = view.findViewById(R.id.tvArrow)
         val tvStatus: TextView = view.findViewById(R.id.tvStatusBadge)
         val cardDateBlock: MaterialCardView = view.findViewById(R.id.cardDateBlock)
     }
@@ -53,7 +56,16 @@ class AttendanceAdapter(private var logs: List<GymAttendance>) : RecyclerView.Ad
 
         // 2. Info Logic
         holder.tvGymName.text = log.gymName
-        holder.tvTime.text = log.time
+        holder.tvTime.text = log.timeIn
+        
+        if (log.timeOut.isNullOrEmpty()) {
+            holder.tvOutTime.text = "ACTIVE"
+            holder.tvOutTime.setTextColor(Color.parseColor("#34D399")) // Emerald/Green color
+        } else {
+            holder.tvOutTime.text = log.timeOut
+            holder.tvOutTime.setTextColor(Color.parseColor("#A1A1AA")) // Dim color
+        }
+
         holder.tvStatus.text = log.status
 
         // 3. Branding

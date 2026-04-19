@@ -20,6 +20,8 @@ import com.example.horizonsystems.utils.ThemeUtils
 import com.google.android.material.card.MaterialCardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -28,6 +30,7 @@ class AttendanceFragment : Fragment() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var attendanceAdapter: AttendanceAdapter
     private val CAMERA_PERMISSION_CODE = 1001
+    private var isScanning = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,21 +53,68 @@ class AttendanceFragment : Fragment() {
 
     private fun setupRecyclerView(view: View) {
         val rv = view.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
-        attendanceAdapter = AttendanceAdapter(getMockAttendance())
+        attendanceAdapter = AttendanceAdapter(emptyList())
         rv?.layoutManager = LinearLayoutManager(requireContext())
         rv?.adapter = attendanceAdapter
         
-        // Show the list if not empty (mock is never empty)
-        rv?.visibility = View.VISIBLE
-        view.findViewById<View>(R.id.emptyStateAttendance)?.visibility = View.GONE
+        fetchRealAttendanceLogs(view)
     }
 
-    private fun getMockAttendance(): List<GymAttendance> {
-        return listOf(
-            GymAttendance("2026-10-18", "08:15 AM", GymManager.getGymName(requireContext()), "PRESENT"),
-            GymAttendance("2026-10-17", "05:30 PM", GymManager.getGymName(requireContext()), "PRESENT"),
-            GymAttendance("2026-10-16", "07:00 AM", GymManager.getGymName(requireContext()), "PRESENT")
-        )
+    private fun fetchRealAttendanceLogs(rootView: View) {
+        val userId = GymManager.getUserId(requireContext())
+        val gymId = GymManager.getTenantId(requireContext())
+        
+        if (userId == -1) return
+        
+        val cookie = GymManager.getBypassCookie(requireContext())
+        val ua = GymManager.getBypassUA(requireContext())
+        val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
+        
+        lifecycleScope.launch {
+            try {
+                val response = api.getAttendanceLogs(userId, gymId)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val logs = response.body()?.logs ?: emptyList()
+                    val mappedLogs = logs.map { log ->
+                        val date = log.attendance_date ?: "1970-01-01"
+                        
+                        val timeRaw = log.check_in_time ?: "00:00:00"
+                        var formattedTime = timeRaw
+                        var formattedTimeOut: String? = null
+                        try {
+                            val sdfIn = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+                            val sdfOut = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                            sdfIn.parse(timeRaw)?.let { formattedTime = sdfOut.format(it) }
+                            
+                            val outTimeRaw = log.check_out_time
+                            if (outTimeRaw != null) {
+                                sdfIn.parse(outTimeRaw)?.let { formattedTimeOut = sdfOut.format(it) }
+                            }
+                        } catch(e: Exception) {}
+                        
+                        val status = if (log.attendance_status == "Active") "ACTIVE NOW" else "COMPLETED"
+                        val gName = log.gym_name ?: GymManager.getGymName(requireContext())
+                        
+                        GymAttendance(date, formattedTime, formattedTimeOut, gName, status)
+                    }
+                    
+                    attendanceAdapter.updateLogs(mappedLogs)
+                    
+                    val rv = rootView.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
+                    val emptyState = rootView.findViewById<View>(R.id.emptyStateAttendance)
+                    
+                    if (mappedLogs.isEmpty()) {
+                        rv?.visibility = View.GONE
+                        emptyState?.visibility = View.VISIBLE
+                    } else {
+                        rv?.visibility = View.VISIBLE
+                        emptyState?.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                // Keep UI states unmodified or show generic error UI
+            }
+        }
     }
 
     private fun applyBranding(view: View) {
@@ -147,10 +197,24 @@ class AttendanceFragment : Fragment() {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
+                val barcodeScanner = com.google.mlkit.vision.barcode.BarcodeScanning.getClient(
+                    com.google.mlkit.vision.barcode.BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_QR_CODE)
+                        .build()
+                )
+
+                val imageAnalysis = androidx.camera.core.ImageAnalysis.Builder()
+                    .setBackpressureStrategy(androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext())) { imageProxy ->
+                    processImageProxy(barcodeScanner, imageProxy)
+                }
+
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview)
+                cameraProvider.bindToLifecycle(viewLifecycleOwner, cameraSelector, preview, imageAnalysis)
 
                 // Transition UI
                 launchOverlay?.visibility = View.GONE
@@ -161,6 +225,81 @@ class AttendanceFragment : Fragment() {
                 android.util.Log.e("AttendanceFragment", "CameraX initialization failed", e)
             }
         }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
+    private fun processImageProxy(
+        barcodeScanner: com.google.mlkit.vision.barcode.BarcodeScanner,
+        imageProxy: androidx.camera.core.ImageProxy
+    ) {
+        val mediaImage = imageProxy.image
+        if (mediaImage != null) {
+            val image = com.google.mlkit.vision.common.InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            barcodeScanner.process(image)
+                .addOnSuccessListener { barcodes ->
+                    for (barcode in barcodes) {
+                        val rawValue = barcode.rawValue
+                        if (rawValue != null && !isScanning) {
+                            handleScannedQR(rawValue)
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    // Ignored
+                }
+                .addOnCompleteListener {
+                    imageProxy.close()
+                }
+        } else {
+            imageProxy.close()
+        }
+    }
+
+    private fun handleScannedQR(qrCodeContent: String) {
+        isScanning = true
+        try {
+            val json = org.json.JSONObject(qrCodeContent)
+            var scannedGymId = -1
+            if (json.has("gym_id")) {
+                scannedGymId = try { json.getInt("gym_id") } catch (e: Exception) { json.getString("gym_id").toIntOrNull() ?: -1 }
+            }
+            var action = json.optString("action", "check_in")
+            if (action == "checkin") action = "check_in"
+            
+            val userId = GymManager.getUserId(requireContext())
+            
+            if (scannedGymId != -1 && userId != -1) {
+                Toast.makeText(requireContext(), "Processing Check In...", Toast.LENGTH_SHORT).show()
+                val request = com.example.horizonsystems.models.AttendanceRequest(userId, scannedGymId, action)
+                
+                val cookie = GymManager.getBypassCookie(requireContext())
+                val ua = GymManager.getBypassUA(requireContext())
+                val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
+                
+                lifecycleScope.launch {
+                    try {
+                        val response = api.recordAttendance(request)
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            Toast.makeText(requireContext(), response.body()?.message ?: "Check-in successful!", Toast.LENGTH_LONG).show()
+                            view?.let { fetchRealAttendanceLogs(it) }
+                        } else {
+                            Toast.makeText(requireContext(), response.body()?.message ?: "Failed to check in.", Toast.LENGTH_LONG).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
+                    } finally {
+                        kotlinx.coroutines.delay(3000)
+                        isScanning = false
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Invalid QR Code for Check-in", Toast.LENGTH_SHORT).show()
+                view?.postDelayed({ isScanning = false }, 2000)
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Invalid QR format", Toast.LENGTH_SHORT).show()
+            view?.postDelayed({ isScanning = false }, 2000)
+        }
     }
 
     override fun onDestroyView() {
