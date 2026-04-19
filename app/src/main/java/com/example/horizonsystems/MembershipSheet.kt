@@ -53,7 +53,7 @@ class MembershipSheet : BottomSheetDialogFragment() {
         val ctx = context ?: return@registerForActivityResult
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             // NOTE: finalizeSubscription() is now handled server-side via payment_success_redirect.php
-            Toast.makeText(ctx, "Payment Successful! Your membership is now active.", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, "Payment Successful! Waiting for approval.", Toast.LENGTH_LONG).show()
             onSubscriptionCreated?.invoke()
             dismiss()
         } else {

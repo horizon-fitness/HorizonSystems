@@ -363,6 +363,19 @@
                 android:background="#1AFFFFFF"
                 android:layout_marginBottom="8dp" />
 
+            <TextView
+                android:id="@+id/tvEmptyHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="32dp"
+                android:gravity="center"
+                android:text="No records in this filter"
+                android:textColor="#FFFFFF"
+                android:alpha="0.3"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMembershipHistory"
                 android:layout_width="match_parent"

@@ -55,28 +55,43 @@ class BookingFilterSheet : BottomSheetDialogFragment() {
         val tvClear = view.findViewById<View>(R.id.tvClearAll)
         val displayFmt = SimpleDateFormat("MMM dd, yyyy", Locale.US)
 
+        var isUpdating = true
         // Restore state — "All" means all checked
-        when(currentStatus) {
-            "ALL" -> { cbAll.isChecked = true; cbPending.isChecked = true; cbConfirmed.isChecked = true; cbCompleted.isChecked = true }
-            "PENDING" -> { cbAll.isChecked = false; cbPending.isChecked = true; cbConfirmed.isChecked = false; cbCompleted.isChecked = false }
-            "APPROVED" -> { cbAll.isChecked = false; cbPending.isChecked = false; cbConfirmed.isChecked = true; cbCompleted.isChecked = false }
-            "COMPLETED" -> { cbAll.isChecked = false; cbPending.isChecked = false; cbConfirmed.isChecked = false; cbCompleted.isChecked = true }
+        if (currentStatus == "ALL") {
+            cbAll.isChecked = true; cbPending.isChecked = false; cbConfirmed.isChecked = false; cbCompleted.isChecked = false
+        } else {
+            cbAll.isChecked = false
+            val filters = currentStatus.split(",")
+            cbPending.isChecked = filters.contains("PENDING")
+            cbConfirmed.isChecked = filters.contains("APPROVED")
+            cbCompleted.isChecked = filters.contains("COMPLETED")
         }
+        isUpdating = false
 
         // Restore date labels
         startDate?.let { tvFromDate.text = displayFmt.format(Date(it)); tvFromDate.alpha = 1f }
         endDate?.let { tvToDate.text = displayFmt.format(Date(it)); tvToDate.alpha = 1f }
 
-        // "All" checks/unchecks all
+        val checkBoxes = listOf(cbPending, cbConfirmed, cbCompleted)
+
         cbAll.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) { cbPending.isChecked = true; cbConfirmed.isChecked = true; cbCompleted.isChecked = true }
+            if (isUpdating) return@setOnCheckedChangeListener
+            if (isChecked) {
+                isUpdating = true
+                checkBoxes.forEach { it.isChecked = false }
+                isUpdating = false
+            }
         }
-        val deAllListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
-            if (!isChecked) cbAll.isChecked = false
+        val childListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
+            if (!isUpdating) {
+                if (isChecked) {
+                    isUpdating = true
+                    cbAll.isChecked = false
+                    isUpdating = false
+                }
+            }
         }
-        cbPending.setOnCheckedChangeListener(deAllListener)
-        cbConfirmed.setOnCheckedChangeListener(deAllListener)
-        cbCompleted.setOnCheckedChangeListener(deAllListener)
+        checkBoxes.forEach { it.setOnCheckedChangeListener(childListener) }
 
         // From date picker
         tvFromDate.setOnClickListener {
@@ -113,12 +128,15 @@ class BookingFilterSheet : BottomSheetDialogFragment() {
         }
 
         btnApply.setOnClickListener {
-            currentStatus = when {
-                cbAll.isChecked || (cbPending.isChecked && cbConfirmed.isChecked && cbCompleted.isChecked) -> "ALL"
-                cbPending.isChecked && !cbConfirmed.isChecked && !cbCompleted.isChecked -> "PENDING"
-                cbConfirmed.isChecked && !cbPending.isChecked && !cbCompleted.isChecked -> "APPROVED"
-                cbCompleted.isChecked && !cbPending.isChecked && !cbConfirmed.isChecked -> "COMPLETED"
-                else -> "ALL"
+            val selected = mutableListOf<String>()
+            if (cbPending.isChecked) selected.add("PENDING")
+            if (cbConfirmed.isChecked) selected.add("APPROVED")
+            if (cbCompleted.isChecked) selected.add("COMPLETED")
+
+            currentStatus = if (cbAll.isChecked || selected.size == 3 || selected.isEmpty()) {
+                "ALL"
+            } else {
+                selected.joinToString(",")
             }
             listener?.onFiltersApplied(currentStatus, startDate, endDate)
             dismiss()
@@ -148,8 +166,10 @@ class BookingFilterSheet : BottomSheetDialogFragment() {
                     root.background = shape
                 }
 
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilters)?.backgroundTintList =
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilters)?.let { btn ->
+                    btn.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
 
                 val checkBoxes = listOf(R.id.cbStatusAll, R.id.cbStatusPending, R.id.cbStatusConfirmed, R.id.cbStatusCompleted)
                 checkBoxes.forEach { id ->

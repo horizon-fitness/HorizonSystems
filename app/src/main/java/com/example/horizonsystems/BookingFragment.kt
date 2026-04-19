@@ -132,6 +132,12 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
                             val sheet = BookingSheet()
                             sheet.onBookingCreated = { fetchBookings(view) }
                             sheet.show(parentFragmentManager, "booking_sheet")
+                        } else if (response.body()?.subscriptionStatus == "Pending Approval") {
+                            DialogUtils.showConfirmationDialog(
+                                ctx,
+                                "Approval Required",
+                                "Your membership is currently pending approval. Please wait for the admin to approve it."
+                            )
                         } else {
                             DialogUtils.showConfirmationDialog(
                                 ctx,
@@ -263,10 +269,13 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
         
         // 1. Filter logic
         var baseList = allLogs.filter { log ->
-            val statusMatch = when (currentFilter) {
-                "ALL" -> true
-                "APPROVED" -> log.status?.uppercase() == "APPROVED" || log.status?.uppercase() == "CONFIRMED"
-                else -> log.status?.uppercase() == currentFilter
+            val statusMatch = if (currentFilter == "ALL") {
+                true
+            } else {
+                val filters = currentFilter.split(",")
+                val logStatus = log.status?.uppercase() ?: ""
+                val mappedLogStatus = if (logStatus == "CONFIRMED") "APPROVED" else logStatus
+                filters.contains(mappedLogStatus)
             }
 
             val dateMatch = if (startDate != null && endDate != null) {
@@ -303,6 +312,10 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
         if (::adapter.isInitialized) adapter.updateLogs(pageItems)
 
         // Visibility & UI
+        val hasActiveFilter = currentFilter != "ALL" || startDate != null || searchQuery.isNotEmpty()
+        val emptyMsg = if (hasActiveFilter) "No records in this filter" else "No training logs yet"
+        root.findViewById<android.widget.TextView>(R.id.bookingEmptyState)?.text = emptyMsg
+
         root.findViewById<View>(R.id.emptyStateBooking)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
         root.findViewById<View>(R.id.rvTrainingLogs)?.visibility = if (pageItems.isEmpty()) View.GONE else View.VISIBLE
         root.findViewById<View>(R.id.pagination_container_booking)?.visibility = if (totalPages > 1) View.VISIBLE else View.GONE

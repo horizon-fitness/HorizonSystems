@@ -31,8 +31,6 @@ class ProfileFragment : Fragment() {
         (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
         applyBranding(view)
-        refreshUI()
-        fetchProfileData(false) // Background sync
 
         // Sign Out Logic
         view.findViewById<View>(R.id.btnSignOut)?.setOnClickListener {
@@ -68,12 +66,9 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    }
-
     private fun fetchProfileData(showToast: Boolean) {
         val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         if (userId == -1) {
-            swipeRefresh.isRefreshing = false
             return
         }
 
@@ -284,6 +279,12 @@ class ProfileFragment : Fragment() {
         view.findViewById<View>(R.id.profilePhone)?.parent?.let { parent ->
             (parent as? View)?.setOnClickListener { copyToClipboard("Phone number", phone) }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshUI()
+        fetchProfileData(false) // Background sync
     }
 
     override fun onDestroyView() {

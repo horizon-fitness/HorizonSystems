@@ -32,6 +32,7 @@ import androidx.core.os.bundleOf
 class HomeFragment : Fragment() {
     private var currentPlans: List<MembershipPlan>? = null
     private var hasActivePlan = false
+    private var isPendingPlan = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +46,49 @@ class HomeFragment : Fragment() {
         
         applyBranding(view)
 
+
+        // Ensure rvPreview has layout manager immediately
+        val rvPreview = view.findViewById<RecyclerView>(R.id.rvMembershipPreview)
+        rvPreview?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+
+        // Status Card Clicks
+        val bookClick = View.OnClickListener {
+            if (hasActivePlan && !isPendingPlan) {
+                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
+            } else if (isPendingPlan) {
+                DialogUtils.showConfirmationDialog(
+                    requireContext(),
+                    "Approval Required",
+                    "Your membership is currently pending approval. Please wait for the admin to approve it."
+                )
+            } else {
+                DialogUtils.showConfirmationDialog(
+                    requireContext(),
+                    "Membership Required",
+                    "You must have an Active Membership to book a session."
+                )
+            }
+        }
+        view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
+        view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
+
+        // Services Offered Setup
+        val rvServices = view.findViewById<RecyclerView>(R.id.rvServicesPreview)
+        rvServices?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        
+        ThemeUtils.applyThemeToView(view)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.let {
+            updateUserInfo(it)
+            fetchData()
+        }
+    }
+
+    private fun updateUserInfo(view: View) {
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
         val dashGreeting = view.findViewById<TextView>(R.id.dashGreeting)
@@ -58,7 +102,6 @@ class HomeFragment : Fragment() {
         // Profile Avatar & Theme Setup (Ultra-Modern Glass)
         val initialsText = view.findViewById<TextView>(R.id.memberInitials)
         val profileBanner = view.findViewById<ImageView>(R.id.memberProfilePic)
-        val profileCard = profileBanner?.parent?.let { it.parent as? MaterialCardView }
         
         // Initialize Initials
         val initials = userName.trim().split(" ")
@@ -78,36 +121,6 @@ class HomeFragment : Fragment() {
             profileBanner?.visibility = View.GONE
             initialsText?.visibility = View.VISIBLE
         }
-
-        // Membership Plan Preview Setup
-        val rvPreview = view.findViewById<RecyclerView>(R.id.rvMembershipPreview)
-        rvPreview?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        fetchMembershipPlans(view)
-
-        // Status Card Clicks
-        val bookClick = View.OnClickListener {
-            if (hasActivePlan) {
-                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
-            } else {
-                DialogUtils.showConfirmationDialog(
-                    requireContext(),
-                    "Membership Required",
-                    "You must have an Active Membership to book a session."
-                )
-            }
-        }
-        view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
-        view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
-
-        fetchActiveStatus(view)
-        fetchUpcomingSession(view)
-        
-        // Services Offered Setup
-        val rvServices = view.findViewById<RecyclerView>(R.id.rvServicesPreview)
-        rvServices?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        fetchServicesOffered(view)
-        
-        ThemeUtils.applyThemeToView(view)
     }
 
     private fun fetchData() {
@@ -141,11 +154,17 @@ class HomeFragment : Fragment() {
                         emptyState?.visibility = View.GONE
 
                         val adapter = HomeServiceAdapter(services) { service ->
-                            if (hasActivePlan) {
+                            if (hasActivePlan && !isPendingPlan) {
                                 val bookingSheet = BookingSheet().apply {
                                     preSelectedServiceId = service.serviceId
                                 }
                                 bookingSheet.show(parentFragmentManager, "HomeBookingSheet")
+                            } else if (isPendingPlan) {
+                                DialogUtils.showConfirmationDialog(
+                                    requireContext(),
+                                    "Approval Required",
+                                    "Your membership is currently pending approval. Please wait for the admin to approve."
+                                )
                             } else {
                                 DialogUtils.showConfirmationDialog(
                                     requireContext(),
@@ -403,11 +422,13 @@ class HomeFragment : Fragment() {
                         hasActivePlan = true
 
                         if (active.subscriptionStatus == "Pending Approval") {
+                            isPendingPlan = true
                             statusText?.text = active.planName ?: "Plan"
                             statusText?.setTextColor(android.graphics.Color.WHITE)
                             btnManage?.text = "PENDING"
                             btnManage?.setTextColor(android.graphics.Color.parseColor("#FFC107"))
                         } else {
+                            isPendingPlan = false
                             statusText?.text = active.planName ?: "Active Member"
                             statusText?.setTextColor(android.graphics.Color.WHITE)
                             btnManage?.text = "ACTIVE"
@@ -436,6 +457,7 @@ class HomeFragment : Fragment() {
                         val btnManage = root.findViewById<TextView>(R.id.btnManageMembership)
                         
                         hasActivePlan = false
+                        isPendingPlan = false
 
                         statusText?.text = "No Active Plan"
                         statusText?.setTextColor(android.graphics.Color.WHITE)
@@ -452,6 +474,7 @@ class HomeFragment : Fragment() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     hasActivePlan = false
+                    isPendingPlan = false
                     val statusText = root.findViewById<TextView>(R.id.membershipStatusText)
                     val planText = root.findViewById<TextView>(R.id.membershipPlan)
                     statusText?.text = "No Active Plan"

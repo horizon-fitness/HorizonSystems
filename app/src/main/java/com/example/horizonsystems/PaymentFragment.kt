@@ -174,10 +174,13 @@ class PaymentFragment : Fragment(), PaymentFilterSheet.FilterListener, PaymentSo
         
         // 1. Combine Filtering & Searching
         var baseList = allTransactions.filter { txn ->
-            val statusMatch = when (currentStatus) {
-                "PENDING" -> txn.status.contains("Pending", ignoreCase = true)
-                "COMPLETED" -> txn.status.contains("Approved", ignoreCase = true) || txn.status.contains("Paid", ignoreCase = true) || txn.status.contains("Completed", ignoreCase = true)
-                else -> true
+            val statusMatch = if (currentStatus == "ALL") {
+                true
+            } else {
+                val filters = currentStatus.split(",")
+                val matchesPending = filters.contains("PENDING") && txn.status.contains("Pending", ignoreCase = true)
+                val matchesCompleted = filters.contains("COMPLETED") && (txn.status.contains("Approved", ignoreCase = true) || txn.status.contains("Paid", ignoreCase = true) || txn.status.contains("Completed", ignoreCase = true))
+                matchesPending || matchesCompleted
             }
 
             val typeMatch = when (currentType) {
@@ -220,7 +223,7 @@ class PaymentFragment : Fragment(), PaymentFilterSheet.FilterListener, PaymentSo
         if (::adapter.isInitialized) adapter.updateTransactions(pageItems)
 
         val hasActiveFilter = currentStatus != "ALL" || currentType != "ALL" || startDate != null || searchQuery.isNotEmpty()
-        val emptyMsg = if (hasActiveFilter) "No results for your filters." else "No transactions found."
+        val emptyMsg = if (hasActiveFilter) "No records in this filter" else "No transactions found."
         root.findViewById<TextView>(R.id.emptyState)?.text = emptyMsg
         root.findViewById<View>(R.id.emptyState)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
         root.findViewById<View>(R.id.rvTransactions)?.visibility = if (pageItems.isEmpty()) View.GONE else View.VISIBLE

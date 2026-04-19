@@ -64,30 +64,42 @@ class PaymentFilterSheet : BottomSheetDialogFragment() {
             "BOOKING" -> view.findViewById<com.google.android.material.chip.Chip>(R.id.chipTypeBooking)?.isChecked = true
         }
 
-        // Restore checkbox state — "All" means all checked
-        when(currentStatus) {
-            "ALL" -> { cbAll.isChecked = true; cbPending.isChecked = true; cbCompleted.isChecked = true }
-            "PENDING" -> { cbAll.isChecked = false; cbPending.isChecked = true; cbCompleted.isChecked = false }
-            "COMPLETED" -> { cbAll.isChecked = false; cbPending.isChecked = false; cbCompleted.isChecked = true }
+        var isUpdating = true
+        // Restore checkbox state
+        if (currentStatus == "ALL") {
+            cbAll.isChecked = true; cbPending.isChecked = false; cbCompleted.isChecked = false
+        } else {
+            cbAll.isChecked = false
+            val filters = currentStatus.split(",")
+            cbPending.isChecked = filters.contains("PENDING")
+            cbCompleted.isChecked = filters.contains("COMPLETED")
         }
+        isUpdating = false
 
         // Restore date labels
         startDate?.let { tvFromDate.text = displayFmt.format(Date(it)); tvFromDate.alpha = 1f }
         endDate?.let { tvToDate.text = displayFmt.format(Date(it)); tvToDate.alpha = 1f }
 
-        // "All" checkbox — checks/unchecks all others
+        val checkBoxes = listOf(cbPending, cbCompleted)
+
         cbAll.setOnCheckedChangeListener { _, isChecked ->
+            if (isUpdating) return@setOnCheckedChangeListener
             if (isChecked) {
-                cbPending.isChecked = true
-                cbCompleted.isChecked = true
+                isUpdating = true
+                checkBoxes.forEach { it.isChecked = false }
+                isUpdating = false
             }
         }
-        // Individual checkboxes — uncheck "All" if any deselected
-        val deAllListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
-            if (!isChecked) cbAll.isChecked = false
+        val childListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
+            if (!isUpdating) {
+                if (isChecked) {
+                    isUpdating = true
+                    cbAll.isChecked = false
+                    isUpdating = false
+                }
+            }
         }
-        cbPending.setOnCheckedChangeListener(deAllListener)
-        cbCompleted.setOnCheckedChangeListener(deAllListener)
+        checkBoxes.forEach { it.setOnCheckedChangeListener(childListener) }
 
         // From date picker — max date = today
         tvFromDate.setOnClickListener {
@@ -130,11 +142,14 @@ class PaymentFilterSheet : BottomSheetDialogFragment() {
                 R.id.chipTypeBooking -> "BOOKING"
                 else -> "ALL"
             }
-            currentStatus = when {
-                cbAll.isChecked || (cbPending.isChecked && cbCompleted.isChecked) -> "ALL"
-                cbPending.isChecked -> "PENDING"
-                cbCompleted.isChecked -> "COMPLETED"
-                else -> "ALL"
+            val selected = mutableListOf<String>()
+            if (cbPending.isChecked) selected.add("PENDING")
+            if (cbCompleted.isChecked) selected.add("COMPLETED")
+
+            currentStatus = if (cbAll.isChecked || selected.size == 2 || selected.isEmpty()) {
+                "ALL"
+            } else {
+                selected.joinToString(",")
             }
             listener?.onFiltersApplied(currentStatus, currentType, startDate, endDate)
             dismiss()
@@ -164,8 +179,10 @@ class PaymentFilterSheet : BottomSheetDialogFragment() {
                     root.background = shape
                 }
 
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilters)?.backgroundTintList =
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilters)?.let { btn ->
+                    btn.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
 
                 // Checkboxes — outline style (use theme color for tick, transparent bg)
                 val checkBoxes = listOf(R.id.cbStatusAll, R.id.cbStatusPending, R.id.cbStatusCompleted)

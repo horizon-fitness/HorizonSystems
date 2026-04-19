@@ -129,6 +129,10 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         val rv = view?.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
         val emptyState = view?.findViewById<View>(R.id.emptyStateAttendance)
         
+        val hasActiveFilter = currentFilterStatus != "ALL" || startDate != null || searchQuery.isNotEmpty()
+        val emptyMsg = if (hasActiveFilter) "No records in this filter" else "No logs found for this period"
+        view?.findViewById<android.widget.TextView>(R.id.tvEmptyAttendanceText)?.text = emptyMsg
+
         if (displayLogsList.isEmpty()) {
             rv?.visibility = View.GONE
             emptyState?.visibility = View.VISIBLE

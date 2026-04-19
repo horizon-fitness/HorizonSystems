@@ -313,7 +313,17 @@ class LandingActivity : AppCompatActivity() {
         }
         
         // Load initial fragment via navigation selection (which triggers loadFragment)
-        findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_home
+        val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
+        if (bottomNav != null) {
+            if (bottomNav.selectedItemId == R.id.nav_home) {
+                // If it's already selected, setting it won't trigger the listener, so load manually
+                loadFragment(HomeFragment())
+            } else {
+                bottomNav.selectedItemId = R.id.nav_home
+            }
+        } else {
+            loadFragment(HomeFragment())
+        }
     }
 
     fun setTopNotificationsVisibility(visible: Boolean) {

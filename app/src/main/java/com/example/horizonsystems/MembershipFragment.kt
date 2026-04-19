@@ -297,9 +297,11 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
         val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US)
         
         val baseList = fullHistoryList.filter { txn ->
-            val statusMatch = when (currentFilter) {
-                "ALL" -> true
-                else -> txn.status.contains(currentFilter, ignoreCase = true)
+            val statusMatch = if (currentFilter == "ALL") {
+                true
+            } else {
+                val filters = currentFilter.split(",")
+                filters.any { filterStr -> txn.status.contains(filterStr, ignoreCase = true) }
             }
 
             val dateMatch = if (startDate != null && endDate != null) {
@@ -326,5 +328,14 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
         historyList.clear()
         historyList.addAll(sortedList)
         if (::adapter.isInitialized) adapter.notifyDataSetChanged()
+
+        val hasActiveFilter = currentFilter != "ALL" || startDate != null || searchQuery.isNotEmpty()
+        val emptyMsg = if (hasActiveFilter) "No records in this filter" else "No membership history available"
+        
+        view?.findViewById<android.widget.TextView>(R.id.tvEmptyHistory)?.let { tv ->
+            tv.text = emptyMsg
+            tv.visibility = if (historyList.isEmpty()) View.VISIBLE else View.GONE
+        }
+        view?.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvMembershipHistory)?.visibility = if (historyList.isEmpty()) View.GONE else View.VISIBLE
     }
 }
