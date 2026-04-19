@@ -3,7 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="landing_primary">#FFFFFF</color>
-    <color name="nav_active_color">@color/landing_primary</color>
+    <color name="nav_active_color">#D946EF</color>
     <color name="landing_background">#050505</color>
     <color name="background_dark">#050505</color>
     <color name="surface_dark">#151518</color>

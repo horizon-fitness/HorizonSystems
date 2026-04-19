@@ -3,93 +3,132 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="0dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="16dp"
-    app:cardBackgroundColor="#1A1A1A"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="#0DFFFFFF"
+    app:cardCornerRadius="24dp"
     app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="1dp"
+    app:strokeColor="#1AFFFFFF">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:padding="16dp">
 
-        <!-- Info Group (Left) -->
+        <!-- Date Block (Left) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDateBlock"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardBackgroundColor="#0DFFFFFF"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvLogMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="APR"
+                    android:textColor="@color/text_secondary"
+                    android:alpha="0.4"
+                    android:textSize="9sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1" />
+
+                <TextView
+                    android:id="@+id/tvLogDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="21"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-black" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Session Info (Center) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="@id/cardDateBlock"
+            app:layout_constraintBottom_toBottomOf="@id/cardDateBlock"
+            app:layout_constraintStart_toEndOf="@id/cardDateBlock"
+            app:layout_constraintEnd_toStartOf="@id/layoutSessionInfo">
 
             <TextView
                 android:id="@+id/logService"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Unlimited Gym Use"
+                android:text="Personal Training"
                 android:textColor="@color/white"
-                android:textSize="17sp"
-                android:textStyle="bold"
+                android:textSize="18sp"
                 android:fontFamily="sans-serif-black"
-                android:ellipsize="end"
-                android:maxLines="1" />
-
-            <TextView
-                android:id="@+id/logDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Sept 12, 2023"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:fontFamily="sans-serif-medium" />
+                android:letterSpacing="-0.01"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/logTrainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Trainer: John Doe"
-                android:textColor="#BC8CF2"
+                android:layout_marginTop="2dp"
+                android:text="Coach: Andrei Caberto"
+                android:textColor="@color/text_secondary"
+                android:alpha="0.4"
                 android:textSize="11sp"
-                android:alpha="0.8"
-                android:fontFamily="sans-serif-medium" />
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.05"
+                android:maxLines="1"
+                android:ellipsize="end" />
         </LinearLayout>
 
-        <!-- Status & Time Group (Right) -->
+        <!-- Time & Status (Right) -->
         <LinearLayout
+            android:id="@+id/layoutSessionInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="end">
+            android:gravity="end"
+            app:layout_constraintTop_toTopOf="@id/cardDateBlock"
+            app:layout_constraintBottom_toBottomOf="@id/cardDateBlock"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:id="@+id/logTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10:00 AM"
-                android:textColor="#BC8CF2"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-black" />
+                android:text="11:30 AM"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.01" />
 
             <TextView
                 android:id="@+id/logStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
+                android:layout_marginTop="2dp"
                 android:text="PENDING"
-                android:textColor="@color/emerald_400"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textAllCaps="true"
+                android:textColor="#F59E0B"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.05"
-                android:background="@drawable/bg_status_tag" />
+                android:textAllCaps="true" />
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

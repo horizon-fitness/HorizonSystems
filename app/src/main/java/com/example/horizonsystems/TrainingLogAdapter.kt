@@ -1,22 +1,28 @@
 package com.example.horizonsystems
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.TrainingLog
+import com.example.horizonsystems.utils.GymManager
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TrainingLogAdapter(private var logs: List<TrainingLog>) :
     RecyclerView.Adapter<TrainingLogAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val date: TextView = view.findViewById(R.id.logDate)
+        val month: TextView = view.findViewById(R.id.tvLogMonth)
+        val day: TextView = view.findViewById(R.id.tvLogDay)
         val time: TextView = view.findViewById(R.id.logTime)
         val service: TextView = view.findViewById(R.id.logService)
         val trainer: TextView = view.findViewById(R.id.logTrainer)
         val status: TextView = view.findViewById(R.id.logStatus)
+        val cardDateBlock: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardDateBlock)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,32 +33,51 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val log = logs.getOrNull(position) ?: return
+        val context = holder.itemView.context
         
-        holder.date.text = log.date ?: "N/A"
+        // --- 1. Date Parsing (Month/Day) ---
+        try {
+            val dateStr = log.date ?: "2024-01-01"
+            val inputSdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            val dateObj = inputSdf.parse(dateStr)
+            
+            if (dateObj != null) {
+                holder.month.text = SimpleDateFormat("MMM", Locale.US).format(dateObj).uppercase()
+                holder.day.text = SimpleDateFormat("dd", Locale.US).format(dateObj)
+            }
+        } catch (e: Exception) {
+            holder.month.text = "JAN"
+            holder.day.text = "01"
+        }
         
-        // Format Time to 12h: hh:mm AM/PM (Null-Safe)
+        // --- 2. Time Parsing (12h Format) ---
         val timeFormatted = try {
             val sessionTime = log.time ?: "00:00:00"
-            val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
-            val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+            val sdf24 = SimpleDateFormat("HH:mm:ss", Locale.US)
+            val sdf12 = SimpleDateFormat("hh:mm a", Locale.US)
             val dateObj = sdf24.parse(sessionTime)
             sdf12.format(dateObj!!)
         } catch (e: Exception) {
             (log.time ?: "00:00").substringBeforeLast(":") // Fallback
         }
-        holder.time.text = "$timeFormatted - ${log.duration ?: "0m"}"
+        // Show time + duration if available, clean right column
+        val duration = log.duration
+        holder.time.text = if (!duration.isNullOrBlank()) "$timeFormatted · $duration" else timeFormatted
+        
+        // --- 3. Coach & Service ---
         holder.service.text = log.service ?: "Service"
+        val trainerName = log.trainer ?: ""
+        holder.trainer.text = if (trainerName.isBlank() || trainerName.equals("Self", ignoreCase = true)) {
+            "No Coach"
+        } else {
+            "Coach: $trainerName"
+        }
         
-        // Smart Trainer Label: "Self" vs "Trainer: Name"
-        val trainerName = log.trainer ?: "Self"
-        holder.trainer.text = if (trainerName.equals("Self", ignoreCase = true)) "Self" else "Trainer: $trainerName"
-        
-        // Status Mapping: "CANCELLED" -> "REJECTED" for clearer communication
+        // --- 4. Status Styling ---
         val rawStatus = log.status?.uppercase() ?: "PENDING"
         val displayStatus = if (rawStatus == "CANCELLED") "REJECTED" else rawStatus
         holder.status.text = displayStatus
 
-        // Status coloring (Robust)
         val tintColor: String = when (rawStatus) {
             "APPROVED", "CONFIRMED", "ACTIVE" -> "#1A10B981"
             "PENDING" -> "#1AF59E0B"
@@ -69,11 +94,33 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
         }
 
         try {
-            holder.status.setTextColor(android.graphics.Color.parseColor(textColor))
-            holder.status.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(tintColor))
+            holder.status.setTextColor(Color.parseColor(textColor))
+            holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor(tintColor))
         } catch (e: Exception) {
-            holder.status.setTextColor(android.graphics.Color.WHITE)
+            holder.status.setTextColor(Color.WHITE)
         }
+
+        // --- 5. Branding Sync (mirrors TransactionAdapter) ---
+        val themeColorStr = GymManager.getThemeColor(context)
+        val themeColor = try { Color.parseColor(themeColorStr) } catch (e: Exception) { Color.parseColor("#8c2bee") }
+
+        val cardColorStr = GymManager.getCardColor(context)
+        val isAutoCard = GymManager.getAutoCardTheme(context) == "1"
+        val cardBg = if (isAutoCard) {
+            Color.argb(13, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor))
+        } else {
+            try { Color.parseColor(cardColorStr) } catch (e: Exception) { Color.parseColor("#141216") }
+        }
+        (holder.itemView as? com.google.android.material.card.MaterialCardView)
+            ?.setCardBackgroundColor(ColorStateList.valueOf(cardBg))
+
+        // Date block: theme-tinted background, theme-colored day, white month
+        holder.cardDateBlock.setCardBackgroundColor(
+            Color.argb(13, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor))
+        )
+        holder.day.setTextColor(themeColor)
+        holder.month.setTextColor(Color.WHITE)
+        holder.month.alpha = 1.0f
     }
 
     fun updateLogs(newLogs: List<TrainingLog>) {

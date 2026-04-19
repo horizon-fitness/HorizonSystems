@@ -99,7 +99,6 @@ class BookingSheet : BottomSheetDialogFragment() {
 
         val editDate = view.findViewById<TextInputEditText>(R.id.bookDate)
         val editTime = view.findViewById<TextInputEditText>(R.id.bookTime)
-        val btnSubmit = view.findViewById<View>(R.id.btnSubmitBooking)
 
         // Duration Setup
         val durations = listOf("1 Hour", "2 Hours", "3 Hours", "4 Hours", "5 Hours")
@@ -123,6 +122,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                 .setValidator(DateValidatorPointForward.now())
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Booking Date")
+                .setTheme(R.style.CustomMaterialCalendarTheme)
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .setCalendarConstraints(constraintsBuilder.build())
                 .build()
@@ -222,6 +222,16 @@ class BookingSheet : BottomSheetDialogFragment() {
             updatePrice()
         }
 
+        val cbAgreement = view.findViewById<android.widget.CheckBox>(R.id.cbBookingAgreement)
+        val btnSubmit = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSubmitBooking)
+
+        cbAgreement?.setOnCheckedChangeListener { _, isChecked ->
+            btnSubmit?.isEnabled = isChecked
+            btnSubmit?.alpha = if (isChecked) 1.0f else 0.3f
+        }
+
+        view.findViewById<View>(R.id.btnCancelBooking)?.setOnClickListener { dismiss() }
+
         btnSubmit?.setOnClickListener {
             val dateStr = editDate?.text.toString()
             val timeStr = editTime?.tag?.toString() ?: ""
@@ -268,8 +278,10 @@ class BookingSheet : BottomSheetDialogFragment() {
         return view
     }
 
+
     override fun onStart() {
         super.onStart()
+        // Ensure the dialog's window background is transparent so rounded corners of bg_bottom_sheet show
         dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
             it.setBackgroundResource(android.R.color.transparent)
         }
@@ -279,6 +291,7 @@ class BookingSheet : BottomSheetDialogFragment() {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
         val cardColorStr = GymManager.getCardColor(ctx)
+        val bgColorStr = GymManager.getBgColor(ctx)
         val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
 
         try {
@@ -286,9 +299,15 @@ class BookingSheet : BottomSheetDialogFragment() {
             
             // 1. Titles & Buttons
             view.findViewById<TextView>(R.id.sheetSubTitle)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvBookingTermsHeader)?.setTextColor(themeColor)
+            
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSubmitBooking)?.let {
                 it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
             }
+
+            // 1b. Checkbox Tint
+            view.findViewById<android.widget.CheckBox>(R.id.cbBookingAgreement)?.buttonTintList = 
+                android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#80FFFFFF"))
 
             // 2. Card Appearance Synchronization
             val cardColor = if (isAutoCard) {
@@ -300,11 +319,16 @@ class BookingSheet : BottomSheetDialogFragment() {
                 try { android.graphics.Color.parseColor(cardColorStr) } catch(e: Exception) { android.graphics.Color.parseColor("#141216") }
             }
 
-            // 2a. Apply to Root Modal Background
+            // 2a. Apply to Root Modal Background (Solid to prevent bleed-through/ghosting)
             view.findViewById<android.widget.LinearLayout>(R.id.rootSheetContainer)?.let { root ->
                 val shape = android.graphics.drawable.GradientDrawable()
                 shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                shape.setColor(cardColor)
+                
+                // Use a solid background for the main sheet to ensure readability and fix "see-thru" bug
+                val solidBg = try { android.graphics.Color.parseColor(bgColorStr) } 
+                              catch(e: Exception) { android.graphics.Color.parseColor("#151518") }
+                shape.setColor(solidBg)
+                
                 val radius = (28 * ctx.resources.displayMetrics.density)
                 shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
                 root.background = shape

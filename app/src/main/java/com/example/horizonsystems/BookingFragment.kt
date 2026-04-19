@@ -259,9 +259,11 @@ class BookingFragment : Fragment() {
             view.findViewById<TextView>(R.id.tv_page_number_booking)?.setTextColor(textColor)
             view.findViewById<TextView>(R.id.bookingEmptyState)?.setTextColor(textColor)
             
-            // 3. Status Accents
-            view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.setCardBackgroundColor(themeColor)
-            view.findViewById<TextView>(R.id.tv_selected_date_label)?.setTextColor(textColor)
+            // 3. Status Accents & Cards
+            view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.let { card ->
+                card.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
+            }
+            view.findViewById<TextView>(R.id.tv_selected_date_label)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tv_upcoming_sessions_accent)?.setTextColor(themeColor)
 
             // 4. Pagination Tints
