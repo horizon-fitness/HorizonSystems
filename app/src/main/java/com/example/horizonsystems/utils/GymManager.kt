@@ -249,6 +249,41 @@ object GymManager {
     }
 
     /**
+     * Standardized method to load profile pictures with security bypass headers
+     */
+    fun loadProfilePicture(context: Context, path: String?, imageView: ImageView?) {
+        if (imageView == null) return
+        
+        if (path.isNullOrEmpty()) {
+            imageView.setImageResource(com.example.horizonsystems.R.drawable.ic_profile)
+            return
+        }
+
+        val baseUrl = "https://horizonfitnesscorp.gt.tc/"
+        val fullUrl = if (path.startsWith("http")) path else baseUrl + path.removePrefix("/")
+
+        val cookie = getBypassCookie(context)
+        val ua = getBypassUA(context)
+
+        val glideUrl = if (cookie.isNotEmpty() && ua.isNotEmpty() && fullUrl.startsWith("http")) {
+            GlideUrl(
+                fullUrl,
+                LazyHeaders.Builder()
+                    .addHeader("Cookie", cookie)
+                    .addHeader("User-Agent", ua)
+                    .build()
+            )
+        } else {
+            fullUrl
+        }
+
+        Glide.with(context)
+            .load(glideUrl)
+            .circleCrop()
+            .into(imageView)
+    }
+
+    /**
      * Re-fetch the latest branding data from the server and update local preferences.
      */
     suspend fun syncBranding(context: Context) {

@@ -231,20 +231,23 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, sexOptions)
         editSex.setAdapter(adapter)
 
-        editBirth.setOnClickListener {
-            val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Birth Date")
-                .setTheme(com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(requireContext()))
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-
-            datePicker.addOnPositiveButtonClickListener { selection ->
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = selection
-                val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                editBirth.setText(format.format(calendar.time))
+        // Only allow picking date if it's not locked (has no value yet)
+        if (editBirth.isClickable) {
+            editBirth.setOnClickListener {
+                val datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Birth Date")
+                    .setTheme(com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(requireContext()))
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+    
+                datePicker.addOnPositiveButtonClickListener { selection ->
+                    val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                    calendar.timeInMillis = selection
+                    val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                    editBirth.setText(format.format(calendar.time))
+                }
+                datePicker.show(childFragmentManager, "DATE_PICKER")
             }
-            datePicker.show(childFragmentManager, "DATE_PICKER")
         }
     }
 
@@ -257,16 +260,9 @@ class EditProfileSheet : BottomSheetDialogFragment() {
 
         // Load current image
         val profilePicPath = activity?.intent?.getStringExtra("profile_pic")
-        if (!profilePicPath.isNullOrEmpty()) {
-            val fullUrl = "https://horizonsystems.rf.gd/$profilePicPath"
-            Glide.with(this)
-                .load(fullUrl)
-                .placeholder(R.drawable.ic_profile)
-                .circleCrop()
-                .into(sheetProfileImage)
-        }
+        GymManager.loadProfilePicture(requireContext(), profilePicPath, sheetProfileImage)
     }
-
+    
     private fun uploadProfilePicture(uri: Uri) {
         val userId = activity?.intent?.getIntExtra("user_id", 0) ?: 0
         if (userId <= 0) return
@@ -300,10 +296,9 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                         val newPath = response.body()?.path ?: ""
                         activity?.intent?.putExtra("profile_pic", newPath)
                         
-                        Glide.with(this@EditProfileSheet)
-                            .load("https://horizonsystems.rf.gd/$newPath")
-                            .circleCrop()
-                            .into(sheetProfileImage)
+                        GymManager.loadProfilePicture(requireContext(), newPath, sheetProfileImage)
+                        
+                        onSavedListener?.invoke()
                     } else {
                         Toast.makeText(requireContext(), "Upload failed", Toast.LENGTH_SHORT).show()
                     }

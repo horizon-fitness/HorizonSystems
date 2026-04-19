@@ -29,7 +29,7 @@
                 android:id="@+id/cvProfileImage"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                app:cardCornerRadius="18dp"
+                app:cardCornerRadius="30dp"
                 app:cardElevation="0dp"
                 app:cardBackgroundColor="#0DFFFFFF"
                 app:strokeColor="#1AFFFFFF"

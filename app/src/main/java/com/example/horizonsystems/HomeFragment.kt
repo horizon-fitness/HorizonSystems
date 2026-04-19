@@ -72,6 +72,17 @@ class HomeFragment : Fragment() {
             .joinToString("")
         initialsText?.text = if (initials.isNotEmpty()) initials else "U"
 
+        // Load Profile Picture Native to Home Fragment
+        val profilePicPath = activity?.intent?.getStringExtra("profile_pic")
+        if (!profilePicPath.isNullOrEmpty() && profileBanner != null) {
+            profileBanner.visibility = View.VISIBLE
+            initialsText?.visibility = View.GONE
+            GymManager.loadProfilePicture(requireContext(), profilePicPath, profileBanner)
+        } else {
+            profileBanner?.visibility = View.GONE
+            initialsText?.visibility = View.VISIBLE
+        }
+
         // Membership Plan Preview Setup
         val rvPreview = view.findViewById<RecyclerView>(R.id.rvMembershipPreview)
         rvPreview?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

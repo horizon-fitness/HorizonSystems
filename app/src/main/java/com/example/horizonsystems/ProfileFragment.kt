@@ -81,8 +81,9 @@ class ProfileFragment : Fragment() {
         
         swipeRefresh.setOnRefreshListener {
             lifecycleScope.launch {
-                GymManager.syncBranding(requireContext())
-                applyBranding(requireView())
+                if (!isAdded) return@launch
+                context?.let { GymManager.syncBranding(it) }
+                view?.let { applyBranding(it) }
                 fetchProfileData(true)
             }
         }
@@ -95,14 +96,16 @@ class ProfileFragment : Fragment() {
             return
         }
 
-        val cookie = GymManager.getBypassCookie(requireContext())
-        val ua = GymManager.getBypassUA(requireContext())
+        val safeContext = context ?: return
+        val cookie = GymManager.getBypassCookie(safeContext)
+        val ua = GymManager.getBypassUA(safeContext)
         val api = RetrofitClient.getApi(cookie, ua)
 
         lifecycleScope.launch {
+            if (!isAdded) return@launch
             try {
                 // Using existing login/check endpoint or similar
-                val tenant = GymManager.getTenantCode(requireContext())
+                val tenant = GymManager.getTenantCode(safeContext)
                 val response = api.getProfile(userId, tenant)
                 if (response.isSuccessful && response.body()?.success == true) {
                     val user = response.body()?.user
@@ -129,20 +132,21 @@ class ProfileFragment : Fragment() {
                         
                         (activity as? LandingActivity)?.updateUserData(updates)
                         refreshUI()
-                        if (showToast) Toast.makeText(requireContext(), "Profile updated!", Toast.LENGTH_SHORT).show()
+                        if (showToast && isAdded) Toast.makeText(safeContext, "Profile updated!", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
-                if (showToast) Toast.makeText(requireContext(), "Refresh failed", Toast.LENGTH_SHORT).show()
+                if (showToast && isAdded) Toast.makeText(safeContext, "Refresh failed", Toast.LENGTH_SHORT).show()
             } finally {
-                swipeRefresh.isRefreshing = false
+                if (isAdded) swipeRefresh.isRefreshing = false
             }
         }
     }
 
     private fun applyBranding(view: View) {
-        val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(requireContext())
-        val textColorStr = com.example.horizonsystems.utils.GymManager.getTextColor(requireContext())
+        val safeContext = context ?: return
+        val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(safeContext)
+        val textColorStr = com.example.horizonsystems.utils.GymManager.getTextColor(safeContext)
         
         if (!themeColorStr.isNullOrEmpty()) {
             try {
@@ -226,23 +230,19 @@ class ProfileFragment : Fragment() {
         // 0.1 Profile Picture
         val profilePicPath = intent?.getStringExtra("profile_pic")
         val profileImageView = view.findViewById<ImageView>(R.id.profileImage)
-        if (!profilePicPath.isNullOrEmpty() && profileImageView != null) {
-            val fullUrl = "https://horizonsystems.rf.gd/$profilePicPath"
-            
-            profileImageView.imageTintList = null // Clear any tint
-            profileImageView.alpha = 1.0f
-            profileImageView.setPadding(0, 0, 0, 0)
-
-            Glide.with(this)
-                .load(fullUrl)
-                .placeholder(R.drawable.ic_profile)
-                .circleCrop()
-                .into(profileImageView)
-        } else if (profileImageView != null) {
-            profileImageView.setImageResource(R.drawable.ic_profile)
-            profileImageView.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
-            profileImageView.alpha = 0.3f
-            profileImageView.setPadding(24, 24, 24, 24)
+        
+        if (profileImageView != null) {
+            if (!profilePicPath.isNullOrEmpty()) {
+                profileImageView.imageTintList = null
+                profileImageView.alpha = 1.0f
+                profileImageView.setPadding(0, 0, 0, 0)
+                GymManager.loadProfilePicture(requireContext(), profilePicPath, profileImageView)
+            } else {
+                profileImageView.setImageResource(R.drawable.ic_profile)
+                profileImageView.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+                profileImageView.alpha = 0.3f
+                profileImageView.setPadding(24, 24, 24, 24)
+            }
         }
 
         // 1. Account Details
