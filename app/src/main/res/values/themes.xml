@@ -45,7 +45,7 @@
     </style>
 
     <style name="CustomMaterialCalendarTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
-        <item name="colorPrimary">@color/nav_active_color</item>
+        <item name="colorPrimary">@color/calendar_neutral</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/surface_dark</item>
         <item name="colorOnSurface">@color/white</item>
@@ -53,9 +53,29 @@
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 
+    <style name="CustomMaterialCalendarTheme.Red" parent="CustomMaterialCalendarTheme">
+        <item name="colorPrimary">@color/calendar_red</item>
+    </style>
+
+    <style name="CustomMaterialCalendarTheme.Blue" parent="CustomMaterialCalendarTheme">
+        <item name="colorPrimary">@color/calendar_blue</item>
+    </style>
+
+    <style name="CustomMaterialCalendarTheme.Green" parent="CustomMaterialCalendarTheme">
+        <item name="colorPrimary">@color/calendar_green</item>
+    </style>
+
+    <style name="CustomMaterialCalendarTheme.Yellow" parent="CustomMaterialCalendarTheme">
+        <item name="colorPrimary">@color/calendar_yellow</item>
+    </style>
+
+    <style name="CustomMaterialCalendarTheme.Purple" parent="CustomMaterialCalendarTheme">
+        <item name="colorPrimary">@color/calendar_purple</item>
+    </style>
+
     <style name="CustomCalendarViewTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
-        <item name="colorPrimary">@color/nav_active_color</item>
-        <item name="colorAccent">@color/nav_active_color</item>
-        <item name="colorControlActivated">@color/nav_active_color</item>
+        <item name="colorPrimary">@color/calendar_neutral</item>
+        <item name="colorAccent">@color/calendar_neutral</item>
+        <item name="colorControlActivated">@color/calendar_neutral</item>
     </style>
 </resources>

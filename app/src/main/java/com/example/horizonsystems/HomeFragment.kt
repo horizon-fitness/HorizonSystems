@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
 
         // Membership Plan Preview Setup
         val rvPreview = view.findViewById<RecyclerView>(R.id.rvMembershipPreview)
-        rvPreview?.layoutManager = LinearLayoutManager(context)
+        rvPreview?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         fetchMembershipPlans(view)
 
         // Status Card Clicks (Restricted to Booking)
@@ -126,7 +126,7 @@ class HomeFragment : Fragment() {
 
             // 4. Labels & Buttons
             view.findViewById<TextView>(R.id.tvUpcomingLabel)?.setTextColor(themeColor)
-            view.findViewById<TextView>(R.id.tvPlansLabel)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tvPlansHeaderPart2)?.setTextColor(themeColor)
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBookNow)?.let {
                 it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
             }

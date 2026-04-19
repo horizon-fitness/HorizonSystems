@@ -302,26 +302,22 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardBookingTerms"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="#05FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeColor="#0DFFFFFF"
                 app:strokeWidth="1dp">
-                <androidx.core.widget.NestedScrollView
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="1. ARRIVAL: Please arrive at least 30 minutes before your scheduled session. Late arrivals may result in reduced training time.\n\n2. CANCELLATION &amp; REFUND: Sessions can be cancelled or rescheduled up to 2 hours before the start. Refunds are eligible if cancelled within this window or a day before the scheduled session.\n\n3. CONDUCT: Proper gym attire and hygiene are required at all times. Please follow the instructions of your coach and the gym staff.\n\n4. LIABILITY: By booking this session, you acknowledge that physical exercise involves risk of injury. You agree to waive any claims against the gym or coach for injuries sustained during the session."
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp"
-                        android:lineSpacingExtra="5dp"
-                        android:fontFamily="sans-serif-medium" />
-                </androidx.core.widget.NestedScrollView>
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="1. ARRIVAL: Please arrive at least 30 minutes before your scheduled session. Late arrivals may result in reduced training time.\n\n2. CANCELLATION &amp; REFUND: Sessions can be cancelled or rescheduled up to 2 hours before the start. Refunds are eligible if cancelled within this window or a day before the scheduled session.\n\n3. CONDUCT: Proper gym attire and hygiene are required at all times. Please follow the instructions of your coach and the gym staff.\n\n4. LIABILITY: By booking this session, you acknowledge that physical exercise involves risk of injury. You agree to waive any claims against the gym or coach for injuries sustained during the session."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:lineSpacingExtra="5dp"
+                    android:fontFamily="sans-serif-medium" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Agreement -->

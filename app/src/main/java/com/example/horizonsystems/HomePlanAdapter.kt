@@ -98,8 +98,9 @@ class HomePlanAdapter(
         }
 
         // 4. Action Button
+        holder.btnSelectPlan.visibility = View.VISIBLE
         if (!canPurchase) {
-            holder.btnSelectPlan.text = "LOCKED (ACTIVE SUB)"
+            holder.btnSelectPlan.text = "LOCKED"
             holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#333333"))
             holder.btnSelectPlan.setTextColor(Color.GRAY)
             holder.btnSelectPlan.setOnClickListener {

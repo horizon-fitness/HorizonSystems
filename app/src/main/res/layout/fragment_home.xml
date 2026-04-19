@@ -289,18 +289,32 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>        <TextView
+        </LinearLayout>        <LinearLayout
             android:id="@+id/tvPlansLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Membership Plans"
-            android:textColor="@color/white"
-            android:alpha="0.4"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-black"
-            android:textAllCaps="true"
-            android:letterSpacing="0.2" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MEMBERSHIP "
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.02" />
+
+            <TextView
+                android:id="@+id/tvPlansHeaderPart2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PLANS"
+                android:textColor="#A855F7"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.02" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMembershipPreview"

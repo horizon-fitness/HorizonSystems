@@ -48,7 +48,6 @@ class BookingFragment : Fragment() {
         val dateDetailsCard = view.findViewById<View>(R.id.cv_date_details)
         val dateInfoText = view.findViewById<TextView>(R.id.tv_selected_date_info)
         val btnQuickBook = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)
-        val btnTalkToAdmin = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_talk_to_admin)
 
         ThemeUtils.applyThemeToView(view)
         applyBranding(view)
@@ -136,10 +135,6 @@ class BookingFragment : Fragment() {
             }
         }
 
-        btnTalkToAdmin?.setOnClickListener {
-            val sheet = TalkToAdminSheet()
-            sheet.show(parentFragmentManager, "talk_to_admin_sheet")
-        }
 
         // Filter Buttons
         val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_all)
@@ -240,8 +235,7 @@ class BookingFragment : Fragment() {
 
             // 2. Buttons & Titles
             val outlinedButtons = listOfNotNull(
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book),
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_talk_to_admin)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)
             )
 
             outlinedButtons.forEach { btn ->

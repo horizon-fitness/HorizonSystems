@@ -122,7 +122,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                 .setValidator(DateValidatorPointForward.now())
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Booking Date")
-                .setTheme(R.style.CustomMaterialCalendarTheme)
+                .setTheme(com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(ctx))
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .setCalendarConstraints(constraintsBuilder.build())
                 .build()

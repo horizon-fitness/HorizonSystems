@@ -360,6 +360,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val picker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select Birth Date")
+            .setTheme(com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(this))
             .setCalendarConstraints(constraints)
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
             .build()

@@ -58,6 +58,7 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         editBirth.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Birth Date")
+                .setTheme(com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(requireContext()))
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
 
