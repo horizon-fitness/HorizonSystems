@@ -12,6 +12,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -46,29 +48,32 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnClearAll: TextView
     private lateinit var btnSpace: View
 
-    // Layouts
-    private lateinit var gymIdLayout: TextInputLayout
-    private lateinit var userRegLayout: TextInputLayout
-    private lateinit var passRegLayout: TextInputLayout
-    private lateinit var confirmPassRegLayout: TextInputLayout
+    // Layouts (now LinearLayouts)
+    private lateinit var gymIdLayout: View
+    private lateinit var userRegLayout: View
+    private lateinit var passRegLayout: View
+    private lateinit var confirmPassRegLayout: View
     
-    private lateinit var firstNameLayout: TextInputLayout
-    private lateinit var lastNameLayout: TextInputLayout
-    private lateinit var birthDateLayout: TextInputLayout
-    private lateinit var parentNameLayout: TextInputLayout
-    private lateinit var parentPhoneLayout: TextInputLayout
-    private lateinit var sexLayout: TextInputLayout
+    private lateinit var firstNameLayout: View
+    private lateinit var lastNameLayout: View
+    private lateinit var birthDateLayout: View
+    private lateinit var parentNameLayout: View
+    private lateinit var parentPhoneLayout: View
+    private lateinit var sexLayout: View
     
-    private lateinit var emailLayout: TextInputLayout
-    private lateinit var phoneNumberLayout: TextInputLayout
-    private lateinit var addressLineLayout: TextInputLayout
-    private lateinit var barangayLayout: TextInputLayout
-    private lateinit var cityLayout: TextInputLayout
-    private lateinit var provinceLayout: TextInputLayout
-    private lateinit var regionLayout: TextInputLayout
+    private lateinit var emailLayout: View
+    private lateinit var phoneNumberLayout: View
+    private lateinit var addressLineLayout: View
+    private lateinit var barangayLayout: View
+    private lateinit var cityLayout: View
+    private lateinit var provinceLayout: View
+    private lateinit var regionLayout: View
     
-    private lateinit var emergencyNameLayout: TextInputLayout
-    private lateinit var emergencyPhoneLayout: TextInputLayout
+    private lateinit var emergencyNameLayout: View
+    private lateinit var emergencyPhoneLayout: View
+
+    private lateinit var btnTogglePassReg: ImageView
+    private lateinit var btnToggleConfirmPassReg: ImageView
 
     // Edits
     private lateinit var gymIdEdit: TextInputEditText
@@ -122,6 +127,7 @@ class RegisterActivity : AppCompatActivity() {
             restoreRegistrationData()
             loadGymContext()
             updateWizardUI()
+            setupPasswordToggles()
             setupBackNavigation()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -139,6 +145,10 @@ class RegisterActivity : AppCompatActivity() {
         userRegEdit = findViewById(R.id.userRegEdit)
         passRegEdit = findViewById(R.id.passRegEdit)
         confirmPassRegEdit = findViewById(R.id.confirmPassRegEdit)
+        
+        btnTogglePassReg = findViewById(R.id.btnTogglePassReg)
+        btnToggleConfirmPassReg = findViewById(R.id.btnToggleConfirmPassReg)
+
         reqLen = findViewById(R.id.reqLen)
         reqNum = findViewById(R.id.reqNum)
         reqSpecial = findViewById(R.id.reqSpecial)
@@ -254,7 +264,7 @@ class RegisterActivity : AppCompatActivity() {
 
         gymIdEdit.setOnFocusChangeListener { _, h ->
             if (!h && gymIdEdit.text?.isNotEmpty() == true) {
-                validateTenantCode(gymIdEdit.text.toString()) { v, e -> if (!v) gymIdLayout.error = e else gymIdLayout.error = null }
+                validateTenantCode(gymIdEdit.text.toString()) { v, e -> if (!v) gymIdEdit.error = e else gymIdEdit.error = null }
             }
         }
 
@@ -262,7 +272,7 @@ class RegisterActivity : AppCompatActivity() {
             if (validateStep(currentStep)) {
                 if (currentStep == 1) {
                     validateTenantCode(gymIdEdit.text.toString()) { v, e ->
-                        if (v) { currentStep++; updateWizardUI() } else gymIdLayout.error = e
+                        if (v) { currentStep++; updateWizardUI() } else gymIdEdit.error = e
                     }
                 } else { currentStep++; updateWizardUI() }
             }
@@ -371,14 +381,14 @@ class RegisterActivity : AppCompatActivity() {
         if (today.get(Calendar.DAY_OF_YEAR) < birthCal.get(Calendar.DAY_OF_YEAR)) age--
 
         if (age < 12) {
-            birthDateLayout.error = "Minimum age is 12 years old"
+            birthDateEdit.error = "Minimum age is 12 years old"
             findViewById<View>(R.id.parentalInfoSection).visibility = View.GONE
         } else if (age < 18) {
-            birthDateLayout.error = null
+            birthDateEdit.error = null
             findViewById<View>(R.id.parentalInfoSection).visibility = View.VISIBLE
             Toast.makeText(this, "Parent/Guardian info required for minors", Toast.LENGTH_SHORT).show()
         } else {
-            birthDateLayout.error = null
+            birthDateEdit.error = null
             findViewById<View>(R.id.parentalInfoSection).visibility = View.GONE
         }
     }
@@ -388,12 +398,12 @@ class RegisterActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // Clear all errors
-                gymIdLayout.error = null; userRegLayout.error = null; passRegLayout.error = null; confirmPassRegLayout.error = null
-                firstNameLayout.error = null; lastNameLayout.error = null; birthDateLayout.error = null
-                parentNameLayout.error = null; parentPhoneLayout.error = null; sexLayout.error = null
-                emailLayout.error = null; phoneNumberLayout.error = null
-                addressLineLayout.error = null; barangayLayout.error = null; cityLayout.error = null; provinceLayout.error = null; regionLayout.error = null
-                emergencyNameLayout.error = null; emergencyPhoneLayout.error = null
+                gymIdEdit.error = null; userRegEdit.error = null; passRegEdit.error = null; confirmPassRegEdit.error = null
+                firstNameEdit.error = null; lastNameEdit.error = null; birthDateEdit.error = null
+                parentNameEdit.error = null; parentPhoneEdit.error = null; sexSpinner.error = null
+                emailEdit.error = null; phoneEdit.error = null
+                addressLineEdit.error = null; barangayEdit.error = null; cityEdit.error = null; provinceEdit.error = null; regionEdit.error = null
+                emergencyNameEdit.error = null; emergencyPhoneEdit.error = null
             }
             override fun afterTextChanged(s: Editable?) {}
         }
@@ -406,35 +416,35 @@ class RegisterActivity : AppCompatActivity() {
         var valid = true
         when (step) {
             1 -> {
-                if (gymIdEdit.text.isNullOrEmpty()) { gymIdLayout.error = "Required"; valid = false }
-                if (userRegEdit.text.isNullOrEmpty() || userRegEdit.text!!.length < 4) { userRegLayout.error = "Min 4 characters"; valid = false }
+                if (gymIdEdit.text.isNullOrEmpty()) { gymIdEdit.error = "Required"; valid = false }
+                if (userRegEdit.text.isNullOrEmpty() || userRegEdit.text!!.length < 4) { userRegEdit.error = "Min 4 characters"; valid = false }
                 val p = passRegEdit.text.toString()
-                if (p.length < 8 || !p.any { it.isUpperCase() } || !p.any { it.isDigit() } || !p.any { !it.isLetterOrDigit() }) { passRegLayout.error = "Weak password"; valid = false }
-                if (p != confirmPassRegEdit.text.toString()) { confirmPassRegLayout.error = "Mismatch"; valid = false }
+                if (p.length < 8 || !p.any { it.isUpperCase() } || !p.any { it.isDigit() } || !p.any { !it.isLetterOrDigit() }) { passRegEdit.error = "Weak password"; valid = false }
+                if (p != confirmPassRegEdit.text.toString()) { confirmPassRegEdit.error = "Mismatch"; valid = false }
             }
             2 -> {
-                if (firstNameEdit.text.isNullOrEmpty()) { firstNameLayout.error = "Required"; valid = false }
-                if (lastNameEdit.text.isNullOrEmpty()) { lastNameLayout.error = "Required"; valid = false }
-                if (birthDateEdit.text.isNullOrEmpty()) { birthDateLayout.error = "Required"; valid = false }
-                if (sexSpinner.text.isNullOrEmpty()) { sexLayout.error = "Required"; valid = false }
+                if (firstNameEdit.text.isNullOrEmpty()) { firstNameEdit.error = "Required"; valid = false }
+                if (lastNameEdit.text.isNullOrEmpty()) { lastNameEdit.error = "Required"; valid = false }
+                if (birthDateEdit.text.isNullOrEmpty()) { birthDateEdit.error = "Required"; valid = false }
+                if (sexSpinner.text.isNullOrEmpty()) { sexSpinner.error = "Required"; valid = false }
                 if (findViewById<View>(R.id.parentalInfoSection).visibility == View.VISIBLE) {
-                    if (parentNameEdit.text.isNullOrEmpty()) { parentNameLayout.error = "Required for minors"; valid = false }
-                    if (parentPhoneEdit.text.isNullOrEmpty() || parentPhoneEdit.text!!.length < 13) { parentPhoneLayout.error = "Invalid phone"; valid = false }
+                    if (parentNameEdit.text.isNullOrEmpty()) { parentNameEdit.error = "Required for minors"; valid = false }
+                    if (parentPhoneEdit.text.isNullOrEmpty() || parentPhoneEdit.text!!.length < 13) { parentPhoneEdit.error = "Invalid phone"; valid = false }
                 }
             }
             3 -> {
-                if (emailEdit.text.isNullOrEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(emailEdit.text!!).matches()) { emailLayout.error = "Invalid email"; valid = false }
-                if (phoneEdit.text.isNullOrEmpty() || phoneEdit.text!!.length < 13) { phoneNumberLayout.error = "Invalid phone"; valid = false }
+                if (emailEdit.text.isNullOrEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(emailEdit.text!!).matches()) { emailEdit.error = "Invalid email"; valid = false }
+                if (phoneEdit.text.isNullOrEmpty() || phoneEdit.text!!.length < 13) { phoneEdit.error = "Invalid phone"; valid = false }
                 
-                if (addressLineEdit.text.isNullOrEmpty()) { addressLineLayout.error = "Required"; valid = false }
-                if (barangayEdit.text.isNullOrEmpty()) { barangayLayout.error = "Required"; valid = false }
-                if (cityEdit.text.isNullOrEmpty()) { cityLayout.error = "Required"; valid = false }
-                if (provinceEdit.text.isNullOrEmpty()) { provinceLayout.error = "Required"; valid = false }
-                if (regionEdit.text.isNullOrEmpty()) { regionLayout.error = "Required"; valid = false }
+                if (addressLineEdit.text.isNullOrEmpty()) { addressLineEdit.error = "Required"; valid = false }
+                if (barangayEdit.text.isNullOrEmpty()) { barangayEdit.error = "Required"; valid = false }
+                if (cityEdit.text.isNullOrEmpty()) { cityEdit.error = "Required"; valid = false }
+                if (provinceEdit.text.isNullOrEmpty()) { provinceEdit.error = "Required"; valid = false }
+                if (regionEdit.text.isNullOrEmpty()) { regionEdit.error = "Required"; valid = false }
             }
             4 -> {
-                if (emergencyNameEdit.text.isNullOrEmpty()) { emergencyNameLayout.error = "Required"; valid = false }
-                if (emergencyPhoneEdit.text.isNullOrEmpty() || emergencyPhoneEdit.text!!.length < 13) { emergencyPhoneLayout.error = "Invalid phone"; valid = false }
+                if (emergencyNameEdit.text.isNullOrEmpty()) { emergencyNameEdit.error = "Required"; valid = false }
+                if (emergencyPhoneEdit.text.isNullOrEmpty() || emergencyPhoneEdit.text!!.length < 13) { emergencyPhoneEdit.error = "Invalid phone"; valid = false }
             }
         }
         return valid
@@ -675,6 +685,33 @@ class RegisterActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+    private fun setupPasswordToggles() {
+        var isPassVisible = false
+        btnTogglePassReg.setOnClickListener {
+            isPassVisible = !isPassVisible
+            if (isPassVisible) {
+                passRegEdit.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                btnTogglePassReg.alpha = 1.0f
+            } else {
+                passRegEdit.transformationMethod = PasswordTransformationMethod.getInstance()
+                btnTogglePassReg.alpha = 0.5f
+            }
+            passRegEdit.setSelection(passRegEdit.text?.length ?: 0)
+        }
+
+        var isConfirmPassVisible = false
+        btnToggleConfirmPassReg.setOnClickListener {
+            isConfirmPassVisible = !isConfirmPassVisible
+            if (isConfirmPassVisible) {
+                confirmPassRegEdit.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                btnToggleConfirmPassReg.alpha = 1.0f
+            } else {
+                confirmPassRegEdit.transformationMethod = PasswordTransformationMethod.getInstance()
+                btnToggleConfirmPassReg.alpha = 0.5f
+            }
+            confirmPassRegEdit.setSelection(confirmPassRegEdit.text?.length ?: 0)
         }
     }
 }

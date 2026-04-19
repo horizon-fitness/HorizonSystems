@@ -24,6 +24,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 
 class AttendanceFragment : Fragment() {
 
@@ -43,12 +45,56 @@ class AttendanceFragment : Fragment() {
         applyBranding(view)
         ThemeUtils.applyThemeToView(view)
         
+        setupTabs(view)
+        
         // Manual Start Launcher
         view.findViewById<View>(R.id.layoutStartScanner)?.setOnClickListener {
             checkCameraPermission(view)
         }
         
         return view
+    }
+
+    private fun setupTabs(view: View) {
+        val btnScan = view.findViewById<MaterialButton>(R.id.btn_tab_scan_web)
+        val btnMyQr = view.findViewById<MaterialButton>(R.id.btn_tab_my_qr)
+        val cardScanner = view.findViewById<View>(R.id.cardScanner)
+        val cardMyQr = view.findViewById<View>(R.id.cardMyQR)
+        val ivMyQrCode = view.findViewById<ImageView>(R.id.ivMyQrCode)
+        
+        val ctx = context ?: return
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        val themeColor = try { Color.parseColor(themeColorStr) } catch(e: Exception) { Color.parseColor("#A855F7") }
+        
+        btnScan?.setOnClickListener {
+            cardScanner?.visibility = View.VISIBLE
+            cardMyQr?.visibility = View.GONE
+            
+            btnScan.setTextColor(themeColor)
+            btnScan.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26) // 10%
+            
+            btnMyQr?.setTextColor(Color.parseColor("#94A3B8"))
+            btnMyQr?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+        }
+        
+        btnMyQr?.setOnClickListener {
+            cardScanner?.visibility = View.GONE
+            cardMyQr?.visibility = View.VISIBLE
+            
+            btnMyQr.setTextColor(themeColor)
+            btnMyQr.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+            
+            btnScan?.setTextColor(Color.parseColor("#94A3B8"))
+            btnScan?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            
+            // Generate and load QR
+            val userId = GymManager.getUserId(ctx)
+            val data = "{\"user_id\":$userId,\"action\":\"check_in\"}"
+            val encoded = java.net.URLEncoder.encode(data, "UTF-8")
+            val qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=$encoded&color=000000&bgcolor=ffffff&margin=4&qzone=1"
+            
+            Glide.with(this).load(qrUrl).into(ivMyQrCode)
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -146,6 +192,15 @@ class AttendanceFragment : Fragment() {
             val cardScanner = view.findViewById<MaterialCardView>(R.id.cardScanner)
             cardScanner?.setCardBackgroundColor(cardSurface)
             cardScanner?.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))
+            
+            val cardMyQR = view.findViewById<MaterialCardView>(R.id.cardMyQR)
+            cardMyQR?.setCardBackgroundColor(cardSurface)
+            cardMyQR?.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))
+            
+            view.findViewById<MaterialButton>(R.id.btn_tab_scan_web)?.let {
+                it.setTextColor(themeColor)
+                it.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+            }
             
             // 4. Manual Launch Branding
             view.findViewById<ImageView>(R.id.ivLaunchScannerIcon)?.imageTintList = ColorStateList.valueOf(themeColor)

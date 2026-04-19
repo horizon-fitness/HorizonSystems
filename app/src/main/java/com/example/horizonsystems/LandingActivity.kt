@@ -41,6 +41,7 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // Temporarily disabled to rule out API level issues
         // enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
@@ -307,6 +308,7 @@ class LandingActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        
         // Always refresh branding from cache to show changes after switching gyms
         prefillUIFromCache()
     }
@@ -523,6 +525,21 @@ class LandingActivity : AppCompatActivity() {
     }
 
     private fun performLogin(username: String, password: String, isRetry: Boolean = false, forcedCookie: String? = null, forcedUA: String? = null) {
+        val currentSlug = GymManager.getGymSlug(this)
+        if (currentSlug == "horizon" || currentSlug.isEmpty()) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Connection Required")
+                .setMessage("Please connect to a gym first before logging in.")
+                .setPositiveButton("Connect Gym") { d, _ ->
+                    val intent = Intent(this, SwitchGymActivity::class.java)
+                    startActivity(intent)
+                    d.dismiss()
+                }
+                .setNegativeButton("Cancel") { d, _ -> d.dismiss() }
+                .show()
+            return
+        }
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                  val cookie = forcedCookie ?: GymManager.getBypassCookie(this@LandingActivity)

@@ -161,7 +161,10 @@ class SwitchGymActivity : AppCompatActivity() {
                 .show()
         }
 
-        checkCameraPermission()
+        // Manual Start Launcher
+        findViewById<View>(R.id.layoutStartScanner)?.setOnClickListener {
+            checkCameraPermission()
+        }
     }
 
     private fun updateCurrentGymUI() {
@@ -204,6 +207,18 @@ class SwitchGymActivity : AppCompatActivity() {
             findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDisconnectGym)?.setTextColor(color)
             findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConnectCode)?.setTextColor(color)
             findViewById<com.google.android.material.button.MaterialButton>(R.id.btnConnectLink)?.setTextColor(color)
+
+            // Manual Launch Branding
+            findViewById<ImageView>(R.id.ivLaunchScannerIcon)?.imageTintList = colorStateList
+            findViewById<TextView>(R.id.tvLaunchScannerLabel)?.setTextColor(color)
+
+            // Scanner Overlay Branding
+            findViewById<View>(R.id.vScannerOverlay)?.let {
+                it.backgroundTintList = colorStateList
+            }
+            findViewById<ImageView>(R.id.ivScannerIcon)?.let {
+                it.imageTintList = colorStateList
+            }
         } catch (e: Exception) {
             Log.e("SwitchGymActivity", "Error applying theme color: $themeColor", e)
         }
@@ -253,6 +268,11 @@ class SwitchGymActivity : AppCompatActivity() {
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+
+                // Transition UI
+                findViewById<View>(R.id.layoutStartScanner)?.visibility = View.GONE
+                previewView.visibility = View.VISIBLE
+                findViewById<View>(R.id.vScannerOverlay)?.visibility = View.VISIBLE
             } catch (e: Exception) {
                 Log.e("SwitchGym", "Use case binding failed", e)
             }

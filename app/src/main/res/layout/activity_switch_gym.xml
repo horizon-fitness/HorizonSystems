@@ -154,26 +154,80 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/qrCameraPlaceholder"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="320dp"
                 android:layout_marginBottom="40dp"
                 app:cardBackgroundColor="#0DFFFFFF"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#20FFFFFF"
+                app:strokeColor="#1AFFFFFF"
                 app:strokeWidth="1dp">
                 
-                <androidx.camera.view.PreviewView
-                    android:id="@+id/previewView"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:scaleType="fillCenter" />
+                    android:layout_height="match_parent">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="60dp"
-                    android:src="@drawable/ic_qr_code"
-                    app:tint="#20FFFFFF" />
+                    <androidx.camera.view.PreviewView
+                        android:id="@+id/previewView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="invisible"
+                        app:scaleType="fillCenter" />
+
+                    <!-- Launch Trigger Overlay -->
+                    <LinearLayout
+                        android:id="@+id/layoutStartScanner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:background="#1AFFFFFF"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/ivLaunchScannerIcon"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:src="@drawable/ic_qr_code"
+                            app:tint="@color/white" />
+
+                        <TextView
+                            android:id="@+id/tvLaunchScannerLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="0.05"
+                            android:text="TAP TO LAUNCH SCANNER"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Scanner Overlay (Stylized - Hidden initially) -->
+                    <View
+                        android:id="@+id/vScannerOverlay"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:background="@drawable/badge_pill_border"
+                        android:alpha="0.3"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/ivScannerIcon"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_qr_code"
+                        android:alpha="0.2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Option 2: Tenant Code -->
@@ -212,19 +266,11 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="APPLY"
+                    android:text="CONNECT"
                     android:textColor="@color/nav_active_color"
                     android:textStyle="bold" />
             </LinearLayout>
-            
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:text="Format example: HOR-2024"
-                android:textColor="#40FFFFFF"
-                android:textSize="11sp"
-                android:paddingStart="8dp" />
+
 
             <!-- Option 3: Direct Link -->
             <TextView
@@ -265,6 +311,19 @@
                     android:textColor="@color/nav_active_color"
                     android:textStyle="bold" />
             </LinearLayout>
+
+            <!-- Instruction Footer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:gravity="center"
+                android:text="You can find the Gym QR, Tenant Code, or Link\non your gym's official dashboard or webpage."
+                android:textColor="#66FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:lineSpacingExtra="4dp"
+                android:alpha="0.8" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

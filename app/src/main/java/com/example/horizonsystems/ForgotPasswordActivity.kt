@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -35,18 +36,21 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private lateinit var gymLogoContainer: com.google.android.material.card.MaterialCardView
     private lateinit var forgotGymLogo: android.widget.ImageView
     
-    // Layouts (Material TextInputLayout)
-    private lateinit var recoveryEmailLayout: TextInputLayout
-    private lateinit var newPassLayout: TextInputLayout
-    private lateinit var confirmNewPassLayout: TextInputLayout
+    // Layouts (Linear Container)
+    private lateinit var recoveryEmailLayout: LinearLayout
+    private lateinit var newPassLayout: LinearLayout
+    private lateinit var confirmNewPassLayout: LinearLayout
+    private lateinit var tenantCodeResetLayout: LinearLayout
 
     private lateinit var recoveryEmailEdit: TextInputEditText
     private lateinit var tenantCodeResetEdit: TextInputEditText
     private lateinit var newPassEdit: TextInputEditText
     private lateinit var confirmNewPassEdit: TextInputEditText
     
-    private lateinit var tenantCodeResetLayout: TextInputLayout
+    private lateinit var btnToggleNewPass: ImageView
+    private lateinit var btnToggleConfirmPass: ImageView
     private lateinit var forgotSubtitle: TextView
+    private lateinit var lblGymCode: TextView
 
     // Resend UI
     private lateinit var btnResendOtp: TextView
@@ -86,8 +90,12 @@ class ForgotPasswordActivity : AppCompatActivity() {
         gymLogoContainer = findViewById(R.id.gymLogoContainer)
         forgotGymLogo = findViewById(R.id.forgotGymLogo)
         
+        btnToggleNewPass = findViewById(R.id.btnToggleNewPass)
+        btnToggleConfirmPass = findViewById(R.id.btnToggleConfirmPass)
+        
         btnResendOtp = findViewById(R.id.btnResendOtp)
         txtResendTimer = findViewById(R.id.txtResendTimer)
+        lblGymCode = findViewById(R.id.lblGymCode)
         
         btnResendOtp.setOnClickListener { handleResendOtp() }
 
@@ -109,9 +117,30 @@ class ForgotPasswordActivity : AppCompatActivity() {
         btnNext.setOnClickListener { handleNextStep() }
         btnResetPass.setOnClickListener { handlePasswordReset() }
 
+        setupPasswordToggles()
         setupTenantCodeFilter()
         applyDynamicColors()
         checkGymContext()
+    }
+    
+    private fun setupPasswordToggles() {
+        btnToggleNewPass.setOnClickListener {
+            togglePassword(newPassEdit, btnToggleNewPass)
+        }
+        btnToggleConfirmPass.setOnClickListener {
+            togglePassword(confirmNewPassEdit, btnToggleConfirmPass)
+        }
+    }
+
+    private fun togglePassword(editText: EditText, toggleIcon: ImageView) {
+        if (editText.transformationMethod is android.text.method.PasswordTransformationMethod) {
+            editText.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+            toggleIcon.alpha = 1.0f
+        } else {
+            editText.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+            toggleIcon.alpha = 0.5f
+        }
+        editText.setSelection(editText.text?.length ?: 0)
     }
     
     private fun checkGymContext() {
@@ -121,6 +150,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         // Strictly show only if no valid connection
         val notConnected = currentCode.isNullOrEmpty() || currentCode == "000" || currentCode == "horizon" || currentCode == "default"
         tenantCodeResetLayout.visibility = if (notConnected) View.VISIBLE else View.GONE
+        lblGymCode.visibility = if (notConnected) View.VISIBLE else View.GONE
         
         // Header polish
         if (!notConnected && !currentLogo.isNullOrEmpty()) {
@@ -172,9 +202,9 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                recoveryEmailLayout.error = null
-                newPassLayout.error = null
-                confirmNewPassLayout.error = null
+                recoveryEmailEdit.error = null
+                newPassEdit.error = null
+                confirmNewPassEdit.error = null
             }
             override fun afterTextChanged(s: Editable?) {}
         }
@@ -225,7 +255,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             1 -> {
                 val email = recoveryEmailEdit.text.toString().trim()
                 if (email.isEmpty()) {
-                    recoveryEmailLayout.error = "Please enter your email"
+                    recoveryEmailEdit.error = "Please enter your email"
                     return
                 }
                 btnNext.isEnabled = false
@@ -245,7 +275,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                             withContext(Dispatchers.Main) {
                                 btnNext.isEnabled = true
                                 btnNext.text = "Next Step"
-                                tenantCodeResetLayout.error = "Gym Code required"
+                                tenantCodeResetEdit.error = "Gym Code required"
                             }
                             return@launch
                         }
@@ -261,7 +291,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                                 updateStepVisibility()
                                 startResendTimer()
                             } else {
-                                recoveryEmailLayout.error = response.body()?.message ?: "Account not found"
+                                recoveryEmailEdit.error = response.body()?.message ?: "Account not found"
                             }
                         }
                     } catch (e: Exception) {
@@ -303,9 +333,9 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private fun handlePasswordReset() {
         val newPass = newPassEdit.text.toString()
         val confirmPass = confirmNewPassEdit.text.toString()
-        if (newPass.isEmpty()) { newPassLayout.error = "Required"; return }
-        if (confirmPass.isEmpty()) { confirmNewPassLayout.error = "Required"; return }
-        if (newPass != confirmPass) { confirmNewPassLayout.error = "Passwords do not match"; return }
+        if (newPass.isEmpty()) { newPassEdit.error = "Required"; return }
+        if (confirmPass.isEmpty()) { confirmNewPassEdit.error = "Required"; return }
+        if (newPass != confirmPass) { confirmNewPassEdit.error = "Passwords do not match"; return }
 
         btnResetPass.isEnabled = false
         btnResetPass.text = "Updating..."
