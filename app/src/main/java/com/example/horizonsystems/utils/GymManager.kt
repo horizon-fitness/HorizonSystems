@@ -27,6 +27,8 @@ object GymManager {
     private const val KEY_SAVED_PASSWORD = "saved_password"
     private const val KEY_USER_ID = "user_id"
     private const val KEY_MEMBER_ID = "member_id"
+    private const val KEY_OPENING_TIME = "selected_opening_time"
+    private const val KEY_CLOSING_TIME = "selected_closing_time"
     private const val DEFAULT_SLUG = "horizon"
 
 
@@ -50,7 +52,9 @@ object GymManager {
         textColor: String? = null,
         bgColor: String? = null,
         cardColor: String? = null,
-        autoCardTheme: String? = null
+        autoCardTheme: String? = null,
+        openingTime: String? = null,
+        closingTime: String? = null
     ) {
         getPrefs(context).edit().apply {
             putString(KEY_GYM_SLUG, slug)
@@ -64,6 +68,8 @@ object GymManager {
             putString(KEY_BG_COLOR, bgColor)
             putString(KEY_CARD_COLOR, cardColor)
             putString(KEY_AUTO_CARD_THEME, autoCardTheme)
+            putString(KEY_OPENING_TIME, openingTime)
+            putString(KEY_CLOSING_TIME, closingTime)
         }.apply()
     }
 
@@ -144,6 +150,14 @@ object GymManager {
 
     fun getAutoCardTheme(context: Context): String {
         return getPrefs(context).getString(KEY_AUTO_CARD_THEME, "1") ?: "1"
+    }
+
+    fun getOpeningTime(context: Context): String {
+        return getPrefs(context).getString(KEY_OPENING_TIME, "07:00:00") ?: "07:00:00"
+    }
+
+    fun getClosingTime(context: Context): String {
+        return getPrefs(context).getString(KEY_CLOSING_TIME, "21:00:00") ?: "21:00:00"
     }
 
     fun saveLoginCredentials(context: Context, username: String, password: String) {

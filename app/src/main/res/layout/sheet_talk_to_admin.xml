@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <!-- Elite Handle Bar -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:background="#33FFFFFF" />
+
+    <!-- Title Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TALK TO ADMIN"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="-0.02" />
+
+    <TextView
+        android:id="@+id/sheetSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="SEND AN INQUIRY OR MESSAGE"
+        android:textColor="#A855F7"
+        android:textSize="10sp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="0.2"
+        android:alpha="0.8" />
+
+    <!-- Message Form Card -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="INQUIRY DETAILS"
+        android:textColor="@color/text_secondary"
+        android:textSize="9sp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="0.15" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#0DFFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#1AFFFFFF"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Subject -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintEnabled="false"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editSubject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Subject (e.g. Schedule Change)"
+                    android:textColor="@color/white"
+                    android:textColorHint="#9CA3AF"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textSize="14sp"
+                    android:background="@null" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#0DFFFFFF"
+                android:layout_marginVertical="8dp" />
+
+            <!-- Message Body -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintEnabled="false"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Your Message..."
+                    android:textColor="@color/white"
+                    android:textColorHint="#9CA3AF"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:textSize="14sp"
+                    android:gravity="top"
+                    android:minLines="4"
+                    android:background="@null" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Admin Contact Info / Tip -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAdminTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:cardBackgroundColor="#0DFFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#1AFFFFFF"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_business"
+                app:tint="#A855F7"
+                android:id="@+id/imgAdminIcon" />
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ESTIMATED RESPONSE"
+                    android:textColor="#9CA3AF"
+                    android:textSize="9sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.05" />
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Within 24 Hours"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitInquiry"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="32dp"
+        android:text="SEND MESSAGE"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="32dp"
+        app:backgroundTint="#A855F7" />
+
+</LinearLayout>

@@ -375,7 +375,9 @@ class SwitchGymActivity : AppCompatActivity() {
                                 tenant.themeColor,
                                 tenant.bgColor,
                                 tenant.cardColor,
-                                tenant.autoCardTheme
+                                tenant.autoCardTheme,
+                                tenant.openingTime,
+                                tenant.closingTime
                             )
                             updateCurrentGymUI()
                             

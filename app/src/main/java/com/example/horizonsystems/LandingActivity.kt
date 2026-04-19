@@ -374,7 +374,9 @@ class LandingActivity : AppCompatActivity() {
                                     it.textColor,
                                     it.bgColor,
                                     it.cardColor,
-                                    it.autoCardTheme
+                                    it.autoCardTheme,
+                                    it.openingTime,
+                                    it.closingTime
                                 )
                                 updateUIWithBranding(it)
                                 applyDynamicColors(it)

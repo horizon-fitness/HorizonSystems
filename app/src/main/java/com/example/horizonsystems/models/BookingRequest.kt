@@ -22,8 +22,8 @@ data class BookingResponse(
 )
 
 data class GymService(
-    @SerializedName("gym_service_id") val serviceId: Int,
-    @SerializedName("custom_service_name") val serviceName: String,
+    @SerializedName("id") val serviceId: Int,
+    @SerializedName("name") val serviceName: String,
     @SerializedName("price") val price: Double,
-    @SerializedName("duration_minutes") val duration: Int
+    @SerializedName("duration_minutes") val duration: Int? = 60
 )

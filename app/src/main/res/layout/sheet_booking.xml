@@ -223,7 +223,7 @@
                     android:id="@+id/bookCoach"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="General Workout (Self-Train)"
+                    android:hint="Select Coach"
                     android:textColor="@color/white"
                     android:paddingTop="12dp"
                     android:paddingBottom="12dp"

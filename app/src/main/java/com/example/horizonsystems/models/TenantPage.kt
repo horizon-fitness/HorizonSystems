@@ -28,5 +28,7 @@ data class TenantPage(
     @SerializedName("message") val message: String?,
     @SerializedName("status") val status: String?,
     @SerializedName("is_suspended") val isSuspended: Boolean?,
-    @SerializedName("is_fallback") val isFallback: Boolean?
+    @SerializedName("is_fallback") val isFallback: Boolean?,
+    @SerializedName("opening_time") val openingTime: String?,
+    @SerializedName("closing_time") val closingTime: String?
 )

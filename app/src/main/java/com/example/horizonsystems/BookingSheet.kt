@@ -37,7 +37,7 @@ class BookingSheet : BottomSheetDialogFragment() {
     private val services = mutableListOf<GymService>()
     private val coaches = mutableListOf<Coach>()
     private var selectedCoachId: Int? = null
-    private var currentBasePrice = 100.0
+    private var currentBasePrice = 0.0
     private var currentCoachFee = 0.0
 
     private lateinit var txtTotalPrice: TextView
@@ -76,19 +76,40 @@ class BookingSheet : BottomSheetDialogFragment() {
         txtTotalPrice = view.findViewById(R.id.txtTotalPrice)
         txtCoachFeeInfo = view.findViewById(R.id.txtCoachFeeInfo)
 
-        // Force dropdown on click
-        editService?.setOnClickListener { editService.showDropDown() }
-        editCoach?.setOnClickListener { editCoach.showDropDown() }
-        editDuration?.setOnClickListener { editDuration.showDropDown() }
+        // Force dropdown on click + Instant responsiveness
+        editService?.apply {
+            isFocusable = false
+            isFocusableInTouchMode = false
+            setOnClickListener { showDropDown() }
+        }
+        editCoach?.apply {
+            isFocusable = false
+            isFocusableInTouchMode = false
+            setOnClickListener { showDropDown() }
+        }
+        editDuration?.apply {
+            isFocusable = false
+            isFocusableInTouchMode = false
+            setOnClickListener { showDropDown() }
+        }
+
+        // Load Coaches immediately with an instant-response placeholder
+        editCoach?.setAdapter(ArrayAdapter(requireContext(), R.layout.item_dropdown, listOf("Loading coaches...")))
+        fetchCoaches(editCoach, skipSelfTrain = true)
 
         val editDate = view.findViewById<TextInputEditText>(R.id.bookDate)
         val editTime = view.findViewById<TextInputEditText>(R.id.bookTime)
         val btnSubmit = view.findViewById<View>(R.id.btnSubmitBooking)
 
         // Duration Setup
-        val durations = listOf("1 Hour", "2 Hours", "3 Hours")
+        val durations = listOf("1 Hour", "2 Hours", "3 Hours", "4 Hours", "5 Hours")
         val ctx = context ?: return view
-        editDuration?.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, durations))
+        editDuration?.apply {
+            setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, durations))
+            // Limit dropdown to 3 items (~192dp height as each item is roughly 64dp)
+            val itemHeight = (64 * resources.displayMetrics.density).toInt()
+            dropDownHeight = itemHeight * 3
+        }
         editDuration?.setText("1 Hour", false)
         editDuration?.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) { updatePrice() }
@@ -117,12 +138,61 @@ class BookingSheet : BottomSheetDialogFragment() {
         // Time Picker
         editTime?.setOnClickListener {
             val calendar = Calendar.getInstance()
-            TimePickerDialog(context ?: return@setOnClickListener, { _, hour, minute ->
-                // Rule: 7 AM (07:00) to 10 PM (22:00)
-                if (hour < 7 || hour > 22 || (hour == 22 && minute > 0)) {
-                    Toast.makeText(context ?: return@TimePickerDialog, "Bookings are only available from 7 AM to 10 PM", Toast.LENGTH_LONG).show()
+            val ctx = context ?: return@setOnClickListener
+            
+            // Fetch dynamic gym hours
+            val openingStr = GymManager.getOpeningTime(ctx) // e.g. "07:00:00"
+            val closingStr = GymManager.getClosingTime(ctx) // e.g. "21:00:00"
+            
+            fun parseToMinutes(timeStr: String): Int {
+                return try {
+                    val parts = timeStr.split(":")
+                    val h = parts[0].toInt()
+                    val m = parts[1].toInt()
+                    h * 60 + m
+                } catch (e: Exception) { 0 }
+            }
+            
+            fun formatForDisplay(timeStr: String): String {
+                return try {
+                    val inputFormat = SimpleDateFormat("HH:mm:ss", Locale.US)
+                    val outputFormat = SimpleDateFormat("hh:mm a", Locale.US)
+                    val date = inputFormat.parse(timeStr)
+                    if (date != null) outputFormat.format(date) else timeStr
+                } catch (e: Exception) { timeStr }
+            }
+
+            val openMinutes = parseToMinutes(openingStr)
+            val closeMinutes = parseToMinutes(closingStr)
+            val displayOpen = formatForDisplay(openingStr)
+            val displayClose = formatForDisplay(closingStr)
+
+            TimePickerDialog(ctx, { _, hour, minute ->
+                val selectedMinutes = hour * 60 + minute
+                
+                // 1. Gym Hours Validation
+                if (selectedMinutes < openMinutes || selectedMinutes > closeMinutes) {
+                    Toast.makeText(ctx, "Bookings are only available from $displayOpen to $displayClose", Toast.LENGTH_LONG).show()
                     return@TimePickerDialog
                 }
+
+                // 2. Past Time Validation (if Today)
+                try {
+                    val dateStr = editDate?.text.toString()
+                    if (dateStr.isNotEmpty()) {
+                        val manilaTz = TimeZone.getTimeZone("Asia/Manila")
+                        val now = Calendar.getInstance(manilaTz)
+                        val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = manilaTz }.format(now.time)
+                        
+                        if (dateStr == todayStr) {
+                            val currentMinuteOfDay = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+                            if (selectedMinutes < currentMinuteOfDay) {
+                                Toast.makeText(ctx, "You cannot book a time that has already passed today.", Toast.LENGTH_LONG).show()
+                                return@TimePickerDialog
+                            }
+                        }
+                    }
+                } catch (e: Exception) {}
                 
                 val displayCalendar = Calendar.getInstance()
                 displayCalendar.set(Calendar.HOUR_OF_DAY, hour)
@@ -134,50 +204,62 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
 
         // Service Selection Logic
-        editService?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val serviceName = s?.toString() ?: ""
-                val isPT = serviceName.contains("Personal Training", ignoreCase = true)
-                
-                if (isPT) {
-                    editCoach?.text?.clear()
-                    if (editCoach != null) fetchCoaches(editCoach, skipSelfTrain = true)
-                } else {
-                    selectedCoachId = null
-                    editCoach?.setText("General Workout (Self-Train)", false)
-                    currentCoachFee = 0.0
-                    updatePrice()
-                }
+        editService?.setOnItemClickListener { parent, _, position, _ ->
+            val serviceName = parent.getItemAtPosition(position) as String
+            val selectedService = services.find { it.serviceName == serviceName }
+            
+            selectedService?.let {
+                currentBasePrice = it.price
+                updatePrice()
             }
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        }
 
         editCoach?.setOnItemClickListener { parent, _, position, _ ->
             val coachName = parent.getItemAtPosition(position) as String
-            if (coachName.contains("Self-Train", ignoreCase = true)) {
-                selectedCoachId = null
-                currentCoachFee = 0.0
-            } else {
-                selectedCoachId = coaches.find { "${it.firstName} ${it.lastName}" == coachName }?.coachId
-                currentCoachFee = 120.0
-            }
+            val coach = coaches.find { "${it.firstName} ${it.lastName}" == coachName }
+            selectedCoachId = coach?.coachId
+            currentCoachFee = 0.0 // Reset or add fee if needed
             updatePrice()
         }
 
         btnSubmit?.setOnClickListener {
-            val date = editDate?.text.toString()
-            val time = editTime?.tag?.toString() ?: ""
+            val dateStr = editDate?.text.toString()
+            val timeStr = editTime?.tag?.toString() ?: ""
             val serviceName = editService?.text.toString()
-            if (serviceName.isEmpty() || date.isEmpty() || time.isEmpty()) {
+            
+            if (serviceName.isEmpty() || dateStr.isEmpty() || timeStr.isEmpty()) {
                 Toast.makeText(context ?: return@setOnClickListener, "Fill all booking details", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val service = services.find { it.serviceName == serviceName } ?: GymService(1, serviceName, 100.0, 60)
-            checkAvailabilityAndPay(service, date, time)
+
+            // Real-time Validation (Manila Time)
+            try {
+                val manilaTz = TimeZone.getTimeZone("Asia/Manila")
+                val now = Calendar.getInstance(manilaTz)
+                
+                val selected = Calendar.getInstance(manilaTz)
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+                sdf.timeZone = manilaTz
+                val selectedDate = sdf.parse("$dateStr $timeStr")
+                
+                if (selectedDate != null) {
+                    selected.time = selectedDate
+                    if (selected.before(now)) {
+                        Toast.makeText(context ?: return@setOnClickListener, "You cannot book a time that has already passed today.", Toast.LENGTH_LONG).show()
+                        return@setOnClickListener
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("BookingSheet", "Time Validation Error: ${e.message}")
+            }
+
+            val service = services.find { it.serviceName == serviceName } ?: GymService(1, serviceName, currentBasePrice)
+            checkAvailabilityAndPay(service, dateStr, timeStr)
         }
         
         if (editService != null) fetchServices(editService)
+        
+        if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "----"
         updatePrice()
         
         ThemeUtils.applyThemeToView(view)
@@ -243,8 +325,12 @@ class BookingSheet : BottomSheetDialogFragment() {
         val durationText = if (::editDuration.isInitialized) editDuration.text.toString() else "1 Hour"
         val hours = durationText.filter { it.isDigit() }.toIntOrNull() ?: 1
         
-        val total = (currentBasePrice + currentCoachFee) * hours
-        if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "₱%.2f".format(total)
+        if (currentBasePrice > 0) {
+            val total = (currentBasePrice + currentCoachFee) * hours
+            if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "₱%.2f".format(total)
+        } else {
+            if (::txtTotalPrice.isInitialized) txtTotalPrice.text = "----"
+        }
         
         val themeColorStr = context?.let { GymManager.getThemeColor(it) }
         val themeColor = try {
@@ -288,8 +374,9 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun fetchCoaches(spinner: MaterialAutoCompleteTextView, skipSelfTrain: Boolean = false) {
+    private fun fetchCoaches(spinner: MaterialAutoCompleteTextView?, skipSelfTrain: Boolean = false) {
         val ctx = context ?: return
+        val spinnerView = spinner ?: return
         val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
         val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
         val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
@@ -301,15 +388,26 @@ class BookingSheet : BottomSheetDialogFragment() {
                 withContext(Dispatchers.Main) {
                     coaches.clear()
                     val names = mutableListOf<String>()
-                    if (!skipSelfTrain) names.add("General Workout (Self-Train)")
                     
                     if (response.isSuccessful && response.body()?.success == true) {
-                        response.body()?.coaches?.let { 
+                        val body = response.body()
+                        Log.d("BookingSheet", "Fetched ${body?.coaches?.size ?: 0} coaches for gym $gymId")
+                        body?.coaches?.let { 
                             coaches.addAll(it)
                             names.addAll(it.map { c -> "${c.firstName} ${c.lastName}" })
                         }
+                    } else {
+                        Log.e("BookingSheet", "Coach API Error: ${response.code()} - ${response.errorBody()?.string()}")
                     }
-                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, names))
+
+                    if (names.isEmpty()) {
+                        names.add("No coaches available")
+                    }
+                    
+                    spinnerView.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, names))
+                    // Limit dropdown height
+                    val itemHeight = (64 * ctx.resources.displayMetrics.density).toInt()
+                    spinnerView.dropDownHeight = if (names.size > 3) itemHeight * 3 else android.view.ViewGroup.LayoutParams.WRAP_CONTENT
                 }
             } catch (e: Exception) { Log.e("Booking", "Coach error: ${e.message}") }
         }
@@ -327,19 +425,28 @@ class BookingSheet : BottomSheetDialogFragment() {
                 val response = api.getGymServices(gymId)
                 withContext(Dispatchers.Main) {
                     services.clear()
-                    if (response.isSuccessful) response.body()?.let { services.addAll(it) }
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("BookingSheet", "Fetched ${body?.size ?: 0} services for gym $gymId")
+                        body?.let { services.addAll(it) }
+                    } else {
+                        Log.e("BookingSheet", "API Response Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    }
                     
                     if (services.isEmpty()) {
-                        services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
-                        services.add(GymService(2, "Personal Training", 150.0, 60))
+                        Log.w("BookingSheet", "No services available in the catalog for gymId: $gymId")
                     }
                     spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
+                    // Limit dropdown height
+                    val itemHeight = (64 * ctx.resources.displayMetrics.density).toInt()
+                    spinner.dropDownHeight = if (services.size > 3) itemHeight * 3 else android.view.ViewGroup.LayoutParams.WRAP_CONTENT
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    services.add(GymService(1, "Unlimited Gym Use", 100.0, 60))
-                    services.add(GymService(2, "Personal Training", 150.0, 60))
-                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
+                    Log.e("BookingSheet", "API Error fetching services: ${e.message}")
+                    spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, emptyList<String>()))
+                    val itemHeight = (64 * ctx.resources.displayMetrics.density).toInt()
+                    spinner.dropDownHeight = itemHeight * 3
                 }
             }
         }

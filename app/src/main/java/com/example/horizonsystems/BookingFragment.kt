@@ -47,8 +47,10 @@ class BookingFragment : Fragment() {
         val calendarView = view.findViewById<android.widget.CalendarView>(R.id.calendar_view)
         val dateDetailsCard = view.findViewById<View>(R.id.cv_date_details)
         val dateInfoText = view.findViewById<TextView>(R.id.tv_selected_date_info)
-        val btnQuickBook = view.findViewById<View>(R.id.btn_quick_book)
+        val btnQuickBook = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)
+        val btnTalkToAdmin = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_talk_to_admin)
 
+        ThemeUtils.applyThemeToView(view)
         applyBranding(view)
 
         adapter = TrainingLogAdapter(emptyList())
@@ -134,6 +136,11 @@ class BookingFragment : Fragment() {
             }
         }
 
+        btnTalkToAdmin?.setOnClickListener {
+            val sheet = TalkToAdminSheet()
+            sheet.show(parentFragmentManager, "talk_to_admin_sheet")
+        }
+
         // Filter Buttons
         val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_all)
         val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_pending)
@@ -176,7 +183,6 @@ class BookingFragment : Fragment() {
         }
         fetchBookings(view)
         
-        ThemeUtils.applyThemeToView(view)
     }
 
     private fun fetchBookings(root: View) {
@@ -233,15 +239,53 @@ class BookingFragment : Fragment() {
             view.setBackgroundColor(bgColor)
 
             // 2. Buttons & Titles
-            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)?.let {
-                it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+            val outlinedButtons = listOfNotNull(
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book),
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_talk_to_admin)
+            )
+
+            outlinedButtons.forEach { btn ->
+                btn.strokeColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF"))
+                btn.strokeWidth = (1 * ctx.resources.displayMetrics.density).toInt()
+                btn.setTextColor(textColor) 
+                btn.setIconTint(android.content.res.ColorStateList.valueOf(textColor))
+                btn.rippleColor = android.content.res.ColorStateList.valueOf(themeColor and 0x33FFFFFF)
             }
+
             view.findViewById<TextView>(R.id.tv_booking_theme_title)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tv_book_and_pay)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tv_training_label)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tv_upcoming_label)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tv_page_number_booking)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.bookingEmptyState)?.setTextColor(textColor)
             
             // 3. Status Accents
             view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.setCardBackgroundColor(themeColor)
-            view.findViewById<TextView>(R.id.tv_active_training_logs)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tv_selected_date_label)?.setTextColor(textColor)
+            view.findViewById<TextView>(R.id.tv_upcoming_sessions_accent)?.setTextColor(themeColor)
+
+            // 4. Pagination Tints
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
+
+            // 5. Sync Filter Tabs Branding
+            val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_all)
+            val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_pending)
+            val btnApproved = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_approved)
+            updateFilterButtons(
+                when(currentFilter) {
+                    "PENDING" -> btnPending
+                    "APPROVED" -> btnApproved
+                    else -> btnAll
+                }, 
+                listOfNotNull(btnAll, btnPending, btnApproved).filter { 
+                    it.id != when(currentFilter) {
+                        "PENDING" -> R.id.btn_filter_pending
+                        "APPROVED" -> R.id.btn_filter_approved
+                        else -> R.id.btn_filter_all
+                    }
+                }
+            )
         } catch (e: Exception) {
             Log.e("BookingFragment", "Branding Error: ${e.message}")
         }
@@ -250,27 +294,31 @@ class BookingFragment : Fragment() {
     private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton?, inactives: List<com.google.android.material.button.MaterialButton>) {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
+        val textColorStr = GymManager.getTextColor(ctx)
+        
         val themeColor = try {
             if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
         } catch (e: Exception) {
             android.graphics.Color.parseColor("#8c2bee")
         }
+
+        val textColor = try {
+            if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
+        } catch (e: Exception) {
+            android.graphics.Color.parseColor("#D1D5DB")
+        }
         
         active?.apply {
             backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
-            setTextColor(android.graphics.Color.WHITE)
-            strokeColor = android.content.res.ColorStateList.valueOf(themeColor)
-            strokeWidth = 0
+            setTextColor(textColor)
             alpha = 1.0f
         }
 
         inactives.forEach { inactive ->
             inactive.apply {
-                backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#0DFFFFFF"))
+                backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
                 setTextColor(android.graphics.Color.parseColor("#94A3B8"))
-                strokeColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF"))
-                strokeWidth = 2
-                alpha = 0.6f
+                alpha = 1.0f
             }
         }
     }

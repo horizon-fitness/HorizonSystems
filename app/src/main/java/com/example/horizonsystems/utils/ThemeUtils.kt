@@ -66,22 +66,31 @@ object ThemeUtils {
         if (view == null) return
         val context = view.context
         val themeColorStr = GymManager.getThemeColor(context)
+        val textColorStr = GymManager.getTextColor(context)
         
         try {
             val color = Color.parseColor(themeColorStr)
             val colorStateList = ColorStateList.valueOf(color)
+            val textColor = Color.parseColor(textColorStr)
             
-            internalApplyTheme(view, color, colorStateList)
+            internalApplyTheme(view, color, colorStateList, textColor)
         } catch (e: Exception) {
             // Error parsing color
         }
     }
 
-    private fun internalApplyTheme(view: View, color: Int, colorList: ColorStateList) {
+    private fun internalApplyTheme(view: View, color: Int, colorList: ColorStateList, textColor: Int) {
         when (view) {
+            is TextView -> {
+                // Special: If the text is white (commonly used for main labels), link it to the branded text color
+                // Also check for the default white reference or hex
+                if (view.currentTextColor == Color.WHITE || view.currentTextColor == 0xFFFFFFFF.toInt()) {
+                    view.setTextColor(textColor)
+                }
+            }
             is MaterialButton -> {
-                // If the button has a specific ID or style that should be branded
-                // Often we only want to tint filled buttons, not text buttons (unless specified)
+                // Skip buttons explicitly marked to not be overridden (e.g., outlined buttons)
+                if (view.tag == "no_theme_override") return
                 if (view.backgroundTintList != null || view.id != View.NO_ID) {
                      view.backgroundTintList = colorList
                 }
@@ -118,7 +127,7 @@ object ThemeUtils {
 
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
-                internalApplyTheme(view.getChildAt(i), color, colorList)
+                internalApplyTheme(view.getChildAt(i), color, colorList, textColor)
             }
         }
     }
