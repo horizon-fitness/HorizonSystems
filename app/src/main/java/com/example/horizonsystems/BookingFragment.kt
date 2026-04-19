@@ -305,8 +305,8 @@ class BookingFragment : Fragment() {
         }
         
         active?.apply {
-            backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
-            setTextColor(textColor)
+            backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(30)
+            setTextColor(themeColor)
             alpha = 1.0f
         }
 

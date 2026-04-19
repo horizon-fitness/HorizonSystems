@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Transaction
 import com.example.horizonsystems.network.RetrofitClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
@@ -59,9 +60,6 @@ class MembershipFragment : Fragment() {
         btnPending?.setOnClickListener { updateFilter("Pending", btnAll, btnPending, btnApproved) }
         btnApproved?.setOnClickListener { updateFilter("Approved", btnAll, btnPending, btnApproved) }
 
-        // Fetch dynamic plans
-        fetchMembershipPlans(view)
-
         // Fetch Initial State
         fetchData(view)
 
@@ -82,16 +80,20 @@ class MembershipFragment : Fragment() {
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
-                
-                // 1. Fetch Latest Branding (Hot Refresh)
+                val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
                 val slug = com.example.horizonsystems.utils.GymManager.getGymSlug(ctx)
-                val tenantResponse = api.getTenantInfo(slug)
                 
-                // 2. Fetch Active State
-                val activeResponse = api.getActiveMembership(userId)
+                // 1. Fetch data in parallel for performance
+                val tenantDeferred = async { api.getTenantInfo(slug) }
+                val activeDeferred = async { api.getActiveMembership(userId) }
+                val plansDeferred = async { api.getMembershipPlans(gymId) }
+                
+                val tenantResponse = tenantDeferred.await()
+                val activeResponse = activeDeferred.await()
+                val plansResponse = plansDeferred.await()
                 
                 withContext(Dispatchers.Main) {
-                    // Update branding in background so it's ready for applyBranding
+                    // Update branding
                     if (tenantResponse.isSuccessful) {
                         val tenant = tenantResponse.body()
                         com.example.horizonsystems.utils.GymManager.updateBranding(
@@ -105,12 +107,24 @@ class MembershipFragment : Fragment() {
                         )
                     }
 
+                    // Update Active Status
                     val active = activeResponse.body()
                     hasActivePlan = activeResponse.isSuccessful && active?.success == true && (active.subscriptionStatus == "Active" || active.subscriptionStatus == "Pending Approval")
                     
-                    applyBranding(root) // Recalculate and apply colors immediately
+                    applyBranding(root)
                     updateActiveCardUI(root, active)
-                    fetchMembershipPlans(root)
+                    
+                    // Update Plans after hasActivePlan is finalized
+                    if (plansResponse.isSuccessful && plansResponse.body() != null) {
+                        val plans = plansResponse.body()!!
+                        val rvPlanSelection = root.findViewById<RecyclerView>(R.id.rvPlanSelection)
+                        val planAdapter = PlanAdapter(plans, !hasActivePlan) { plan ->
+                            showConfirmationSheet(plan.id, plan.name, plan.price, plan.durationDays)
+                        }
+                        rvPlanSelection?.adapter = planAdapter
+                        rvPlanSelection?.visibility = View.VISIBLE
+                    }
+                    
                     fetchHistory()
                 }
             } catch (e: Exception) {
@@ -329,8 +343,8 @@ class MembershipFragment : Fragment() {
         fun styleButton(btn: View?, isActive: Boolean) {
             (btn as? com.google.android.material.button.MaterialButton)?.let {
                 if (isActive) {
-                    it.backgroundTintList = ColorStateList.valueOf(themeColor)
-                    it.setTextColor(Color.WHITE) // User requested white text for current tab
+                    it.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(30)
+                    it.setTextColor(themeColor) // Match brand color for active text
                     it.alpha = 1.0f
                 } else {
                     it.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)

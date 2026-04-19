@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardHomeService"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:minHeight="220dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="28dp"
+    app:cardBackgroundColor="#141216"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#1AFFFFFF"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="28dp">
+
+        <!-- Badge -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvHomeServiceBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/ic_check_circle"
+                    app:tint="@color/white"
+                    android:layout_marginEnd="5dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SESSION"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Service Name -->
+        <TextView
+            android:id="@+id/tvServiceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Boxing"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="-0.01"
+            app:layout_constraintTop_toBottomOf="@id/cvHomeServiceBadge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tvServicePricePrefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₱"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/tvServicePrice"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvServicePrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="1,000"
+            android:textColor="@color/white"
+            android:textSize="48sp"
+            android:fontFamily="sans-serif-black"
+            app:layout_constraintTop_toBottomOf="@id/tvServiceName"
+            app:layout_constraintStart_toEndOf="@id/tvServicePricePrefix" />
+
+        <TextView
+            android:id="@+id/tvServicePriceSuffix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="12dp"
+            android:text="/ per hour"
+            android:textColor="@color/white"
+            android:alpha="0.4"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintBottom_toBottomOf="@id/tvServicePrice"
+            app:layout_constraintStart_toEndOf="@id/tvServicePrice" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvServiceDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Professional guidance and personalized training sessions."
+            android:textColor="@color/white"
+            android:alpha="0.6"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
+            android:lineSpacingExtra="4dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/tvServicePrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Book Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBookServiceAction"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_marginTop="32dp"
+            android:text="BOOK NOW"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-black"
+            android:textAllCaps="false"
+            app:cornerRadius="18dp"
+            app:backgroundTint="@color/landing_primary"
+            app:layout_constraintTop_toBottomOf="@id/tvServiceDescription"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

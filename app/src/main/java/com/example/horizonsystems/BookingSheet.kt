@@ -39,6 +39,7 @@ class BookingSheet : BottomSheetDialogFragment() {
     private var selectedCoachId: Int? = null
     private var currentBasePrice = 0.0
     private var currentCoachFee = 0.0
+    var preSelectedServiceId: Int? = null
 
     private lateinit var txtTotalPrice: TextView
     private lateinit var txtCoachFeeInfo: TextView
@@ -263,7 +264,7 @@ class BookingSheet : BottomSheetDialogFragment() {
                 Log.e("BookingSheet", "Time Validation Error: ${e.message}")
             }
 
-            val service = services.find { it.serviceName == serviceName } ?: GymService(1, serviceName, currentBasePrice)
+            val service = services.find { it.serviceName == serviceName } ?: GymService(1, serviceName,     currentBasePrice)
             checkAvailabilityAndPay(service, dateStr, timeStr)
         }
         
@@ -461,6 +462,17 @@ class BookingSheet : BottomSheetDialogFragment() {
                         Log.w("BookingSheet", "No services available in the catalog for gymId: $gymId")
                     }
                     spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
+                    
+                    // Auto-select if pre-selected ID is set
+                    preSelectedServiceId?.let { id ->
+                        val selectedService = services.find { it.serviceId == id }
+                        if (selectedService != null) {
+                            spinner.setText(selectedService.serviceName, false)
+                            currentBasePrice = selectedService.price
+                            updatePrice()
+                        }
+                    }
+
                     // Limit dropdown height
                     val itemHeight = (64 * ctx.resources.displayMetrics.density).toInt()
                     spinner.dropDownHeight = if (services.size > 3) itemHeight * 3 else android.view.ViewGroup.LayoutParams.WRAP_CONTENT

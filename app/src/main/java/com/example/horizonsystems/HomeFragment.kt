@@ -80,8 +80,55 @@ class HomeFragment : Fragment() {
         fetchActiveStatus(view)
         fetchUpcomingSession(view)
         
+        // Services Offered Setup
+        val rvServices = view.findViewById<RecyclerView>(R.id.rvServicesPreview)
+        rvServices?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        fetchServicesOffered(view)
+        
         ThemeUtils.applyThemeToView(view)
         return view
+    }
+
+    private fun fetchServicesOffered(root: View) {
+        val ctx = context ?: return
+        val rvServices = root.findViewById<RecyclerView>(R.id.rvServicesPreview) ?: return
+        val tenantId = GymManager.getTenantId(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.getGymServices(tenantId)
+                
+                withContext(Dispatchers.Main) {
+                    val layoutServicesHeader = root.findViewById<View>(R.id.layoutServicesHeader)
+                    if (response.isSuccessful && response.body() != null && response.body()!!.isNotEmpty()) {
+                        val services = response.body()!!
+                        layoutServicesHeader?.visibility = View.VISIBLE
+                        rvServices.visibility = View.VISIBLE
+
+                        val adapter = HomeServiceAdapter(services) { service ->
+                            // Directly open Booking Sheet with pre-selected service
+                            val bookingSheet = BookingSheet().apply {
+                                preSelectedServiceId = service.serviceId
+                            }
+                            bookingSheet.show(parentFragmentManager, "HomeBookingSheet")
+                        }
+                        rvServices.adapter = adapter
+                    } else {
+                        layoutServicesHeader?.visibility = View.GONE
+                        rvServices.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Services Fetch Error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    root.findViewById<View>(R.id.layoutServicesHeader)?.visibility = View.GONE
+                    root.findViewById<View>(R.id.rvServicesPreview)?.visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun applyBranding(view: View) {
@@ -127,6 +174,8 @@ class HomeFragment : Fragment() {
             // 4. Labels & Buttons
             view.findViewById<TextView>(R.id.tvUpcomingLabel)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tvPlansHeaderPart2)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvServicesHeaderPart2)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvServicesSubtitle)?.setTextColor(textColor)
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBookNow)?.let {
                 it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
             }

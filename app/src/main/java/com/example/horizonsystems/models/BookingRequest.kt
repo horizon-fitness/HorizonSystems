@@ -25,5 +25,6 @@ data class GymService(
     @SerializedName("id") val serviceId: Int,
     @SerializedName("name") val serviceName: String,
     @SerializedName("price") val price: Double,
-    @SerializedName("duration_minutes") val duration: Int? = 60
+    @SerializedName("duration_minutes") val duration: Int? = 60,
+    @SerializedName("description") val description: String? = null
 )

@@ -322,7 +322,62 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:nestedScrollingEnabled="false"
-            android:clipToPadding="false" />t>
+            android:clipToPadding="false" />
+
+        <LinearLayout
+            android:id="@+id/layoutServicesHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SERVICES "
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
+
+                <TextView
+                    android:id="@+id/tvServicesHeaderPart2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OFFERED"
+                    android:textColor="#A855F7"
+                    android:textSize="22sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvServicesSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="SPECIALIZED SESSIONS AND RATES"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:alpha="0.4"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
+                android:letterSpacing="0.1" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvServicesPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

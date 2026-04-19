@@ -102,18 +102,19 @@ class PlanAdapter(
         }
 
         // 5. Action Button
-        holder.btnSelectPlan.text = "Select ${plan.name}"
-        holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(themeColor)
-        
-        if (canPurchase) {
-            holder.btnSelectPlan.isEnabled = true
-            holder.btnSelectPlan.alpha = 1.0f
+        if (!canPurchase) {
+            holder.btnSelectPlan.text = "LOCKED"
+            holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#333333"))
+            holder.btnSelectPlan.setTextColor(Color.GRAY)
+            holder.btnSelectPlan.setOnClickListener {
+                android.widget.Toast.makeText(context, "You already have an active membership.", android.widget.Toast.LENGTH_SHORT).show()
+            }
         } else {
-            holder.btnSelectPlan.isEnabled = false
-            holder.btnSelectPlan.alpha = 0.5f
+            holder.btnSelectPlan.text = "Select ${plan.name}"
+            holder.btnSelectPlan.backgroundTintList = ColorStateList.valueOf(themeColor)
+            holder.btnSelectPlan.setTextColor(Color.WHITE)
+            holder.btnSelectPlan.setOnClickListener { onPlanSelected(plan) }
         }
-
-        holder.btnSelectPlan.setOnClickListener { onPlanSelected(plan) }
     }
 
     override fun getItemCount(): Int = plans.size
