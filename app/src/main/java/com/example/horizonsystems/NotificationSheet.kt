@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Notification
 import com.example.horizonsystems.utils.ThemeUtils
@@ -37,6 +38,32 @@ class NotificationSheet : BottomSheetDialogFragment() {
         }
 
         ThemeUtils.applyThemeToView(view)
+        applyBranding(view)
+    }
+
+    private fun applyBranding(view: View) {
+        val ctx = context ?: return
+        val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(ctx)
+        val bgColorStr = com.example.horizonsystems.utils.GymManager.getBgColor(ctx)
+        
+        if (!themeColorStr.isNullOrEmpty()) {
+            try {
+                val themeColor = android.graphics.Color.parseColor(themeColorStr)
+                view.findViewById<TextView>(R.id.sheetSubtitle)?.setTextColor(themeColor)
+            } catch (e: Exception) {}
+        }
+
+        if (!bgColorStr.isNullOrEmpty()) {
+            try {
+                val bgColor = android.graphics.Color.parseColor(bgColorStr)
+                val shape = android.graphics.drawable.GradientDrawable()
+                shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                shape.setColor(bgColor)
+                val radius = (28 * ctx.resources.displayMetrics.density)
+                shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+                view.background = shape
+            } catch (e: Exception) {}
+        }
     }
 
     private fun getMockNotifications(): List<Notification> {

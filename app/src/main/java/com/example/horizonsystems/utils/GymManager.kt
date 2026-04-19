@@ -247,4 +247,32 @@ object GymManager {
             .load(glideUrl)
             .into(imageView)
     }
+
+    /**
+     * Re-fetch the latest branding data from the server and update local preferences.
+     */
+    suspend fun syncBranding(context: Context) {
+        val tenantCode = getTenantCode(context)
+        if (tenantCode == "000") return 
+
+        try {
+            val api = com.example.horizonsystems.network.RetrofitClient.getApi(getBypassCookie(context), getBypassUA(context))
+            val response = api.connectGym(mapOf("gym" to tenantCode))
+            
+            if (response.isSuccessful && response.body() != null) {
+                val b = response.body()!!
+                updateBranding(
+                    context,
+                    b.themeColor,
+                    b.iconColor,
+                    b.textColor,
+                    b.bgColor,
+                    null, // cardColor not in connect_gym yet
+                    null  // autoCardTheme not in connect_gym yet
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

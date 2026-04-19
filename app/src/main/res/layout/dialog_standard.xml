@@ -2,12 +2,13 @@
 <com.google.android.material.card.MaterialCardView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialogCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="24dp"
     app:cardBackgroundColor="#141216"
     app:cardCornerRadius="28dp"
-    app:cardElevation="8dp"
+    app:cardElevation="12dp"
     app:strokeColor="#1AFFFFFF"
     app:strokeWidth="1dp">
 
@@ -22,38 +23,66 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-black"
-            android:text="TITLE"
+            android:text="ELITE NOTICE"
             android:textAllCaps="true"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.05" />
+            android:textSize="20sp"
+            android:textStyle="bold|italic"
+            android:letterSpacing="-0.02" />
+
+        <View
+            android:id="@+id/dialogDivider"
+            android:layout_width="40dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="8dp"
+            android:background="#A855F7" />
 
         <TextView
             android:id="@+id/dialogMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="sans-serif-black"
-            android:text="Message body goes here..."
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Action confirmation required to proceed with system operation."
             android:textColor="#A1A1AA"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp" />
+            android:textSize="13sp"
+            android:lineSpacingExtra="4dp"
+            android:alpha="0.8" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDialogPositive"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="28dp"
-            android:fontFamily="sans-serif-black"
-            android:text="OK"
-            android:textAllCaps="true"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:cornerRadius="32dp"
-            app:backgroundTint="#8c2bee"
-            android:letterSpacing="0.1" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDialogPositive"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:fontFamily="sans-serif-black"
+                android:text="CONFIRM ACTION"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold|italic"
+                app:cornerRadius="16dp"
+                app:backgroundTint="#A855F7"
+                android:letterSpacing="0.1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDialogNegative"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="8dp"
+                android:text="DISMISS"
+                android:textColor="#EF4444"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:letterSpacing="0.15" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

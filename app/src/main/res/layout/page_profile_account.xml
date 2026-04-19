@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="28dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/headerAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5. MEMBER IDENTITY"
+            android:textColor="#A855F7"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.15"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Member Code"
+            android:layout_marginBottom="12dp"
+            android:enabled="false"
+            app:boxStrokeColor="#A855F7"
+            app:hintTextColor="#A855F7"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="#80FFFFFF">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editMemberCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#80FFFFFF"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your member identity is unique to this gym and cannot be changed."
+            android:textColor="#80FFFFFF"
+            android:textSize="10sp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

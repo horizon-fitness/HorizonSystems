@@ -130,4 +130,22 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AttendanceLogsResponse>
+
+    @POST("api/update_profile.php")
+    suspend fun updateProfile(
+        @Body request: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
+    @POST("api/change_password.php")
+    suspend fun changePassword(
+        @Body request: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
+    @POST("api/connect_gym.php")
+    suspend fun connectGym(
+        @Body request: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.TenantPage>
 }

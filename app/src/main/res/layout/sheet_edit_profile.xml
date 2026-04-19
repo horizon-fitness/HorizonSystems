@@ -1,369 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/surface_dark"
-    android:padding="20dp"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:paddingTop="28dp"
+    android:paddingHorizontal="0dp"
     android:clipToPadding="false">
+
+    <!-- Handle Bar -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:background="#33FFFFFF" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!-- Handle Bar -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:background="#33FFFFFF" />
+        android:orientation="vertical"
+        android:paddingHorizontal="28dp">
 
         <TextView
+            android:id="@+id/sheetTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Member Profile"
+            android:text="EDIT MEMBER PROFILE"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-black" />
+            android:fontFamily="sans-serif-black"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:letterSpacing="-0.02" />
 
         <TextView
+            android:id="@+id/sheetSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please ensure all your information is accurate."
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:alpha="0.8"
+            android:layout_marginTop="4dp"
+            android:text="ELITE IDENTITY MANAGEMENT"
+            android:textColor="#A855F7"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.2"
             android:layout_marginBottom="24dp" />
+    </LinearLayout>
 
-        <!-- 1. PERSONAL INFORMATION -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1. PERSONAL INFORMATION"
-            android:textColor="@color/landing_primary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="12dp" />
+    <!-- Sliding Tabs -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:tabMode="scrollable"
+        app:tabIndicatorHeight="3dp"
+        app:tabIndicatorColor="#A855F7"
+        app:tabSelectedTextColor="#FFFFFF"
+        app:tabTextColor="#80FFFFFF"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabTextAppearance="@style/TabTextAppearance"
+        app:tabIndicatorFullWidth="false" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Username"
-                android:layout_marginEnd="8dp"
-                android:enabled="false"
-                app:boxStrokeColor="@color/landing_primary"
-                app:hintTextColor="@color/landing_primary"
-                android:textColorHint="#40FFFFFF">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-            
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Member Code"
-                android:enabled="false"
-                app:boxStrokeColor="@color/landing_primary"
-                app:hintTextColor="@color/landing_primary"
-                android:textColorHint="#40FFFFFF">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editMemberCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerProfile"
+        android:layout_width="match_parent"
+        android:layout_height="450dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="First Name"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <!-- Fixed Footer -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:background="#0DFFFFFF">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Last Name"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Middle Name"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editMiddleName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-            
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.2"
-                android:hint="Birth Date"
-                android:layout_marginEnd="8dp"
-                app:boxStrokeColor="@color/landing_primary"
-                app:hintTextColor="@color/landing_primary"
-                android:textColorHint="#40FFFFFF">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editBirthDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.8"
-                android:hint="Sex"
-                app:boxStrokeColor="@color/landing_primary"
-                app:hintTextColor="@color/landing_primary"
-                android:textColorHint="#40FFFFFF">
-                <AutoCompleteTextView
-                    android:id="@+id/editSex"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-
-        <!-- 2. CONTACT INFORMATION -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2. CONTACT INFORMATION"
-            android:textColor="@color/landing_primary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="12dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email Address"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="phone" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Residential Address"
-            android:layout_marginBottom="24dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textPostalAddress|textMultiLine"
-                android:lines="2" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- 3. HEALTH & BACKGROUND -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3. HEALTH &amp; BACKGROUND"
-            android:textColor="@color/landing_primary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="12dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Occupation"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editOccupation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Medical History / Allergies"
-            android:layout_marginBottom="24dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editMedical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textMultiLine"
-                android:lines="2" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- 4. EMERGENCY CONTACT -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4. EMERGENCY CONTACT"
-            android:textColor="@color/landing_primary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="12dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contact Person"
-            android:layout_marginBottom="12dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmergencyName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Emergency Number"
-            android:layout_marginBottom="32dp"
-            app:boxStrokeColor="@color/landing_primary"
-            app:hintTextColor="@color/landing_primary"
-            android:textColorHint="#40FFFFFF">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editEmergencyPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:inputType="phone" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Save Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:text="Save Full Profile"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:text="SAVE FULL PROFILE"
             android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
             app:cornerRadius="16dp"
-            app:backgroundTint="@color/landing_primary"
-            android:layout_marginBottom="12dp" />
+            app:backgroundTint="#A855F7"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            android:layout_marginBottom="8dp" />
+
+        <ProgressBar
+            android:id="@+id/pbSaving"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelEdit"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Discard Changes"
-            android:textAllCaps="false"
-            android:textColor="@color/text_secondary"
-            android:layout_marginBottom="20dp" />
-
+            android:layout_height="48dp"
+            android:text="DISCARD CHANGES"
+            android:textColor="#EF4444"
+            android:textSize="10sp"
+            android:textStyle="bold" />
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
