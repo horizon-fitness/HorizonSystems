@@ -112,9 +112,11 @@
                 android:layout_height="wrap_content"
                 android:text="11:30 AM"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.01" />
+                android:letterSpacing="-0.01"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/logStatus"
