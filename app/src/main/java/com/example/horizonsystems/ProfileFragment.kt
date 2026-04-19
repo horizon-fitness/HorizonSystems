@@ -63,16 +63,26 @@ class ProfileFragment : Fragment() {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
                 val themeList = android.content.res.ColorStateList.valueOf(themeColor)
                 
-                // 1. Name Highlight
-                view.findViewById<TextView>(R.id.profileName)?.setTextColor(themeColor)
+                // 1. Name and Headers Highlight
+                val headers = listOf(
+                    R.id.profileName, R.id.headerAccount, R.id.headerPersonal, 
+                    R.id.headerContact, R.id.headerAddress, R.id.headerHealth, R.id.headerEmergency, R.id.headerParent
+                )
+                headers.forEach { view.findViewById<TextView>(it)?.setTextColor(themeColor) }
                 
                 // 2. Avatar Edit Icon
                 view.findViewById<ImageView>(R.id.iv_profile_edit_icon)?.imageTintList = themeList
                 
                 // 3. Hub Icons
                 val icons = listOf(
-                    R.id.iconUsername, R.id.iconMemberCode, R.id.iconPhone, 
-                    R.id.iconAddress, R.id.iconMenuNotify, R.id.iconMenuInfo, R.id.iconMenuSecure
+                    R.id.iconUsername, R.id.iconRole, R.id.iconGym,
+                    R.id.iconFirstName, R.id.iconMiddleName, R.id.iconLastName, R.id.iconBirthDate, R.id.iconSex,
+                    R.id.iconPhone, R.id.iconEmail,
+                    R.id.iconAddressLine, R.id.iconBarangay, R.id.iconCity, R.id.iconProvince, R.id.iconRegion,
+                    R.id.iconOccupation, R.id.iconMedHistory,
+                    R.id.iconEmergencyName, R.id.iconEmergencyPhone,
+                    R.id.iconParentName, R.id.iconParentPhone,
+                    R.id.iconMenuNotify, R.id.iconMenuInfo, R.id.iconMenuSecure
                 )
                 icons.forEach { iconId ->
                     view.findViewById<ImageView>(iconId)?.imageTintList = themeList
@@ -80,6 +90,18 @@ class ProfileFragment : Fragment() {
 
                 // 4. Role Accent 
                 view.findViewById<TextView>(R.id.profileRole)?.setTextColor(themeColor)
+                
+                // 5. Action Cards Themed Backgrounds
+                val bgAlphaColor = androidx.core.graphics.ColorUtils.setAlphaComponent(themeColor, 13) // 5% alpha
+                val strokeAlphaColor = androidx.core.graphics.ColorUtils.setAlphaComponent(themeColor, 26) // 10% alpha
+                
+                val actionCards = listOf(R.id.btnProfileNotifications, R.id.btnChangePassword, R.id.btnEditFullProfile)
+                actionCards.forEach { cardId ->
+                    view.findViewById<com.google.android.material.card.MaterialCardView>(cardId)?.let { card ->
+                        card.setCardBackgroundColor(bgAlphaColor)
+                        card.strokeColor = strokeAlphaColor
+                    }
+                }
                 
             } catch (e: Exception) {}
         }
@@ -92,8 +114,6 @@ class ProfileFragment : Fragment() {
         val userEmail = intent?.getStringExtra("email") ?: ""
         val userRole = intent?.getStringExtra("user_role") ?: "Member"
         val gymName = intent?.getStringExtra("gym_name") ?: "Horizon Gym"
-        val tenantId = intent?.getStringExtra("tenant_id") ?: "000"
-        val memberCode = intent?.getStringExtra("member_code") ?: ""
 
         // Registration Fields (Schema Aligned)
         val firstName = intent?.getStringExtra("first_name") ?: ""
@@ -107,38 +127,56 @@ class ProfileFragment : Fragment() {
         val medHistory = intent?.getStringExtra("medical_history") ?: ""
         val emergencyName = intent?.getStringExtra("emergency_contact_name") ?: ""
         val emergencyPhone = intent?.getStringExtra("emergency_contact_number") ?: ""
+        
+        // Parent / Guardian
+        val parentName = intent?.getStringExtra("parent_name") ?: ""
+        val parentPhone = intent?.getStringExtra("parent_contact_number") ?: ""
 
-        // Identification
+        // 0. Header Status
         val displayName = if (firstName.isNotEmpty() && lastName.isNotEmpty()) "$firstName $lastName".uppercase() else userName.uppercase()
+        val finalEmail = userEmail.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileName)?.text = displayName
-        view.findViewById<TextView>(R.id.profileFirstName)?.text = firstName.ifEmpty { "---" }
-        view.findViewById<TextView>(R.id.profileLastName)?.text = lastName.ifEmpty { "---" }
-        view.findViewById<TextView>(R.id.profileMiddleName)?.text = middleName.ifEmpty { "---" }
-        view.findViewById<TextView>(R.id.profileUsernameDisplay)?.text = userName.ifEmpty { "---" }
-        view.findViewById<TextView>(R.id.profileMemberCode)?.text = memberCode.ifEmpty { "---" }
-        
-        // Contact
-        val finalEmail = if (userEmail.isNotEmpty()) {
-            if (gymName.isNotEmpty() && gymName != "Horizon Gym") "$userEmail ($gymName)" else userEmail
-        } else "---"
         view.findViewById<TextView>(R.id.profileEmail)?.text = finalEmail
-        view.findViewById<TextView>(R.id.profilePhone)?.text = phone.ifEmpty { "---" }
-        view.findViewById<TextView>(R.id.profileAddress)?.text = address.ifEmpty { "---" }
-        
-        // Health & Status
+
+        // 1. Account Details
+        view.findViewById<TextView>(R.id.profileUsernameDisplay)?.text = userName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileRole)?.text = userRole.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileGym)?.text = gymName.ifEmpty { "---" }
+
+        // 2. Personal Information
+        view.findViewById<TextView>(R.id.profileFirstName)?.text = firstName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileMiddleName)?.text = middleName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileLastName)?.text = lastName.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileBirthDate)?.text = birthDate.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileSex)?.text = sex.ifEmpty { "---" }
+
+        // 3. Contact Information
+        view.findViewById<TextView>(R.id.profilePhone)?.text = phone.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileEmailContact)?.text = finalEmail
+
+        // 3.5. Residential Address
+        val addressLine = intent?.getStringExtra("address_line") ?: ""
+        val barangay = intent?.getStringExtra("barangay") ?: ""
+        val city = intent?.getStringExtra("city") ?: ""
+        val province = intent?.getStringExtra("province") ?: ""
+        val region = intent?.getStringExtra("region") ?: ""
+        view.findViewById<TextView>(R.id.profileAddressLine)?.text = addressLine.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileBarangay)?.text = barangay.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileCity)?.text = city.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileProvince)?.text = province.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileRegion)?.text = region.ifEmpty { "---" }
+
+        // 4. Occupation & Health Status
         view.findViewById<TextView>(R.id.profileOccupation)?.text = occupation.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileMedHistory)?.text = medHistory.ifEmpty { "None listed" }
-        
-        // Emergency
+
+        // 5. Emergency Contact
         view.findViewById<TextView>(R.id.profileEmergencyName)?.text = emergencyName.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileEmergencyPhone)?.text = emergencyPhone.ifEmpty { "---" }
 
-        // Context Footer
-        view.findViewById<TextView>(R.id.profileRole)?.text = userRole
-        view.findViewById<TextView>(R.id.profileGym)?.text = gymName
-        view.findViewById<TextView>(R.id.profileTenantId)?.text = tenantId
+        // 6. Parent / Guardian
+        view.findViewById<TextView>(R.id.profileParentName)?.text = parentName.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.profileParentPhone)?.text = parentPhone.ifEmpty { "---" }
 
         // Copy Success Lambda
         val copyToClipboard: (String, String) -> Unit = { label, text ->
@@ -149,8 +187,8 @@ class ProfileFragment : Fragment() {
         }
 
         // Copy Actions
-        view.findViewById<View>(R.id.profileTenantId)?.parent?.let { parent ->
-            (parent as? View)?.setOnClickListener { copyToClipboard("Tenant ID", tenantId) }
+        view.findViewById<View>(R.id.profileParentPhone)?.parent?.let { parent ->
+            (parent as? View)?.setOnClickListener { copyToClipboard("Parent Phone number", parentPhone) }
         }
         view.findViewById<View>(R.id.profilePhone)?.parent?.let { parent ->
             (parent as? View)?.setOnClickListener { copyToClipboard("Phone number", phone) }

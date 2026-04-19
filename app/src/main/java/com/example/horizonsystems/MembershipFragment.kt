@@ -112,7 +112,7 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
                 val slug = com.example.horizonsystems.utils.GymManager.getGymSlug(ctx)
                 
                 val tenantDeferred = async { api.getTenantInfo(slug) }
-                val activeDeferred = async { api.getActiveMembership(userId) }
+                val activeDeferred = async { api.getActiveMembership(userId, gymId) }
                 val plansDeferred = async { api.getMembershipPlans(gymId) }
                 
                 val tenantResponse = tenantDeferred.await()
@@ -196,7 +196,8 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
-                val response = api.getMembershipHistory(userId)
+                val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
+                val response = api.getMembershipHistory(userId, gymId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         fullHistoryList.clear()

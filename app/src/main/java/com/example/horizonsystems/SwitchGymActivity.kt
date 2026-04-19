@@ -146,8 +146,10 @@ class SwitchGymActivity : AppCompatActivity() {
                         "000", 
                         "HORIZON SYSTEMS", 
                         null,
-                        "#7f13ec", // Specific Brand Purple
-                        "#0a090d",  // Default Dark BG
+                        "#8c2bee", // Standard Horizon Purple
+                        "#A1A1AA", 
+                        "#D1D5DB",
+                        "#0a090d", // Default Dark BG
                         "#141216",
                         "1"
                     )
@@ -183,15 +185,22 @@ class SwitchGymActivity : AppCompatActivity() {
         
         if (!currentLogo.isNullOrEmpty()) {
             GymManager.loadLogo(this, currentLogo, gymLogoImg)
-            applyDynamicColors()
+            gymLogoImg.imageTintList = null
         } else {
-            // Fix: Force default logo immediately on disconnect
-            gymLogoImg.setImageResource(R.drawable.horizon_logo)
+            // Consistent fallback logic: Horizon logo for default system, Dumbbell for tenants
+            if (currentName.uppercase().contains("HORIZON")) {
+                gymLogoImg.setImageResource(R.drawable.horizon_logo)
+                gymLogoImg.imageTintList = null
+            } else {
+                gymLogoImg.setImageResource(R.drawable.ic_dumbbell)
+                try {
+                    gymLogoImg.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(GymManager.getThemeColor(this)))
+                } catch (e: Exception) {}
+            }
             gymLogoImg.setPadding(0, 0, 0, 0)
             gymLogoImg.scaleType = ImageView.ScaleType.CENTER_INSIDE
-            gymLogoImg.imageTintList = null // Remove any tint
-            applyDynamicColors()
         }
+        applyDynamicColors()
     }
 
     private fun applyDynamicColors() {

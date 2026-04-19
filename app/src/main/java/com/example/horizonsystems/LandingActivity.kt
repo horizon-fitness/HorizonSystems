@@ -46,6 +46,26 @@ class LandingActivity : AppCompatActivity() {
         // enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
         
+        // System Native Splash Screen Extension (2 seconds) to hide theme jumps
+        var isSplashReady = false
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            isSplashReady = true
+        }, 2000)
+        
+        val rootLayout = findViewById<View>(R.id.rootLayout)
+        rootLayout.viewTreeObserver.addOnPreDrawListener(
+            object : android.view.ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    return if (isSplashReady) {
+                        rootLayout.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        )
+        
         // Initialize view references
         loginScrollView = findViewById(R.id.loginScrollView)
         dashContainer = findViewById(R.id.dashContainer)
@@ -207,6 +227,11 @@ class LandingActivity : AppCompatActivity() {
             putExtra("middle_name", user.middleName ?: "")
             putExtra("contact_number", user.contactNumber ?: "")
             putExtra("address", user.address ?: "")
+            putExtra("address_line", user.addressLine ?: "")
+            putExtra("barangay", user.barangay ?: "")
+            putExtra("city", user.city ?: "")
+            putExtra("province", user.province ?: "")
+            putExtra("region", user.region ?: "")
             putExtra("birth_date", user.birthDate ?: "")
             putExtra("sex", user.sex ?: "")
             putExtra("occupation", user.occupation ?: "")
@@ -214,6 +239,8 @@ class LandingActivity : AppCompatActivity() {
             putExtra("emergency_contact_name", user.emergencyContactName ?: "")
             putExtra("emergency_contact_number", user.emergencyContactNumber ?: "")
             putExtra("member_code", user.memberCode ?: "")
+            putExtra("parent_name", user.parentName ?: "")
+            putExtra("parent_contact_number", user.parentContactNumber ?: "")
         }
 
         loginScrollView?.visibility = android.view.View.GONE
@@ -249,8 +276,18 @@ class LandingActivity : AppCompatActivity() {
         } else {
             // Last resort: Show default logo if no gym logo is set
             gymLogoContainer?.visibility = android.view.View.VISIBLE
-            gymLogoHeader?.setImageResource(R.drawable.horizon_logo)
-            gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.GRAY)
+            if (rawGymName.contains("HORIZON")) {
+                gymLogoHeader?.setImageResource(R.drawable.horizon_logo)
+                gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.GRAY)
+            } else {
+                gymLogoHeader?.setImageResource(R.drawable.ic_dumbbell)
+                try {
+                    val accent = android.graphics.Color.parseColor(GymManager.getThemeColor(this))
+                    gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(accent)
+                } catch (e: Exception) {
+                    gymLogoHeader?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.GRAY)
+                }
+            }
         }
         
         // Handle Member Profile Pic Placeholder in HomeFragment (via Intent/Mock)
@@ -409,7 +446,7 @@ class LandingActivity : AppCompatActivity() {
         GymManager.saveGymData(
             this,
             "horizon", 1, "000", "HORIZON SYSTEMS",
-            "assests/horizon logo.png", "#8c2bee", "#a1a1aa", "#d1d5db", "#0a090d",
+            null, "#8c2bee", "#a1a1aa", "#d1d5db", "#0a090d",
             "#141216", "1"
         )
         // 3. Refresh UI to default
@@ -437,12 +474,30 @@ class LandingActivity : AppCompatActivity() {
         if (!savedLogo.isNullOrEmpty()) {
             GymManager.loadLogo(this, savedLogo, gymLogo)
         } else {
-            gymLogo?.setImageResource(R.drawable.horizon_logo)
+            if (savedName == "HORIZON SYSTEMS" || savedName.isEmpty()) {
+                gymLogo?.setImageResource(R.drawable.horizon_logo)
+                gymLogo?.imageTintList = null
+            } else {
+                gymLogo?.setImageResource(R.drawable.ic_dumbbell)
+                try {
+                    gymLogo?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(GymManager.getThemeColor(this)))
+                } catch (e:Exception) {}
+            }
         }
         
         // Pre-emptively apply the theme color from cache so it stays on restart
         val savedColor = GymManager.getThemeColor(this)
         applyDynamicColors(savedColor)
+        
+        // Ensure background color is also applied from cache (crucial for disconnect/revert)
+        try {
+            val savedBg = GymManager.getBgColor(this).ifEmpty { "#0a090d" }
+            findViewById<android.view.View>(R.id.rootLayout)?.setBackgroundColor(android.graphics.Color.parseColor(savedBg))
+        } catch (e: Exception) {}
+
+        // Static Icon for Switch Gym button (QR Code as requested)
+        val btnSwitchGym = findViewById<MaterialButton>(R.id.btnSwitchGym)
+        btnSwitchGym?.setIconResource(R.drawable.ic_qr_code)
     }
 
     private fun updateUIWithBranding(tenant: TenantPage) {
@@ -459,8 +514,20 @@ class LandingActivity : AppCompatActivity() {
         if (!tenant.logoPath.isNullOrEmpty()) {
             GymManager.loadLogo(this, tenant.logoPath!!, gymLogo)
         } else {
-            gymLogo?.setImageResource(R.drawable.horizon_logo)
+            if (gymName.uppercase().contains("HORIZON")) {
+                gymLogo?.setImageResource(R.drawable.horizon_logo)
+                gymLogo?.imageTintList = null
+            } else {
+                gymLogo?.setImageResource(R.drawable.ic_dumbbell)
+                try {
+                    gymLogo?.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor(tenant.themeColor))
+                } catch (e:Exception) {}
+            }
         }
+        
+        // Static Icon for Switch Gym button (QR Code as requested)
+        val btnSwitchGym = findViewById<MaterialButton>(R.id.btnSwitchGym)
+        btnSwitchGym?.setIconResource(R.drawable.ic_qr_code)
     }
 
     private fun applyDynamicColors(themeColor: String) {

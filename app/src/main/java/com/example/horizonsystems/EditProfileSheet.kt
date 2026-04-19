@@ -14,6 +14,13 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.DialogUtils
+import com.example.horizonsystems.network.RetrofitClient
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.example.horizonsystems.utils.NetworkBypass
 
 class EditProfileSheet : BottomSheetDialogFragment() {
 
@@ -117,12 +124,42 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 "emergency_contact_number" to editEmergencyPhone.text.toString()
             )
 
-            // Update Activity's intent extras for the demo
-            (activity as? LandingActivity)?.updateUserData(updates)
+            // Integrate Backend Update
+            val ctx = requireContext()
+            val userId = GymManager.getUserId(ctx)
+            val gymId = GymManager.getTenantId(ctx)
+            val cookie = GymManager.getBypassCookie(ctx)
+            val ua = GymManager.getBypassUA(ctx)
 
-            Toast.makeText(requireContext(), "Member Profile fully updated!", Toast.LENGTH_LONG).show()
-            onSavedListener?.invoke()
-            dismiss()
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val api = RetrofitClient.getApi(cookie, ua)
+                    val response = api.updateProfile(userId, updates)
+                    
+                    withContext(Dispatchers.Main) {
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            // Update Activity's intent extras for the demo/persistence
+                            (activity as? LandingActivity)?.updateUserData(updates)
+                            
+                            DialogUtils.showConfirmationDialog(
+                                ctx,
+                                "Profile Updated",
+                                "Your personal information has been saved successfully.",
+                                positiveText = "OK"
+                            ) {
+                                onSavedListener?.invoke()
+                                dismiss()
+                            }
+                        } else {
+                            Toast.makeText(ctx, response.body()?.message ?: "Update failed.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(ctx, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
         ThemeUtils.applyThemeToView(view)

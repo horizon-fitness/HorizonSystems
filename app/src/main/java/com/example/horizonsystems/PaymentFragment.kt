@@ -154,7 +154,8 @@ class PaymentFragment : Fragment(), PaymentFilterSheet.FilterListener, PaymentSo
                 val cookie = GymManager.getBypassCookie(ctx)
                 val ua = GymManager.getBypassUA(ctx)
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
-                val response = api.getMembershipHistory(userId, showAll = 1)
+                val gymId = GymManager.getTenantId(ctx)
+                val response = api.getMembershipHistory(userId, gymId, showAll = 1)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         allTransactions.clear()

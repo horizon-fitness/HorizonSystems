@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import com.example.horizonsystems.utils.DialogUtils
 
 class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSortSheet.SortListener {
     private lateinit var adapter: TrainingLogAdapter
@@ -121,7 +122,8 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
                     val cookie = GymManager.getBypassCookie(ctx)
                     val ua = GymManager.getBypassUA(ctx)
                     val api = RetrofitClient.getApi(cookie, ua)
-                    val response = api.getActiveMembership(userId)
+                    val gymId = GymManager.getTenantId(ctx)
+                    val response = api.getActiveMembership(userId, gymId)
                     withContext(Dispatchers.Main) {
                         it.isEnabled = true
                         if (response.isSuccessful && response.body()?.success == true && response.body()?.subscriptionStatus == "Active") {
@@ -129,10 +131,11 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
                             sheet.onBookingCreated = { fetchBookings(view) }
                             sheet.show(parentFragmentManager, "booking_sheet")
                         } else {
-                            android.app.AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                                .setTitle("Membership Required")
-                                .setMessage("You must have an Active Membership to book a session.")
-                                .setPositiveButton("OK", null).show()
+                            DialogUtils.showConfirmationDialog(
+                                ctx,
+                                "Membership Required",
+                                "You must have an Active Membership to book a session."
+                            )
                         }
                     }
                 } catch (e: Exception) {
@@ -185,8 +188,9 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
             try {
                 val cookie = GymManager.getBypassCookie(ctx)
                 val ua = GymManager.getBypassUA(ctx)
+                val gymId = GymManager.getTenantId(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
-                val response = api.getUserBookings(userId)
+                val response = api.getUserBookings(userId, gymId)
                 withContext(Dispatchers.Main) {
                     allLogs.clear()
                     if (response.isSuccessful && response.body()?.bookings != null) {

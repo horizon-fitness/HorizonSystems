@@ -131,7 +131,17 @@ class BookingSheet : BottomSheetDialogFragment() {
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = selection
                 val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                editDate.setText(format.format(calendar.time))
+                val dateStr = format.format(calendar.time)
+                editDate.setText(dateStr)
+                
+                // Refresh coaches based on selected date (Day Off Logic)
+                if (editCoach != null) {
+                    editCoach.setText("", false)
+                    selectedCoachId = null
+                    currentCoachFee = 0.0
+                    updatePrice()
+                    fetchCoaches(editCoach, date = dateStr)
+                }
             }
             datePicker.show(childFragmentManager, "BOOK_DATE_PICKER")
         }
@@ -386,7 +396,7 @@ class BookingSheet : BottomSheetDialogFragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val api = RetrofitClient.getApi(cookie, ua)
-                val response = api.checkBookingAvailability(userId, gymId, date, time)
+                val response = api.checkBookingAvailability(userId, gymId, date, time, coachId = selectedCoachId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.available == true) {
                         initiatePayment(service, date, time)
@@ -400,7 +410,7 @@ class BookingSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun fetchCoaches(spinner: MaterialAutoCompleteTextView?, skipSelfTrain: Boolean = false) {
+    private fun fetchCoaches(spinner: MaterialAutoCompleteTextView?, skipSelfTrain: Boolean = false, date: String? = null) {
         val ctx = context ?: return
         val spinnerView = spinner ?: return
         val gymId = com.example.horizonsystems.utils.GymManager.getTenantId(ctx)
@@ -410,7 +420,7 @@ class BookingSheet : BottomSheetDialogFragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val api = RetrofitClient.getApi(cookie, ua)
-                val response = api.getGymCoaches(gymId)
+                val response = api.getGymCoaches(gymId, date)
                 withContext(Dispatchers.Main) {
                     coaches.clear()
                     val names = mutableListOf<String>()

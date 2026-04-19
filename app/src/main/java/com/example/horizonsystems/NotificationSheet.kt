@@ -9,7 +9,18 @@ import com.example.horizonsystems.models.Notification
 import com.example.horizonsystems.utils.ThemeUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.example.horizonsystems.network.RetrofitClient
+import com.example.horizonsystems.utils.GymManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 class NotificationSheet : BottomSheetDialogFragment() {
+
+    private lateinit var adapter: NotificationAdapter
+    private var notificationList = mutableListOf<Notification>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,56 +35,99 @@ class NotificationSheet : BottomSheetDialogFragment() {
 
         val rvNotifications = view.findViewById<RecyclerView>(R.id.rvNotifications)
         val emptyState = view.findViewById<View>(R.id.tvEmptyState)
+        val btnClearAll = view.findViewById<View>(R.id.btnClearAllNotifications)
 
-        val notifications = getMockNotifications()
+        adapter = NotificationAdapter(notificationList) { notif ->
+            deleteNotification(notif.notification_id)
+        }
+        rvNotifications.adapter = adapter
 
-        if (notifications.isEmpty()) {
-            emptyState.visibility = View.VISIBLE
-            rvNotifications.visibility = View.GONE
-        } else {
-            emptyState.visibility = View.GONE
-            rvNotifications.visibility = View.VISIBLE
-            rvNotifications.adapter = NotificationAdapter(notifications)
+        fetchNotifications(emptyState, rvNotifications)
+
+        btnClearAll?.setOnClickListener {
+            clearAllNotifications()
         }
 
         ThemeUtils.applyThemeToView(view)
     }
 
-    private fun getMockNotifications(): List<Notification> {
-        return listOf(
-            Notification(
-                id = "1",
-                title = "Welcome to Horizon!",
-                message = "We're glad to have you. Enjoy your premium fitness experience.",
-                time = "Just now",
-                type = "system",
-                isRead = false
-            ),
-            Notification(
-                id = "2",
-                title = "Membership Confirmed",
-                message = "Your Unlimited Gym Plan is now active. Let's start training!",
-                time = "2 hours ago",
-                type = "membership",
-                isRead = true
-            ),
-            Notification(
-                id = "3",
-                title = "Booking Success",
-                message = "Your session for Personal Training with Coach Sam is confirmed for Monday at 10:00 AM.",
-                time = "5 hours ago",
-                type = "booking",
-                isRead = true
-            ),
-            Notification(
-                id = "4",
-                title = "System Update",
-                message = "The gym will be closed for maintenance on Sunday from 2:00 PM to 6:00 PM.",
-                time = "Yesterday",
-                type = "system",
-                isRead = true
-            )
-        )
+    private fun fetchNotifications(emptyState: View, rvNotifications: View) {
+        val ctx = requireContext()
+        val userId = GymManager.getUserId(ctx)
+        val gymId = GymManager.getTenantId(ctx)
+        val cookie = GymManager.getBypassCookie(ctx)
+        val ua = GymManager.getBypassUA(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.getNotifications(userId, gymId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        notificationList = response.body()?.notifications?.toMutableList() ?: mutableListOf()
+                        adapter.updateData(notificationList)
+                        
+                        val isEmpty = notificationList.isEmpty()
+                        emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+                        rvNotifications.visibility = if (isEmpty) View.GONE else View.VISIBLE
+                    } else {
+                        emptyState.visibility = View.VISIBLE
+                        rvNotifications.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    emptyState.visibility = View.VISIBLE
+                    rvNotifications.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun deleteNotification(notifId: Int) {
+        val ctx = requireContext()
+        val userId = GymManager.getUserId(ctx)
+        val cookie = GymManager.getBypassCookie(ctx)
+        val ua = GymManager.getBypassUA(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.clearNotification(userId, notifId, 0)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        notificationList.removeAll { it.notification_id == notifId }
+                        adapter.updateData(notificationList)
+                        if (notificationList.isEmpty()) {
+                            view?.findViewById<View>(R.id.tvEmptyState)?.visibility = View.VISIBLE
+                            view?.findViewById<View>(R.id.rvNotifications)?.visibility = View.GONE
+                        }
+                    }
+                }
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun clearAllNotifications() {
+        val ctx = requireContext()
+        val userId = GymManager.getUserId(ctx)
+        val cookie = GymManager.getBypassCookie(ctx)
+        val ua = GymManager.getBypassUA(ctx)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.clearNotification(userId, 0, 1)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        notificationList.clear()
+                        adapter.updateData(notificationList)
+                        view?.findViewById<View>(R.id.tvEmptyState)?.visibility = View.VISIBLE
+                        view?.findViewById<View>(R.id.rvNotifications)?.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {}
+        }
     }
 
     companion object {

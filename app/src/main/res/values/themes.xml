@@ -78,4 +78,10 @@
         <item name="colorAccent">@color/calendar_neutral</item>
         <item name="colorControlActivated">@color/calendar_neutral</item>
     </style>
+
+    <style name="CustomDialogTheme" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.75</item>
+    </style>
 </resources>

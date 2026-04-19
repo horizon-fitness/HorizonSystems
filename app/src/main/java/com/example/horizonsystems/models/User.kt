@@ -22,11 +22,18 @@ data class User(
     @SerializedName("gym_id") val gymId: Int? = null,
     @SerializedName("role") val role: String? = null,
     @SerializedName("address") val address: String? = null,
+    @SerializedName("address_line") val addressLine: String? = null,
+    @SerializedName("barangay") val barangay: String? = null,
+    @SerializedName("city") val city: String? = null,
+    @SerializedName("province") val province: String? = null,
+    @SerializedName("region") val region: String? = null,
     @SerializedName("birth_date") val birthDate: String? = null,
     @SerializedName("sex") val sex: String? = null,
     @SerializedName("occupation") val occupation: String? = null,
     @SerializedName("medical_history") val medicalHistory: String? = null,
     @SerializedName("emergency_contact_name") val emergencyContactName: String? = null,
     @SerializedName("emergency_contact_number") val emergencyContactNumber: String? = null,
-    @SerializedName("member_code") val memberCode: String? = null
+    @SerializedName("member_code") val memberCode: String? = null,
+    @SerializedName("parent_name") val parentName: String? = null,
+    @SerializedName("parent_contact_number") val parentContactNumber: String? = null
 )

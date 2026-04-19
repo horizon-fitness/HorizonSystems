@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.security.MessageDigest
 import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 
 class MembershipSheet : BottomSheetDialogFragment() {
 
@@ -255,7 +256,8 @@ class MembershipSheet : BottomSheetDialogFragment() {
                 val api = RetrofitClient.getApi(cookie, ua)
                 
                 // 1. Eligibility Check
-                val checkResponse = api.checkSubscriptionStatus(userId)
+                val gymId = GymManager.getTenantId(ctx)
+                val checkResponse = api.checkSubscriptionStatus(userId, gymId)
                 if (checkResponse.isSuccessful && checkResponse.body()?.canBuy == false) {
                     val msg = checkResponse.body()?.message ?: "You are not eligible to purchase a new membership at this time."
                     withContext(Dispatchers.Main) {

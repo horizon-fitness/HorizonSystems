@@ -57,6 +57,7 @@ interface HorizonApi {
     @GET("api/get_user_bookings.php")
     suspend fun getUserBookings(
         @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.BookingResponse>
 
@@ -69,6 +70,7 @@ interface HorizonApi {
     @GET("api/get_membership_history.php")
     suspend fun getMembershipHistory(
         @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
         @Query("show_all") showAll: Int = 0,
         @Query("i") bypass: Int = 1
     ): Response<List<com.example.horizonsystems.models.Transaction>>
@@ -76,6 +78,7 @@ interface HorizonApi {
     @GET("api/get_active_membership.php")
     suspend fun getActiveMembership(
         @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.ActiveMembershipResponse>
 
@@ -88,12 +91,14 @@ interface HorizonApi {
     @GET("api/check_subscription_status.php")
     suspend fun checkSubscriptionStatus(
         @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.CheckSubscriptionResponse>
 
     @GET("api/get_gym_coaches.php")
     suspend fun getGymCoaches(
         @Query("gym_id") gymId: Int,
+        @Query("date") date: String? = null,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.CoachListResponse>
 
@@ -103,6 +108,7 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("date") date: String,
         @Query("time") time: String,
+        @Query("coach_id") coachId: Int? = null,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AvailabilityResponse>
 
@@ -124,4 +130,35 @@ interface HorizonApi {
         @Query("gym_id") gymId: Int,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AttendanceLogsResponse>
+    @FormUrlEncoded
+    @POST("api/update_profile.php")
+    suspend fun updateProfile(
+        @Field("user_id") userId: Int,
+        @FieldMap updates: Map<String, String>
+    ): Response<com.example.horizonsystems.network.CommonResponse>
+
+    @GET("api/get_notifications.php")
+    suspend fun getNotifications(
+        @Query("user_id") userId: Int,
+        @Query("gym_id") gymId: Int? = null
+    ): Response<com.example.horizonsystems.network.NotificationResponse>
+
+    @FormUrlEncoded
+    @POST("api/clear_notification.php")
+    suspend fun clearNotification(
+        @Field("user_id") userId: Int,
+        @Field("notification_id") notificationId: Int = 0,
+        @Field("clear_all") clearAll: Int = 0 // 1 for true, 0 for false
+    ): Response<com.example.horizonsystems.network.CommonResponse>
 }
+
+data class NotificationResponse(
+    val success: Boolean,
+    val notifications: List<com.example.horizonsystems.models.Notification>? = null,
+    val message: String? = null
+)
+
+data class CommonResponse(
+    val success: Boolean,
+    val message: String? = null
+)

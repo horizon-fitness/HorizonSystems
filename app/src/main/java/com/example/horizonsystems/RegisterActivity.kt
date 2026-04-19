@@ -325,6 +325,16 @@ class RegisterActivity : AppCompatActivity() {
         val sexOptions = arrayOf("Male", "Female", "Other")
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sexOptions)
         sexSpinner.setAdapter(adapter)
+
+        sexSpinner.setOnClickListener {
+            sexSpinner.showDropDown()
+        }
+        
+        sexSpinner.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                sexSpinner.showDropDown()
+            }
+        }
     }
 
     private fun loadGymContext() {

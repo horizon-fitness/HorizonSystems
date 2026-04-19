@@ -260,10 +260,11 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val context = requireContext()
+                val tenantId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
-                val response = api.getUserBookings(userId)
+                val response = api.getUserBookings(userId, tenantId)
                 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
@@ -336,10 +337,11 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val context = requireContext()
+                val tenantId = com.example.horizonsystems.utils.GymManager.getTenantId(context)
                 val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(context)
                 val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(context)
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
-                val response = api.getActiveMembership(userId)
+                val response = api.getActiveMembership(userId, tenantId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val active = response.body()!!
