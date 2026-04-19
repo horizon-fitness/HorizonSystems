@@ -1,5 +1,7 @@
 package com.example.horizonsystems
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,9 +24,8 @@ import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.card.MaterialCardView
-import android.graphics.Color
-import android.content.res.ColorStateList
 import java.util.*
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, PaymentSortSheet.SortListener {
     private lateinit var adapter: TransactionAdapter
@@ -219,7 +220,7 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
         }
     }
 
-    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -253,10 +254,8 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
     }
 
     private fun fetchData() {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
-        if (userId != -1) {
-            fetchMembershipPlans(userId)
-            fetchMembershipHistory(userId)
+        view?.let {
+            fetchData(it)
         }
     }
 

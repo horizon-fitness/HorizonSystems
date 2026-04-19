@@ -46,25 +46,15 @@ class LandingActivity : AppCompatActivity() {
         // enableEdgeToEdge()
         setContentView(R.layout.activity_landing)
         
-        // System Native Splash Screen Extension (2 seconds) to hide theme jumps
-        var isSplashReady = false
-        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-            isSplashReady = true
-        }, 2000)
+        // native splash screen wait removed for speed (0.5s max or just immediate)
+        var isSplashReady = true 
         
         val rootLayout = findViewById<View>(R.id.rootLayout)
-        rootLayout.viewTreeObserver.addOnPreDrawListener(
-            object : android.view.ViewTreeObserver.OnPreDrawListener {
-                override fun onPreDraw(): Boolean {
-                    return if (isSplashReady) {
-                        rootLayout.viewTreeObserver.removeOnPreDrawListener(this)
-                        true
-                    } else {
-                        false
-                    }
-                }
-            }
-        )
+        // Set background color immediately to avoid white flash
+        val cachedBg = GymManager.getBgColor(this)
+        if (!cachedBg.isNullOrEmpty()) {
+            try { rootLayout.setBackgroundColor(android.graphics.Color.parseColor(cachedBg)) } catch(e: Exception) {}
+        }
         
         // Initialize view references
         loginScrollView = findViewById(R.id.loginScrollView)
@@ -73,27 +63,35 @@ class LandingActivity : AppCompatActivity() {
         // 0. Pre-fill branding from cache to avoid jumping
         prefillUIFromCache()
 
-        // 1. First capture security cookie for InfinityFree
-        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay) ?: return
-        val btnManualBypass = findViewById<MaterialButton>(R.id.btnManualBypass) ?: return
+        val loadingOverlay = findViewById<android.view.View>(R.id.loadingOverlay)
+        val btnManualBypass = findViewById<MaterialButton>(R.id.btnManualBypass)
         
-        // Timer for manual bypass (5 seconds)
+        if (loadingOverlay == null || btnManualBypass == null) return
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
         val showManualBypassRunnable = Runnable {
             btnManualBypass.visibility = android.view.View.VISIBLE
         }
-        handler.postDelayed(showManualBypassRunnable, 5000)
-        
-        btnManualBypass?.setOnClickListener {
+
+        btnManualBypass.setOnClickListener {
             handler.removeCallbacks(showManualBypassRunnable)
-            loadingOverlay?.visibility = android.view.View.GONE
-            handleIntent(intent) // Try to fetch branding anyway
+            loadingOverlay.visibility = android.view.View.GONE
+            handleIntent(intent)
         }
-        
+
         // 1. Initial UI Setup & Handle Intent immediately (Zero-Wait)
         handleIntent(intent)
+
+        // 2. Check for cached credentials to hide overlay immediately
+        val cachedCookieStr = GymManager.getBypassCookie(this)
+        if (cachedCookieStr.isNotEmpty() && cachedCookieStr.contains("__test")) {
+            loadingOverlay.visibility = android.view.View.GONE
+            isBypassed = true
+        } else {
+            // Only show manual bypass if we really don't have a cookie
+            handler.postDelayed(showManualBypassRunnable, 2000)
+        }
         
-        // 2. Refresh Security Cookie silently in the background
+        // 3. Refresh/Get Security Cookie in the background
         NetworkBypass.getSecurityCookie(this) { cookie, userAgent ->
             cachedCookie = cookie
             cachedUserAgent = userAgent
@@ -241,6 +239,7 @@ class LandingActivity : AppCompatActivity() {
             putExtra("member_code", user.memberCode ?: "")
             putExtra("parent_name", user.parentName ?: "")
             putExtra("parent_contact_number", user.parentContactNumber ?: "")
+            putExtra("profile_pic", user.profilePic ?: "")
         }
 
         loginScrollView?.visibility = android.view.View.GONE

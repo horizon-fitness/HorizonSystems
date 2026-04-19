@@ -51,17 +51,6 @@
                     android:src="@drawable/ic_profile" />
             </com.google.android.material.card.MaterialCardView>
 
-            <ImageView
-                android:id="@+id/btnEditProfile"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_edit"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="@+id/profilePicCard"
-                app:layout_constraintEnd_toEndOf="@+id/profilePicCard"
-                app:tint="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

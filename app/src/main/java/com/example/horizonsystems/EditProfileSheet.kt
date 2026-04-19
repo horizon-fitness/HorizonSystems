@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import android.net.Uri
+import android.util.Base64
+import com.bumptech.glide.Glide
+import java.io.InputStream
 
 class EditProfileSheet : BottomSheetDialogFragment() {
 
@@ -40,8 +47,16 @@ class EditProfileSheet : BottomSheetDialogFragment() {
     private lateinit var btnSave: MaterialButton
     private lateinit var pbSaving: ProgressBar
     
-    // Page View Holders (to access inputs across pages)
+    // View holders
     private val pageViews = mutableMapOf<Int, View>()
+    private lateinit var sheetProfileImage: ImageView
+    private lateinit var pbUploadPhoto: ProgressBar
+    
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            uploadProfilePicture(uri)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,8 +69,11 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         viewPager = root.findViewById(R.id.viewPagerProfile)
         btnSave = root.findViewById(R.id.btnSaveChanges)
         pbSaving = root.findViewById(R.id.pbSaving)
+        sheetProfileImage = root.findViewById(R.id.sheetProfileImage)
+        pbUploadPhoto = root.findViewById(R.id.pbUploadPhoto)
         
         setupViewPager()
+        setupImagePicker(root)
         
         root.findViewById<View>(R.id.btnCancelEdit).setOnClickListener { dismiss() }
 
@@ -117,12 +135,12 @@ class EditProfileSheet : BottomSheetDialogFragment() {
     private fun collectDataFromPage(position: Int, view: View, updates: MutableMap<String, Any>) {
         when (position) {
             0 -> { // Account
+                updates["username"] = view.findViewById<TextInputEditText>(R.id.editUsername).text.toString()
                 updates["first_name"] = view.findViewById<TextInputEditText>(R.id.editFirstName).text.toString()
                 updates["last_name"] = view.findViewById<TextInputEditText>(R.id.editLastName).text.toString()
                 updates["middle_name"] = view.findViewById<TextInputEditText>(R.id.editMiddleName).text.toString()
                 updates["birth_date"] = view.findViewById<TextInputEditText>(R.id.editBirthDate).text.toString()
                 updates["sex"] = view.findViewById<AutoCompleteTextView>(R.id.editSex).text.toString()
-                // Username is locked, no need to collect for update
             }
             1 -> { // Contact
                 updates["email"] = view.findViewById<TextInputEditText>(R.id.editEmail).text.toString()
@@ -227,6 +245,75 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 editBirth.setText(format.format(calendar.time))
             }
             datePicker.show(childFragmentManager, "DATE_PICKER")
+        }
+    }
+
+    private fun setupImagePicker(root: View) {
+        val clickListener = View.OnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        root.findViewById<View>(R.id.sheetProfilePicCard)?.setOnClickListener(clickListener)
+        root.findViewById<View>(R.id.btnChangePhoto)?.setOnClickListener(clickListener)
+
+        // Load current image
+        val profilePicPath = activity?.intent?.getStringExtra("profile_pic")
+        if (!profilePicPath.isNullOrEmpty()) {
+            val fullUrl = "https://horizonsystems.rf.gd/$profilePicPath"
+            Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.ic_profile)
+                .circleCrop()
+                .into(sheetProfileImage)
+        }
+    }
+
+    private fun uploadProfilePicture(uri: Uri) {
+        val userId = activity?.intent?.getIntExtra("user_id", 0) ?: 0
+        if (userId <= 0) return
+
+        lifecycleScope.launch {
+            try {
+                withContext(Dispatchers.Main) {
+                    pbUploadPhoto.visibility = View.VISIBLE
+                }
+
+                val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
+                val bytes = inputStream?.readBytes()
+                if (bytes == null) return@launch
+                
+                val base64Image = Base64.encodeToString(bytes, Base64.DEFAULT)
+                
+                val request = mapOf(
+                    "user_id" to userId,
+                    "image" to base64Image
+                )
+                
+                val cookie = GymManager.getBypassCookie(requireContext())
+                val ua = GymManager.getBypassUA(requireContext())
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.uploadProfilePic(request)
+
+                withContext(Dispatchers.Main) {
+                    pbUploadPhoto.visibility = View.GONE
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(requireContext(), "Photo updated!", Toast.LENGTH_SHORT).show()
+                        val newPath = response.body()?.path ?: ""
+                        activity?.intent?.putExtra("profile_pic", newPath)
+                        
+                        Glide.with(this@EditProfileSheet)
+                            .load("https://horizonsystems.rf.gd/$newPath")
+                            .circleCrop()
+                            .into(sheetProfileImage)
+                    } else {
+                        Toast.makeText(requireContext(), "Upload failed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    pbUploadPhoto.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Error uploading", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

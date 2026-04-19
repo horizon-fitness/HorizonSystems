@@ -131,6 +131,13 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.AttendanceLogsResponse>
 
+    @GET("api/get_profile.php")
+    suspend fun getProfile(
+        @Query("user_id") userId: Int,
+        @Query("tenant_code") tenantCode: String,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
     @POST("api/update_profile.php")
     suspend fun updateProfile(
         @Body request: Map<String, @JvmSuppressWildcards Any>,

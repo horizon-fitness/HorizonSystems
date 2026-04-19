@@ -26,11 +26,13 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, AttendanceSortSheet.SortListener {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var attendanceAdapter: AttendanceAdapter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val CAMERA_PERMISSION_CODE = 1001
     private var isScanning = false
     
@@ -63,6 +65,15 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         }
         
         return view
+    }
+    
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        swipeRefresh = view.findViewById(R.id.swipeRefreshAttendance)
+        
+        applyBranding(view)
+        setupRefresh()
     }
 
     private fun setupSearchAndFilters(view: View) {
@@ -146,13 +157,13 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         fun updateTabStyles(isScanActive: Boolean) {
             if (isScanActive) {
                 btnScan?.setTextColor(themeColor)
-                btnScan?.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+                btnScan?.backgroundTintList = ColorStateList.valueOf(themeColor.withAlpha(15))
                 
                 btnMyQr?.setTextColor(Color.parseColor("#94A3B8"))
                 btnMyQr?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
             } else {
                 btnMyQr?.setTextColor(themeColor)
-                btnMyQr?.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+                btnMyQr?.backgroundTintList = ColorStateList.valueOf(themeColor.withAlpha(15))
                 
                 btnScan?.setTextColor(Color.parseColor("#94A3B8"))
                 btnScan?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
@@ -186,10 +197,14 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         rv?.layoutManager = LinearLayoutManager(requireContext())
         rv?.adapter = attendanceAdapter
         
-        fetchRealAttendanceLogs(view)
+        fetchAttendanceLogs(view)
     }
 
-    private fun fetchRealAttendanceLogs(rootView: View) {
+    private fun Int.withAlpha(alpha: Int): Int {
+        return (this and 0x00FFFFFF) or (alpha shl 24)
+    }
+
+    private fun fetchAttendanceLogs(view: View) {
         val userId = GymManager.getUserId(requireContext())
         val gymId = GymManager.getTenantId(requireContext())
         
@@ -251,9 +266,8 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     }
 
     private fun fetchData() {
-        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
-        if (userId != -1) {
-            fetchAttendanceLogs(userId)
+        view?.let {
+            fetchAttendanceLogs(it)
         }
     }
 
@@ -298,15 +312,15 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
 
             val cardScanner = view.findViewById<MaterialCardView>(R.id.cardScanner)
             cardScanner?.setCardBackgroundColor(cardSurface)
-            cardScanner?.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))
+            cardScanner?.setStrokeColor(ColorStateList.valueOf(themeColor.withAlpha(40)))
             
             val cardMyQR = view.findViewById<MaterialCardView>(R.id.cardMyQR)
             cardMyQR?.setCardBackgroundColor(cardSurface)
-            cardMyQR?.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))
+            cardMyQR?.setStrokeColor(ColorStateList.valueOf(themeColor.withAlpha(40)))
             
             view.findViewById<MaterialButton>(R.id.btn_tab_scan_web)?.let {
                 it.setTextColor(themeColor)
-                it.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+                it.backgroundTintList = ColorStateList.valueOf(themeColor.withAlpha(15))
             }
             
             // 4. Manual Launch Branding
@@ -443,7 +457,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
                         val response = api.recordAttendance(request)
                         if (response.isSuccessful && response.body()?.success == true) {
                             Toast.makeText(requireContext(), response.body()?.message ?: "Check-in successful!", Toast.LENGTH_LONG).show()
-                            view?.let { fetchRealAttendanceLogs(it) }
+                            view?.let { fetchAttendanceLogs(it) }
                         } else {
                             Toast.makeText(requireContext(), response.body()?.message ?: "Failed to check in.", Toast.LENGTH_LONG).show()
                         }

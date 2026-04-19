@@ -29,17 +29,16 @@
             android:layout_height="wrap_content"
             android:hint="Username"
             android:layout_marginBottom="12dp"
-            android:enabled="false"
             app:boxStrokeColor="#A855F7"
             app:hintTextColor="#A855F7"
-            app:startIconDrawable="@drawable/ic_lock"
-            app:startIconTint="#80FFFFFF">
+            app:startIconDrawable="@drawable/ic_profile"
+            app:startIconTint="#A855F7">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#80FFFFFF"
-                android:inputType="none" />
+                android:textColor="@color/white"
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

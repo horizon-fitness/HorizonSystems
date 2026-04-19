@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -123,8 +125,8 @@ class PaymentFragment : Fragment(), PaymentFilterSheet.FilterListener, PaymentSo
                 view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next)?.iconTint = android.content.res.ColorStateList.valueOf(themeColor)
                 
                 // Header Icon Tints
-                view.findViewById<View>(R.id.btn_sort_modal)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
-                view.findViewById<View>(R.id.btn_filter_modal)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+                view.findViewById<View>(R.id.btn_sort_modal)?.let { it.backgroundTintList = ColorStateList.valueOf(themeColor.withAlpha(15)) }
+                view.findViewById<View>(R.id.btn_filter_modal)?.let { it.backgroundTintList = ColorStateList.valueOf(themeColor.withAlpha(15)) }
                 
                 // Search Bar Border Tint
                 view.findViewById<View>(R.id.etSearchTransactions)?.parent?.let { container ->

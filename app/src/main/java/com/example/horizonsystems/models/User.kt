@@ -12,7 +12,7 @@ data class User(
     @SerializedName("middle_name") val middleName: String? = null,
     @SerializedName("last_name") val lastName: String? = null,
     @SerializedName("contact_number") val contactNumber: String? = null,
-    @SerializedName("profile_picture") val profilePicture: String? = null,
+    @SerializedName("profile_picture") val profilePic: String? = null,
     @SerializedName("is_verified") val isVerified: Int? = null,
     @SerializedName("is_active") val isActive: Int? = null,
     @SerializedName("created_at") val createdAt: String? = null,

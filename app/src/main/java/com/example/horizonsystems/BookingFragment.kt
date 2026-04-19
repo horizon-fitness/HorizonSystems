@@ -232,8 +232,8 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
 
             // Labs Header Branding
-            view.findViewById<View>(R.id.btnSortBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
-            view.findViewById<View>(R.id.btnFilterBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+            view.findViewById<View>(R.id.btnSortBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor.withAlpha(15)) }
+            view.findViewById<View>(R.id.btnFilterBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor.withAlpha(15)) }
             
             view.findViewById<View>(R.id.etSearchBooking)?.parent?.let { container ->
                 if (container is View) {

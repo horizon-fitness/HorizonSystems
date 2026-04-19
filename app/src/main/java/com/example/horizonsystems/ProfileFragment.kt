@@ -24,11 +24,6 @@ import java.io.InputStream
 
 class ProfileFragment : Fragment() {
 
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            uploadProfilePicture(uri)
-        }
-    }
 
     private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
@@ -58,10 +53,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Edit Profile Picture
-        view.findViewById<View>(R.id.btnEditProfile)?.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
 
         // Edit Personal Information (Full Profile)
         view.findViewById<View>(R.id.btnEditFullProfile)?.setOnClickListener {
@@ -166,9 +157,6 @@ class ProfileFragment : Fragment() {
                 )
                 headers.forEach { view.findViewById<TextView>(it)?.setTextColor(themeColor) }
                 
-                // 2. Avatar Edit Icon (Pen only, matching Text Color as requested)
-                val textList = android.content.res.ColorStateList.valueOf(textColor)
-                view.findViewById<ImageView>(R.id.btnEditProfile)?.imageTintList = textList
                 
                 // 3. Hub Icons
                 val icons = listOf(
@@ -311,41 +299,6 @@ class ProfileFragment : Fragment() {
         }
         view.findViewById<View>(R.id.profilePhone)?.parent?.let { parent ->
             (parent as? View)?.setOnClickListener { copyToClipboard("Phone number", phone) }
-        }
-    }
-    private fun uploadProfilePicture(uri: Uri) {
-        val userId = activity?.intent?.getIntExtra("user_id", 0) ?: 0
-        if (userId <= 0) return
-
-        lifecycleScope.launch {
-            try {
-                val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
-                val bytes = inputStream?.readBytes()
-                if (bytes == null) return@launch
-                
-                val base64Image = Base64.encodeToString(bytes, Base64.DEFAULT)
-                
-                val request = mapOf(
-                    "user_id" to userId,
-                    "image" to base64Image
-                )
-                
-                val cookie = GymManager.getBypassCookie(requireContext())
-                val ua = GymManager.getBypassUA(requireContext())
-                val response = RetrofitClient.getApi(cookie, ua).uploadProfilePic(request)
-                if (response.isSuccessful && response.body()?.success == true) {
-                    Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show()
-                    
-                    // Update the local URL and refresh
-                    val newPath = response.body()?.path ?: ""
-                    activity?.intent?.putExtra("profile_pic", newPath)
-                    refreshUI()
-                } else {
-                    Toast.makeText(requireContext(), "Upload failed: ${response.body()?.message}", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
