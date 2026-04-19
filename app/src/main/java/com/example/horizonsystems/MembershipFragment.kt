@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.TextView
+import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -134,14 +135,20 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
                     applyBranding(root)
                     updateActiveCardUI(root, active)
                     
-                    if (plansResponse.isSuccessful && plansResponse.body() != null) {
-                        val plans = plansResponse.body()!!
-                        val rvPlanSelection = root.findViewById<RecyclerView>(R.id.rvPlanSelection)
+                    val plans = plansResponse.body()
+                    val rvPlanSelection = root.findViewById<RecyclerView>(R.id.rvPlanSelection)
+                    val emptyState = root.findViewById<View>(R.id.emptyStateMembership)
+                    
+                    if (plansResponse.isSuccessful && !plans.isNullOrEmpty()) {
                         val planAdapter = PlanAdapter(plans, !hasActivePlan) { plan ->
                             showConfirmationSheet(plan.id, plan.name, plan.price, plan.durationDays)
                         }
                         rvPlanSelection?.adapter = planAdapter
                         rvPlanSelection?.visibility = View.VISIBLE
+                        emptyState?.visibility = View.GONE
+                    } else if (plansResponse.isSuccessful) {
+                        rvPlanSelection?.visibility = View.GONE
+                        emptyState?.visibility = View.VISIBLE
                     }
                     
                     fetchHistory()
@@ -274,6 +281,10 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
                     container.background = shape
                 }
             }
+            
+            // Empty State Branding (Matching Text Color as requested)
+            view.findViewById<ImageView>(R.id.ivEmptyMembership)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
+            view.findViewById<TextView>(R.id.tvNoMembershipPlans)?.setTextColor(textColor)
         } catch (e: Exception) { Log.e("MembershipFragment", "Branding Error: ${e.message}") }
     }
 

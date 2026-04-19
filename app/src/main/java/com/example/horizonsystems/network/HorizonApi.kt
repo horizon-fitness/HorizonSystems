@@ -148,4 +148,10 @@ interface HorizonApi {
         @Body request: Map<String, @JvmSuppressWildcards Any>,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.TenantPage>
+
+    @POST("api/upload_profile_pic.php")
+    suspend fun uploadProfilePic(
+        @Body request: Map<String, @JvmSuppressWildcards Any>,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
 }

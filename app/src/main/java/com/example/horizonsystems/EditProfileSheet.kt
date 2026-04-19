@@ -81,9 +81,9 @@ class EditProfileSheet : BottomSheetDialogFragment() {
     private fun setupViewPager() {
         val adapter = ProfilePagerAdapter()
         viewPager.adapter = adapter
-        viewPager.offscreenPageLimit = 4 // Keep all pages in memory for easy data access
+        viewPager.offscreenPageLimit = 3
         
-        val tabTitles = arrayOf("ACCOUNT", "CONTACT", "RESIDENCE", "DETAILS", "IDENTITY")
+        val tabTitles = arrayOf("ACCOUNT", "CONTACT", "RESIDENCE", "DETAILS")
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
@@ -93,7 +93,7 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         val updates = mutableMapOf<String, Any>()
         
         // Collect data from all pages
-        for (i in 0 until 5) {
+        for (i in 0 until 4) {
             val page = pageViews[i] ?: continue
             collectDataFromPage(i, page, updates)
         }
@@ -159,10 +159,12 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 
                 // AGE RULING: Lock Birth Date if already set
                 if (!bdate.isNullOrEmpty()) {
-                    editBirth.isEnabled = false
-                    editBirth.alpha = 0.6f
+                    // Keep it enabled but non-editable so borders stay vivid
+                    editBirth.isFocusable = false
+                    editBirth.isFocusableInTouchMode = false
+                    editBirth.isClickable = false
+                    editBirth.alpha = 0.8f
                     view.findViewById<TextInputLayout>(R.id.layoutBirthDate).apply {
-                        isEnabled = false
                         helperText = "Locked for security"
                     }
                 }
@@ -256,6 +258,10 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 val radius = (28 * resources.displayMetrics.density)
                 shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
                 root.background = shape
+                
+                // Set footer background to transparent or slightly dark overlay if requested
+                // For now, flush with background as requested
+                root.findViewById<View>(R.id.sheetFooter)?.setBackgroundColor(Color.TRANSPARENT)
             } catch (e: Exception) {
                 // Fallback if color string is invalid
             }
@@ -275,7 +281,19 @@ class EditProfileSheet : BottomSheetDialogFragment() {
 
     private fun tintInputLayouts(view: View, themeColor: Int) {
         if (view is TextInputLayout) {
-            view.boxStrokeColor = themeColor
+            // Create a vivid state list for the box stroke
+            val states = arrayOf(
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf(android.R.attr.state_enabled),
+                intArrayOf()
+            )
+            val colors = intArrayOf(
+                themeColor, // Focused
+                themeColor, // Enabled (Always visible now)
+                Color.parseColor("#40FFFFFF") // Disabled (Faint white)
+            )
+            view.setBoxStrokeColorStateList(ColorStateList(states, colors))
+            view.defaultHintTextColor = ColorStateList.valueOf(themeColor)
             view.hintTextColor = ColorStateList.valueOf(themeColor)
         } else if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
@@ -341,7 +359,7 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         }
 
         override fun getItemViewType(position: Int): Int = position
-        override fun getItemCount(): Int = 5
+        override fun getItemCount(): Int = 4
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }

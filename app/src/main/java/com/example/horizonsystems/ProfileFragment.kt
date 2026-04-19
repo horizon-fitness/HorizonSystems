@@ -11,8 +11,24 @@ import android.graphics.Color
 import androidx.fragment.app.Fragment
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import android.net.Uri
+import android.util.Base64
+import com.bumptech.glide.Glide
+import com.example.horizonsystems.network.RetrofitClient
+import android.widget.Toast
+import java.io.InputStream
 
 class ProfileFragment : Fragment() {
+
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            uploadProfilePicture(uri)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,6 +50,11 @@ class ProfileFragment : Fragment() {
                 NotificationSheet().show(parentFragmentManager, "notifications")
             } catch (e: Exception) {
             }
+        }
+
+        // Edit Profile Picture
+        view.findViewById<View>(R.id.btnEditProfile)?.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         // Edit Personal Information (Full Profile)
@@ -58,9 +79,12 @@ class ProfileFragment : Fragment() {
 
     private fun applyBranding(view: View) {
         val themeColorStr = com.example.horizonsystems.utils.GymManager.getThemeColor(requireContext())
+        val textColorStr = com.example.horizonsystems.utils.GymManager.getTextColor(requireContext())
+        
         if (!themeColorStr.isNullOrEmpty()) {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
+                val textColor = if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
                 val themeList = android.content.res.ColorStateList.valueOf(themeColor)
                 
                 // 1. Name and Headers Highlight
@@ -70,8 +94,9 @@ class ProfileFragment : Fragment() {
                 )
                 headers.forEach { view.findViewById<TextView>(it)?.setTextColor(themeColor) }
                 
-                // 2. Avatar Edit Icon
-                view.findViewById<ImageView>(R.id.iv_profile_edit_icon)?.imageTintList = themeList
+                // 2. Avatar Edit Icon (Pen only, matching Text Color as requested)
+                val textList = android.content.res.ColorStateList.valueOf(textColor)
+                view.findViewById<ImageView>(R.id.btnEditProfile)?.imageTintList = textList
                 
                 // 3. Hub Icons
                 val icons = listOf(
@@ -138,6 +163,28 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.profileName)?.text = displayName
         view.findViewById<TextView>(R.id.profileEmail)?.text = finalEmail
 
+        // 0.1 Profile Picture
+        val profilePicPath = intent?.getStringExtra("profile_pic")
+        val profileImageView = view.findViewById<ImageView>(R.id.profileImage)
+        if (!profilePicPath.isNullOrEmpty() && profileImageView != null) {
+            val fullUrl = "https://horizonsystems.rf.gd/$profilePicPath"
+            
+            profileImageView.imageTintList = null // Clear any tint
+            profileImageView.alpha = 1.0f
+            profileImageView.setPadding(0, 0, 0, 0)
+
+            Glide.with(this)
+                .load(fullUrl)
+                .placeholder(R.drawable.ic_profile)
+                .circleCrop()
+                .into(profileImageView)
+        } else if (profileImageView != null) {
+            profileImageView.setImageResource(R.drawable.ic_profile)
+            profileImageView.imageTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.WHITE)
+            profileImageView.alpha = 0.3f
+            profileImageView.setPadding(24, 24, 24, 24)
+        }
+
         // 1. Account Details
         view.findViewById<TextView>(R.id.profileUsernameDisplay)?.text = userName.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileRole)?.text = userRole.ifEmpty { "---" }
@@ -192,6 +239,41 @@ class ProfileFragment : Fragment() {
         }
         view.findViewById<View>(R.id.profilePhone)?.parent?.let { parent ->
             (parent as? View)?.setOnClickListener { copyToClipboard("Phone number", phone) }
+        }
+    }
+    private fun uploadProfilePicture(uri: Uri) {
+        val userId = activity?.intent?.getIntExtra("user_id", 0) ?: 0
+        if (userId <= 0) return
+
+        lifecycleScope.launch {
+            try {
+                val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
+                val bytes = inputStream?.readBytes()
+                if (bytes == null) return@launch
+                
+                val base64Image = Base64.encodeToString(bytes, Base64.DEFAULT)
+                
+                val request = mapOf(
+                    "user_id" to userId,
+                    "image" to base64Image
+                )
+                
+                val cookie = GymManager.getBypassCookie(requireContext())
+                val ua = GymManager.getBypassUA(requireContext())
+                val response = RetrofitClient.getApi(cookie, ua).uploadProfilePic(request)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show()
+                    
+                    // Update the local URL and refresh
+                    val newPath = response.body()?.path ?: ""
+                    activity?.intent?.putExtra("profile_pic", newPath)
+                    refreshUI()
+                } else {
+                    Toast.makeText(requireContext(), "Upload failed: ${response.body()?.message}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

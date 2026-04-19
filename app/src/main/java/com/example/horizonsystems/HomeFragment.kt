@@ -103,13 +103,15 @@ class HomeFragment : Fragment() {
                 
                 withContext(Dispatchers.Main) {
                     val layoutServicesHeader = root.findViewById<View>(R.id.layoutServicesHeader)
-                    if (response.isSuccessful && response.body() != null && response.body()!!.isNotEmpty()) {
+                    val emptyState = root.findViewById<View>(R.id.emptyStateServicesHome)
+                    
+                    if (response.isSuccessful && !response.body().isNullOrEmpty()) {
                         val services = response.body()!!
                         layoutServicesHeader?.visibility = View.VISIBLE
                         rvServices.visibility = View.VISIBLE
+                        emptyState?.visibility = View.GONE
 
                         val adapter = HomeServiceAdapter(services) { service ->
-                            // Directly open Booking Sheet with pre-selected service
                             val bookingSheet = BookingSheet().apply {
                                 preSelectedServiceId = service.serviceId
                             }
@@ -117,8 +119,9 @@ class HomeFragment : Fragment() {
                         }
                         rvServices.adapter = adapter
                     } else {
-                        layoutServicesHeader?.visibility = View.GONE
+                        layoutServicesHeader?.visibility = View.VISIBLE
                         rvServices.visibility = View.GONE
+                        emptyState?.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {
@@ -182,6 +185,12 @@ class HomeFragment : Fragment() {
             view.findViewById<TextView>(R.id.btnManageMembership)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tvMembershipLabel)?.setTextColor(textColor)
 
+            // Empty State Branding (Matching Text Color as requested)
+            view.findViewById<ImageView>(R.id.ivEmptyPlansHome)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
+            view.findViewById<TextView>(R.id.tvNoPlansHome)?.setTextColor(textColor)
+            view.findViewById<ImageView>(R.id.ivEmptyServicesHome)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
+            view.findViewById<TextView>(R.id.tvNoServicesHome)?.setTextColor(textColor)
+
             // 5. Icons & Tints (Removed grid icons, but keeping logic for sub-card icons)
 
             
@@ -218,14 +227,16 @@ class HomeFragment : Fragment() {
                 
                 withContext(Dispatchers.Main) {
                     val tvPlansLabel = root.findViewById<View>(R.id.tvPlansLabel)
-                    if (response.isSuccessful && response.body() != null && response.body()!!.isNotEmpty()) {
+                    val emptyState = root.findViewById<View>(R.id.emptyStatePlansHome)
+                    
+                    if (response.isSuccessful && !response.body().isNullOrEmpty()) {
                         val plans = response.body()!!
                         currentPlans = plans
                         tvPlansLabel?.visibility = View.VISIBLE
                         rvPreview.visibility = View.VISIBLE
+                        emptyState?.visibility = View.GONE
 
                         val adapter = HomePlanAdapter(plans, !hasActivePlan) { plan ->
-                            // Redirect to Membership Fragment
                             parentFragmentManager.setFragmentResult("plan_selection", bundleOf(
                                 "id" to plan.id,
                                 "name" to plan.name,
@@ -236,8 +247,9 @@ class HomeFragment : Fragment() {
                         }
                         rvPreview.adapter = adapter
                     } else {
-                        tvPlansLabel?.visibility = View.GONE
+                        tvPlansLabel?.visibility = View.VISIBLE
                         rvPreview.visibility = View.GONE
+                        emptyState?.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {

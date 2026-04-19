@@ -9,5 +9,6 @@ data class LoginResponse(
     @SerializedName("user") val user: User?,
     @SerializedName("branding") val branding: TenantPage?,
     @SerializedName("user_id") val userId: Int?,
-    @SerializedName("unverified") val unverified: Boolean?
+    @SerializedName("unverified") val unverified: Boolean?,
+    @SerializedName("path") val path: String?
 )

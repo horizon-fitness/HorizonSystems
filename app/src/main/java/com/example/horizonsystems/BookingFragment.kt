@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -243,6 +244,10 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
                     container.background = shape
                 }
             }
+
+            // Empty State Branding (Matching Text Color as requested)
+            view.findViewById<ImageView>(R.id.ivEmptyBooking)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
+            view.findViewById<TextView>(R.id.bookingEmptyState)?.setTextColor(textColor)
 
         } catch (e: Exception) { Log.e("BookingFragment", "Branding Error: ${e.message}") }
     }

@@ -44,29 +44,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile"
-                    app:tint="@color/white"
-                    android:alpha="0.3"
-                    android:padding="24dp" />
+                    android:src="@drawable/ic_profile" />
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
+            <ImageView
                 android:id="@+id/btnEditProfile"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                app:cardBackgroundColor="#BC8CF2"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_edit"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 app:layout_constraintBottom_toBottomOf="@+id/profilePicCard"
-                app:layout_constraintEnd_toEndOf="@+id/profilePicCard">
-                <ImageView
-                    android:id="@+id/iv_profile_edit_icon"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_edit"
-                    app:tint="@color/white" />
-            </com.google.android.material.card.MaterialCardView>
+                app:layout_constraintEnd_toEndOf="@+id/profilePicCard"
+                app:tint="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

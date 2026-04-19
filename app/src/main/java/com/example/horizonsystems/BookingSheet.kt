@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
+import android.widget.ImageView
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -352,6 +353,12 @@ class BookingSheet : BottomSheetDialogFragment() {
                 setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
             }
 
+            // 3. Empty State Branding (Matching Text Color as requested)
+            // Using a muted white/secondary text style instead of the theme color
+            view.findViewById<ImageView>(R.id.ivEmptyServicesBooking)?.imageTintList = 
+                android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#80FFFFFF"))
+            view.findViewById<TextView>(R.id.tvNoServicesBooking)?.setTextColor(android.graphics.Color.parseColor("#80FFFFFF"))
+
         } catch (e: Exception) {
             Log.e("BookingSheet", "Branding Error: ${e.message}")
         }
@@ -469,9 +476,15 @@ class BookingSheet : BottomSheetDialogFragment() {
                         Log.e("BookingSheet", "API Response Error: ${response.code()} - ${response.errorBody()?.string()}")
                     }
                     
+                    val emptyState = view?.findViewById<View>(R.id.emptyStateServicesBooking)
                     if (services.isEmpty()) {
                         Log.w("BookingSheet", "No services available in the catalog for gymId: $gymId")
+                        emptyState?.visibility = View.VISIBLE
+                        spinner.hint = "No services available"
+                    } else {
+                        emptyState?.visibility = View.GONE
                     }
+                    
                     spinner.setAdapter(ArrayAdapter(ctx, R.layout.item_dropdown, services.map { it.serviceName }))
                     
                     // Auto-select if pre-selected ID is set
