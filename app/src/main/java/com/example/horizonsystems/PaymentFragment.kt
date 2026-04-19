@@ -16,12 +16,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class PaymentFragment : Fragment() {
+class PaymentFragment : Fragment(), PaymentFilterSheet.FilterListener, PaymentSortSheet.SortListener {
     private lateinit var adapter: TransactionAdapter
     private var currentPage = 1
-    private val itemsPerPage = 8
-    private var currentFilter = "RECENT"
+    private val itemsPerPage = 10
+    private var currentSort = "NEWEST"   // NEWEST, OLDEST, HIGH_PRICE, LOW_PRICE
+    private var currentStatus = "ALL"    // ALL, PENDING, COMPLETED
+    private var currentType = "ALL"      // ALL, MEMBERSHIP, BOOKING
+    private var startDate: Long? = null
+    private var endDate: Long? = null
+    private var searchQuery = ""
+    
     private var allTransactions = mutableListOf<Transaction>()
     private var filteredList = listOf<Transaction>()
 
@@ -34,11 +42,11 @@ class PaymentFragment : Fragment() {
         } ?: return null
 
         val rvTransactions = view.findViewById<RecyclerView>(R.id.rvTransactions)
-        val emptyState = view.findViewById<TextView>(R.id.emptyState)
-        val paginationContainer = view.findViewById<View>(R.id.pagination_container)
         val btnPrev = view.findViewById<View>(R.id.btn_prev)
         val btnNext = view.findViewById<View>(R.id.btn_next)
-        val tvPageNumber = view.findViewById<TextView>(R.id.tv_page_number)
+        val btnFilter = view.findViewById<View>(R.id.btn_filter_modal)
+        val btnSort = view.findViewById<View>(R.id.btn_sort_modal)
+        val etSearch = view.findViewById<android.widget.EditText>(R.id.etSearchTransactions)
 
         adapter = TransactionAdapter(emptyList())
         rvTransactions?.let {
@@ -46,44 +54,55 @@ class PaymentFragment : Fragment() {
             it.adapter = adapter
         }
 
-        // Filter Buttons
-        val btnRecent = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_recent)
-        val btnHistory = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_history)
-
-        btnRecent?.setOnClickListener {
-            currentFilter = "RECENT"
-            updateFilterButtons(btnRecent, btnHistory)
-            applyFilterAndPage(view)
-        }
-
-        btnHistory?.setOnClickListener {
-            currentFilter = "HISTORY"
-            updateFilterButtons(btnHistory, btnRecent)
-            applyFilterAndPage(view)
-        }
-
-        // Pagination Buttons
-        btnPrev?.setOnClickListener {
-            if (currentPage > 1) {
-                currentPage--
+        // --- Search Logic ---
+        etSearch?.addTextChangedListener(object: android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchQuery = s.toString().trim()
+                currentPage = 1
                 applyFilterAndPage(view)
             }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        // --- Dual Sheet Triggers ---
+        btnFilter?.setOnClickListener {
+            val sheet = PaymentFilterSheet()
+            sheet.setParams(currentStatus, currentType, startDate, endDate, this)
+            sheet.show(childFragmentManager, "FILTER_SHEET")
         }
 
+        btnSort?.setOnClickListener {
+            val sheet = PaymentSortSheet()
+            sheet.setParams(currentSort, this)
+            sheet.show(childFragmentManager, "SORT_SHEET")
+        }
+
+        // --- Pagination ---
+        btnPrev?.setOnClickListener { if (currentPage > 1) { currentPage--; applyFilterAndPage(view) } }
         btnNext?.setOnClickListener {
-            val totalPages = Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt()
-            if (currentPage < totalPages) {
-                currentPage++
-                applyFilterAndPage(view)
-            }
+            val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
+            if (currentPage < totalPages) { currentPage++; applyFilterAndPage(view) }
         }
 
-        // Initial fetch
         fetchTransactions(view)
-
         ThemeUtils.applyThemeToView(view)
-
         return view
+    }
+
+    override fun onFiltersApplied(status: String, type: String, start: Long?, end: Long?) {
+        this.currentStatus = status
+        this.currentType = type
+        this.startDate = start
+        this.endDate = end
+        this.currentPage = 1
+        view?.let { applyFilterAndPage(it) }
+    }
+
+    override fun onSortSelected(sort: String) {
+        this.currentSort = sort
+        this.currentPage = 1
+        view?.let { applyFilterAndPage(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,61 +116,43 @@ class PaymentFragment : Fragment() {
         if (!themeColorStr.isNullOrEmpty()) {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
-                
-                // 1. Title Accent
                 view.findViewById<TextView>(R.id.tv_payment_theme_subtitle)?.setTextColor(themeColor)
                 
-                // 2. Pagination Controls
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev)?.iconTint = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next)?.iconTint = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                // Pagination Tints
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev)?.iconTint = android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next)?.iconTint = android.content.res.ColorStateList.valueOf(themeColor)
                 
-                // 3. Initial filter state
-                val btnRecent = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_recent)
-                val btnHistory = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_history)
-                updateFilterButtons(btnRecent, btnHistory)
-            } catch (e: Exception) {}
+                // Header Icon Tints
+                view.findViewById<View>(R.id.btn_sort_modal)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+                view.findViewById<View>(R.id.btn_filter_modal)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+                
+                // Search Bar Border Tint
+                view.findViewById<View>(R.id.etSearchTransactions)?.parent?.let { container ->
+                    if (container is View) {
+                        val shape = android.graphics.drawable.GradientDrawable()
+                        shape.setColor(android.graphics.Color.parseColor("#0DFFFFFF"))
+                        shape.setStroke(1, themeColor.withAlpha(50))
+                        shape.cornerRadius = (14 * ctx.resources.displayMetrics.density)
+                        container.background = shape
+                    }
+                }
+            } catch (e: Exception) { Log.e("PaymentFragment", "Branding Error: ${e.message}") }
         }
     }
 
-    private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton?, inactive: com.google.android.material.button.MaterialButton?) {
-        val ctx = context ?: return
-        val themeColorStr = GymManager.getThemeColor(ctx)
-        val themeColor = try {
-            if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#A855F7")
-        } catch (e: Exception) { android.graphics.Color.parseColor("#A855F7") }
-        
-        // Active Style (Glass Glow)
-        active?.let {
-            it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(40)
-            it.setTextColor(themeColor)
-            it.setStrokeColor(android.content.res.ColorStateList.valueOf(themeColor))
-            it.setStrokeWidth(3)
-            it.alpha = 1.0f
-        }
-
-        // Inactive Style (Clean Transparency)
-        inactive?.let {
-            it.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#0DFFFFFF"))
-            it.setTextColor(android.graphics.Color.WHITE)
-            it.setStrokeWidth(0)
-            it.alpha = 0.5f
-        }
+    private fun Int.withAlpha(alpha: Int): Int {
+        return (this and 0x00FFFFFF) or (alpha shl 24)
     }
 
     private fun fetchTransactions(root: View) {
         val ctx = context ?: return
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
-        if (userId == -1) {
-            applyFilterAndPage(root)
-            return
-        }
+        val userId = GymManager.getUserId(ctx)
+        if (userId == -1) { applyFilterAndPage(root); return }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
-                val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
                 val response = api.getMembershipHistory(userId, showAll = 1)
                 withContext(Dispatchers.Main) {
@@ -159,49 +160,67 @@ class PaymentFragment : Fragment() {
                         allTransactions.clear()
                         allTransactions.addAll(response.body()!!)
                         applyFilterAndPage(root)
-                    } else {
-                        applyFilterAndPage(root)
-                    }
+                    } else { applyFilterAndPage(root) }
                 }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    applyFilterAndPage(root)
-                }
-            }
+            } catch (e: Exception) { withContext(Dispatchers.Main) { applyFilterAndPage(root) } }
         }
     }
 
     private fun applyFilterAndPage(root: View) {
-        filteredList = if (currentFilter == "RECENT") {
-            allTransactions.take(8)
-        } else {
-            allTransactions
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        
+        // 1. Combine Filtering & Searching
+        var baseList = allTransactions.filter { txn ->
+            val statusMatch = when (currentStatus) {
+                "PENDING" -> txn.status.contains("Pending", ignoreCase = true)
+                "COMPLETED" -> txn.status.contains("Approved", ignoreCase = true) || txn.status.contains("Paid", ignoreCase = true) || txn.status.contains("Completed", ignoreCase = true)
+                else -> true
+            }
+
+            val typeMatch = when (currentType) {
+                "MEMBERSHIP" -> txn.service.contains("Plan", ignoreCase = true) || txn.service.contains("Month", ignoreCase = true) || txn.service.contains("Subscription", ignoreCase = true)
+                "BOOKING" -> !txn.service.contains("Plan", ignoreCase = true) && !txn.service.contains("Month", ignoreCase = true) && !txn.service.contains("Subscription", ignoreCase = true)
+                else -> true
+            }
+
+            val dateMatch = if (startDate != null && endDate != null) {
+                try {
+                    val txnDate = sdf.parse(txn.date)?.time ?: 0L
+                    txnDate in startDate!!..endDate!!
+                } catch (e: Exception) { true }
+            } else true
+
+            val searchMatch = if (searchQuery.isNotEmpty()) {
+                txn.service.contains(searchQuery, ignoreCase = true) || txn.reference.contains(searchQuery, ignoreCase = true)
+            } else true
+
+            statusMatch && typeMatch && dateMatch && searchMatch
         }
 
+        // 2. Sort Logic (Enhanced)
+        baseList = when(currentSort) {
+            "OLDEST" -> baseList.sortedBy { try { sdf.parse(it.date)?.time ?: 0L } catch(e: Exception) { 0L } }
+            "HIGH_PRICE" -> baseList.sortedByDescending { it.amount.replace(",", "").replace("₱", "").toDoubleOrNull() ?: 0.0 }
+            "LOW_PRICE" -> baseList.sortedBy { it.amount.replace(",", "").replace("₱", "").toDoubleOrNull() ?: 0.0 }
+            else -> baseList.sortedByDescending { try { sdf.parse(it.date)?.time ?: 0L } catch(e: Exception) { 0L } } // NEWEST
+        }
+
+        filteredList = baseList
+
         val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
-        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages
+        if (currentPage > totalPages) currentPage = totalPages
         if (currentPage < 1) currentPage = 1
 
         val startIndex = (currentPage - 1) * itemsPerPage
-        val endIndex = Math.min(startIndex + itemsPerPage, filteredList.size)
+        val pageItems = if (filteredList.isEmpty()) emptyList() else filteredList.subList(startIndex, Math.min(startIndex + itemsPerPage, filteredList.size))
         
-        val pageItems = if (filteredList.isEmpty()) emptyList() else filteredList.subList(startIndex, endIndex)
-        if (::adapter.isInitialized) {
-            adapter.updateTransactions(pageItems)
-        }
+        if (::adapter.isInitialized) adapter.updateTransactions(pageItems)
 
-        // Visibility & Text (Safe Access)
         root.findViewById<View>(R.id.emptyState)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
         root.findViewById<View>(R.id.rvTransactions)?.visibility = if (pageItems.isEmpty()) View.GONE else View.VISIBLE
-        
-        root.findViewById<View>(R.id.pagination_container)?.let { container ->
-            container.visibility = if (currentFilter == "HISTORY" && totalPages > 1) View.VISIBLE else View.GONE
-        }
-        
+        root.findViewById<View>(R.id.pagination_container)?.visibility = if (totalPages > 1) View.VISIBLE else View.GONE
         root.findViewById<TextView>(R.id.tv_page_number)?.text = "$currentPage/$totalPages"
-        
         root.findViewById<View>(R.id.btn_prev)?.isEnabled = currentPage > 1
         root.findViewById<View>(R.id.btn_next)?.isEnabled = currentPage < totalPages
     }
 }
-

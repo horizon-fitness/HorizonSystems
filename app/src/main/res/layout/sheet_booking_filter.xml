@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootFilterContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:background="#33FFFFFF" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filtered by:"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-black"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Section: Status -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Session Status"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-black" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp">
+
+        <CheckBox
+            android:id="@+id/cbStatusAll"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="All Status"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white" />
+
+        <CheckBox
+            android:id="@+id/cbStatusPending"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Pending Approval"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white" />
+
+        <CheckBox
+            android:id="@+id/cbStatusConfirmed"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Confirmed/Approved"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white" />
+            
+        <CheckBox
+            android:id="@+id/cbStatusCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Completed"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#1AFFFFFF"
+        android:layout_marginVertical="20dp" />
+
+    <!-- Section: Date -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Service Date"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-black" />
+
+    <CalendarView
+        android:id="@+id/calendarFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:theme="@style/CustomCalendarViewTheme" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Apply Filters"
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="16dp" />
+
+    <TextView
+        android:id="@+id/tvClearAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Clear all"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-black"
+        android:alpha="0.6" />
+
+</LinearLayout>

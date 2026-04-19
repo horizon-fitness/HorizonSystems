@@ -10,21 +10,20 @@
     android:paddingBottom="48dp">
 
     <!-- Header Section -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:orientation="vertical"
-            android:layout_toStartOf="@+id/historyIcon">
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_alignParentStart="true">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -32,8 +31,8 @@
                     android:text="TRANSACTION "
                     android:textColor="@color/white"
                     android:textSize="24sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black" />
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
 
                 <TextView
                     android:id="@+id/tv_payment_theme_subtitle"
@@ -42,121 +41,143 @@
                     android:text="HISTORY"
                     android:textColor="#A855F7"
                     android:textSize="24sp"
-                    android:textStyle="bold|italic"
-                    android:fontFamily="sans-serif-black" />
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Your recent billing activity and records"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:alpha="0.8" />
-        </LinearLayout>
+        </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/historyIcon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_clock"
-            app:tint="@color/text_secondary"
-            android:alpha="0.6" />
-    </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="MANAGE YOUR BILLING &amp; PAYMENTS"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.1"
+            android:alpha="0.4"
+             />
+    </LinearLayout>
 
-    <!-- Filters & Pagination -->
+    <!-- Labs Search Header -->
     <LinearLayout
-        android:id="@+id/filter_container_txn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_filter_recent"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Recent"
-            android:textSize="12sp"
-            android:backgroundTint="#A855F7"
-            android:textColor="@color/white"
-            android:layout_marginEnd="8dp"
-            app:cornerRadius="20dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_filter_history"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="History"
-            android:textSize="12sp"
-            android:backgroundTint="@color/surface_dark"
-            android:textColor="@color/text_secondary"
-            app:cornerRadius="20dp"
-            app:strokeColor="@color/border_light"
-            app:strokeWidth="1dp"/>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <!-- Pagination (Integrated) -->
         <LinearLayout
-            android:id="@+id/pagination_container"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search_modern"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                app:tint="@color/text_secondary"
+                android:alpha="0.4" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearchTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:hint="Search by service or ID..."
+                android:textColor="@color/white"
+                android:textColorHint="#4DFFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="8dp"
+                android:inputType="text"
+                android:imeOptions="actionSearch" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_sort_modal"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_action_icon"
+            android:src="@drawable/ic_sort"
+            app:tint="@color/white"
+            android:padding="12dp"
+            android:scaleType="centerInside" />
+
+        <ImageButton
+            android:id="@+id/btn_filter_modal"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_action_icon"
+            android:src="@drawable/ic_tune"
+            app:tint="@color/white"
+            android:padding="12dp"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#1AFFFFFF"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Pagination (Small Overlay Style) -->
+    <LinearLayout
+        android:id="@+id/pagination_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_prev"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/ic_chevron_left"
+            app:iconTint="#A855F7"
+            app:iconSize="14dp" />
+
+        <TextView
+            android:id="@+id/tv_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:visibility="gone">
+            android:layout_marginHorizontal="6dp"
+            android:text="1/1"
+            android:textColor="@color/white"
+            android:textSize="9sp"
+            android:fontFamily="sans-serif-black"
+            android:alpha="0.4" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_prev"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:padding="0dp"
-                app:icon="@drawable/ic_chevron_left"
-                app:iconTint="#BC8CF2"
-                app:iconSize="18dp"
-                app:iconGravity="textStart" />
-
-            <TextView
-                android:id="@+id/tv_page_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:text="1/1"
-                android:textColor="@color/white"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:alpha="0.7" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_next"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                android:padding="0dp"
-                app:icon="@drawable/ic_chevron_right"
-                app:iconTint="#BC8CF2"
-                app:iconSize="18dp"
-                app:iconGravity="textStart" />
-        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_next"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/ic_chevron_right"
+            app:iconTint="#A855F7"
+            app:iconSize="14dp" />
     </LinearLayout>
 
     <FrameLayout

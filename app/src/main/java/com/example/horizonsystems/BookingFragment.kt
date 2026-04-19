@@ -19,13 +19,18 @@ import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
 
-class BookingFragment : Fragment() {
+class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSortSheet.SortListener {
     private lateinit var adapter: TrainingLogAdapter
     private val allLogs = mutableListOf<TrainingLog>()
 
     private var currentPage = 1
     private val itemsPerPage = 5
     private var currentFilter = "ALL"
+    private var currentSort = "NEWEST"
+    private var searchQuery = ""
+    private var startDate: Long? = null
+    private var endDate: Long? = null
+
     private var filteredList: List<TrainingLog> = allLogs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,9 +38,6 @@ class BookingFragment : Fragment() {
             inflater.inflate(R.layout.fragment_booking, container, false)
         } catch (e: Exception) {
             Log.e("BookingFragment", "Inflation Error: ${e.message}")
-            try {
-                Toast.makeText(context, "Layout Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-            } catch (te: Exception) {}
             null
         }
     }
@@ -53,17 +55,42 @@ class BookingFragment : Fragment() {
         applyBranding(view)
 
         adapter = TrainingLogAdapter(emptyList())
-
         rvTrainingLogs?.let {
             it.layoutManager = LinearLayoutManager(context ?: return@let)
             it.adapter = adapter
         }
 
-        // Calendar Selection
+        // --- Labs Search Header Logic ---
+        val etSearch = view.findViewById<android.widget.EditText>(R.id.etSearchBooking)
+        val btnSort = view.findViewById<View>(R.id.btnSortBooking)
+        val btnFilter = view.findViewById<View>(R.id.btnFilterBooking)
+
+        etSearch?.addTextChangedListener(object: android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchQuery = s.toString().trim()
+                applyPaginationAndRefresh(view)
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        btnSort?.setOnClickListener {
+            val sheet = BookingSortSheet()
+            sheet.setParams(currentSort, this)
+            sheet.show(childFragmentManager, "SORT_SHEET")
+        }
+
+        btnFilter?.setOnClickListener {
+            val sheet = BookingFilterSheet()
+            sheet.setParams(currentFilter, startDate, endDate, this)
+            sheet.show(childFragmentManager, "FILTER_SHEET")
+        }
+
+        // Calendar Selection (Legacy feature kept for scheduling value)
         calendarView?.setOnDateChangeListener { _, year, month, dayOfMonth ->
             val selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
-            val displayDate = "${month + 1}/$dayOfMonth/$year"
             dateDetailsCard?.visibility = View.VISIBLE
+            val displayDate = "${month + 1}/$dayOfMonth/$year"
             
             val approvedSessions = allLogs.filter { 
                 val status = it.status?.uppercase()
@@ -75,16 +102,7 @@ class BookingFragment : Fragment() {
             } else {
                 val sb = StringBuilder("Approved for $displayDate:\n")
                 approvedSessions.forEachIndexed { index, session ->
-                    val timeFormatted = try {
-                        val sessionTime = session.time ?: "00:00:00"
-                        val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
-                        val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
-                        val dateObj = sdf24.parse(sessionTime)
-                        sdf12.format(dateObj!!)
-                    } catch (e: Exception) {
-                        (session.time ?: "00:00").substringBeforeLast(":") // Fallback
-                    }
-                    
+                    val timeFormatted = formatTime(session.time)
                     sb.append("• ${session.service ?: "Service"} at $timeFormatted")
                     if (index < approvedSessions.size - 1) sb.append("\n")
                 }
@@ -95,35 +113,26 @@ class BookingFragment : Fragment() {
         // Action Buttons
         btnQuickBook?.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
-            val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
+            val userId = GymManager.getUserId(ctx)
             if (userId == -1) return@setOnClickListener
-
-            // Disable button briefly to prevent double clicks
             it.isEnabled = false
-
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
-                    val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
+                    val cookie = GymManager.getBypassCookie(ctx)
+                    val ua = GymManager.getBypassUA(ctx)
                     val api = RetrofitClient.getApi(cookie, ua)
                     val response = api.getActiveMembership(userId)
-                    
                     withContext(Dispatchers.Main) {
                         it.isEnabled = true
                         if (response.isSuccessful && response.body()?.success == true && response.body()?.subscriptionStatus == "Active") {
-                            // User is an active member
                             val sheet = BookingSheet()
-                            sheet.onBookingCreated = {
-                                fetchBookings(view)
-                            }
+                            sheet.onBookingCreated = { fetchBookings(view) }
                             sheet.show(parentFragmentManager, "booking_sheet")
                         } else {
-                            // Membership pending, expired, or non-existent
                             android.app.AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                                 .setTitle("Membership Required")
-                                .setMessage("You must have an Active Membership to book a session. Please ensure your membership is approved and not expired.")
-                                .setPositiveButton("OK", null)
-                                .show()
+                                .setMessage("You must have an Active Membership to book a session.")
+                                .setPositiveButton("OK", null).show()
                         }
                     }
                 } catch (e: Exception) {
@@ -135,89 +144,62 @@ class BookingFragment : Fragment() {
             }
         }
 
-
-        // Filter Buttons
-        val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_all)
-        val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_pending)
-        val btnApproved = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_approved)
-
-        btnAll?.setOnClickListener { 
-            currentFilter = "ALL"
-            updateFilterButtons(btnAll, listOf(btnPending, btnApproved))
-            applyPaginationAndRefresh(view)
-        }
-        btnPending?.setOnClickListener { 
-            currentFilter = "PENDING"
-            updateFilterButtons(btnPending, listOf(btnAll, btnApproved))
-            applyPaginationAndRefresh(view)
-        }
-        btnApproved?.setOnClickListener { 
-            currentFilter = "APPROVED"
-            updateFilterButtons(btnApproved, listOf(btnAll, btnPending))
-            applyPaginationAndRefresh(view)
-        }
-
         // Pagination Buttons
         view.findViewById<View>(R.id.btn_prev_booking)?.setOnClickListener {
-            if (currentPage > 1) {
-                currentPage--
-                applyPaginationAndRefresh(view)
-            }
+            if (currentPage > 1) { currentPage--; applyPaginationAndRefresh(view) }
         }
         view.findViewById<View>(R.id.btn_next_booking)?.setOnClickListener {
-            val totalPages = Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt()
-            if (currentPage < totalPages) {
-                currentPage++
-                applyPaginationAndRefresh(view)
-            }
+            val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
+            if (currentPage < totalPages) { currentPage++; applyPaginationAndRefresh(view) }
         }
 
-        // Initial setup
-        if (btnAll != null) {
-            updateFilterButtons(btnAll, listOf(btnPending, btnApproved).filterNotNull())
-        }
         fetchBookings(view)
-        
+    }
+
+    private fun formatTime(time: String?): String {
+        return try {
+            val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+            val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+            sdf12.format(sdf24.parse(time ?: "00:00:00")!!)
+        } catch (e: Exception) { (time ?: "00:00").substringBeforeLast(":") }
+    }
+
+    override fun onFiltersApplied(status: String, start: Long?, end: Long?) {
+        this.currentFilter = status
+        this.startDate = start
+        this.endDate = end
+        applyPaginationAndRefresh(view ?: return)
+    }
+
+    override fun onSortSelected(sort: String) {
+        this.currentSort = sort
+        applyPaginationAndRefresh(view ?: return)
     }
 
     private fun fetchBookings(root: View) {
         val ctx = context ?: return
-        val userId = com.example.horizonsystems.utils.GymManager.getUserId(ctx)
-        val cookie = com.example.horizonsystems.utils.GymManager.getBypassCookie(ctx)
-        val ua = com.example.horizonsystems.utils.GymManager.getBypassUA(ctx)
-
-        if (userId == -1) {
-            applyPaginationAndRefresh(root)
-            return
-        }
+        val userId = GymManager.getUserId(ctx)
+        if (userId == -1) { applyPaginationAndRefresh(root); return }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
                 val api = RetrofitClient.getApi(cookie, ua)
                 val response = api.getUserBookings(userId)
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val bookings = response.body()?.bookings
-                        allLogs.clear()
-                        if (bookings != null) {
-                            allLogs.addAll(bookings)
-                        }
-                        applyPaginationAndRefresh(root)
-                    } else {
-                        allLogs.clear()
-                        applyPaginationAndRefresh(root)
+                    allLogs.clear()
+                    if (response.isSuccessful && response.body()?.bookings != null) {
+                        allLogs.addAll(response.body()!!.bookings!!)
                     }
+                    applyPaginationAndRefresh(root)
                 }
             } catch (e: Exception) {
                 Log.e("BookingFragment", "Fetch Error: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    allLogs.clear()
-                    applyPaginationAndRefresh(root)
-                }
+                withContext(Dispatchers.Main) { allLogs.clear(); applyPaginationAndRefresh(root) }
             }
         }
     }
-
 
     private fun applyBranding(view: View) {
         val ctx = context ?: return
@@ -230,129 +212,90 @@ class BookingFragment : Fragment() {
             val textColor = if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
             val bgColor = if (!bgColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(bgColorStr) else android.graphics.Color.parseColor("#0a090d")
 
-            // 1. Fragment Background
             view.setBackgroundColor(bgColor)
-
-            // 2. Buttons & Titles
-            val outlinedButtons = listOfNotNull(
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)
-            )
-
-            outlinedButtons.forEach { btn ->
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)?.let { btn ->
                 btn.strokeColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF"))
-                btn.strokeWidth = (1 * ctx.resources.displayMetrics.density).toInt()
                 btn.setTextColor(textColor) 
                 btn.setIconTint(android.content.res.ColorStateList.valueOf(textColor))
-                btn.rippleColor = android.content.res.ColorStateList.valueOf(themeColor and 0x33FFFFFF)
             }
 
             view.findViewById<TextView>(R.id.tv_booking_theme_title)?.setTextColor(themeColor)
-            view.findViewById<TextView>(R.id.tv_book_and_pay)?.setTextColor(textColor)
-            view.findViewById<TextView>(R.id.tv_training_label)?.setTextColor(textColor)
-            view.findViewById<TextView>(R.id.tv_upcoming_label)?.setTextColor(textColor)
-            view.findViewById<TextView>(R.id.tv_page_number_booking)?.setTextColor(textColor)
-            view.findViewById<TextView>(R.id.bookingEmptyState)?.setTextColor(textColor)
-            
-            // 3. Status Accents & Cards
-            view.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cv_date_details)?.let { card ->
-                card.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF")))
-            }
             view.findViewById<TextView>(R.id.tv_selected_date_label)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tv_upcoming_sessions_accent)?.setTextColor(themeColor)
 
-            // 4. Pagination Tints
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
 
-            // 5. Sync Filter Tabs Branding
-            val btnAll = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_all)
-            val btnPending = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_pending)
-            val btnApproved = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_filter_approved)
-            updateFilterButtons(
-                when(currentFilter) {
-                    "PENDING" -> btnPending
-                    "APPROVED" -> btnApproved
-                    else -> btnAll
-                }, 
-                listOfNotNull(btnAll, btnPending, btnApproved).filter { 
-                    it.id != when(currentFilter) {
-                        "PENDING" -> R.id.btn_filter_pending
-                        "APPROVED" -> R.id.btn_filter_approved
-                        else -> R.id.btn_filter_all
-                    }
+            // Labs Header Branding
+            view.findViewById<View>(R.id.btnSortBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+            view.findViewById<View>(R.id.btnFilterBooking)?.let { it.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(15) }
+            
+            view.findViewById<View>(R.id.etSearchBooking)?.parent?.let { container ->
+                if (container is View) {
+                    val shape = android.graphics.drawable.GradientDrawable()
+                    shape.setColor(android.graphics.Color.parseColor("#0DFFFFFF"))
+                    shape.setStroke(1, themeColor.withAlpha(50))
+                    shape.cornerRadius = (14 * ctx.resources.displayMetrics.density)
+                    container.background = shape
                 }
-            )
-        } catch (e: Exception) {
-            Log.e("BookingFragment", "Branding Error: ${e.message}")
-        }
+            }
+
+        } catch (e: Exception) { Log.e("BookingFragment", "Branding Error: ${e.message}") }
     }
 
-    private fun updateFilterButtons(active: com.google.android.material.button.MaterialButton?, inactives: List<com.google.android.material.button.MaterialButton>) {
-        val ctx = context ?: return
-        val themeColorStr = GymManager.getThemeColor(ctx)
-        val textColorStr = GymManager.getTextColor(ctx)
-        
-        val themeColor = try {
-            if (!themeColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(themeColorStr) else android.graphics.Color.parseColor("#8c2bee")
-        } catch (e: Exception) {
-            android.graphics.Color.parseColor("#8c2bee")
-        }
-
-        val textColor = try {
-            if (!textColorStr.isNullOrEmpty()) android.graphics.Color.parseColor(textColorStr) else android.graphics.Color.parseColor("#D1D5DB")
-        } catch (e: Exception) {
-            android.graphics.Color.parseColor("#D1D5DB")
-        }
-        
-        active?.apply {
-            backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor).withAlpha(30)
-            setTextColor(themeColor)
-            alpha = 1.0f
-        }
-
-        inactives.forEach { inactive ->
-            inactive.apply {
-                backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
-                setTextColor(android.graphics.Color.parseColor("#94A3B8"))
-                alpha = 1.0f
-            }
-        }
+    private fun Int.withAlpha(alpha: Int): Int {
+        return (this and 0x00FFFFFF) or (alpha shl 24)
     }
 
     private fun applyPaginationAndRefresh(root: View) {
-        filteredList = if (currentFilter == "ALL") {
-            allLogs
-        } else if (currentFilter == "APPROVED") {
-            allLogs.filter { 
-                val status = it.status?.uppercase()
-                status == "APPROVED" || status == "CONFIRMED" 
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        
+        // 1. Filter logic
+        var baseList = allLogs.filter { log ->
+            val statusMatch = when (currentFilter) {
+                "ALL" -> true
+                "APPROVED" -> log.status?.uppercase() == "APPROVED" || log.status?.uppercase() == "CONFIRMED"
+                else -> log.status?.uppercase() == currentFilter
             }
-        } else {
-            allLogs.filter { it.status?.uppercase() == currentFilter }
+
+            val dateMatch = if (startDate != null && endDate != null) {
+                try {
+                    val logDate = sdf.parse(log.date ?: "")?.time ?: 0L
+                    logDate in startDate!!..endDate!!
+                } catch (e: Exception) { true }
+            } else true
+
+            val searchMatch = if (searchQuery.isNotEmpty()) {
+                (log.service ?: "").contains(searchQuery, ignoreCase = true) || 
+                (log.trainer ?: "").contains(searchQuery, ignoreCase = true)
+            } else true
+
+            statusMatch && dateMatch && searchMatch
         }
+
+        // 2. Sort Logic
+        baseList = when(currentSort) {
+            "OLDEST" -> baseList.sortedBy { try { sdf.parse(it.date ?: "")?.time ?: 0L } catch(e: Exception) { 0L } }
+            "COACH" -> baseList.sortedBy { it.trainer ?: "" }
+            else -> baseList.sortedByDescending { try { sdf.parse(it.date ?: "")?.time ?: 0L } catch(e: Exception) { 0L } } // NEWEST
+        }
+
+        filteredList = baseList
         
         val totalPages = Math.max(1, Math.ceil(filteredList.size.toDouble() / itemsPerPage).toInt())
         if (currentPage > totalPages) currentPage = totalPages
         if (currentPage < 1) currentPage = 1
 
         val startIndex = (currentPage - 1) * itemsPerPage
-        val endIndex = Math.min(startIndex + itemsPerPage, filteredList.size)
+        val pageItems = if (filteredList.isEmpty()) emptyList() else filteredList.subList(startIndex, Math.min(startIndex + itemsPerPage, filteredList.size))
         
-        val pageItems = if (filteredList.isEmpty()) emptyList() else filteredList.subList(startIndex, endIndex)
-        if (::adapter.isInitialized) {
-            adapter.updateLogs(pageItems)
-        }
+        if (::adapter.isInitialized) adapter.updateLogs(pageItems)
 
-        // Visibility & Text
+        // Visibility & UI
         root.findViewById<View>(R.id.emptyStateContainer)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
         root.findViewById<View>(R.id.rvTrainingLogs)?.visibility = if (pageItems.isEmpty()) View.GONE else View.VISIBLE
-        
-        root.findViewById<View>(R.id.pagination_container_booking)?.let { container ->
-            container.visibility = if (totalPages > 1) View.VISIBLE else View.GONE
-        }
-        
+        root.findViewById<View>(R.id.pagination_container_booking)?.visibility = if (totalPages > 1) View.VISIBLE else View.GONE
         root.findViewById<TextView>(R.id.tv_page_number_booking)?.text = "$currentPage/$totalPages"
-        
         root.findViewById<View>(R.id.btn_prev_booking)?.isEnabled = currentPage > 1
         root.findViewById<View>(R.id.btn_next_booking)?.isEnabled = currentPage < totalPages
     }

@@ -378,7 +378,7 @@
                     android:text="HORIZON SYSTEMS"
                     android:textColor="@color/white"
                     android:textSize="17sp"
-                    android:textStyle="bold|italic"
+                    android:textStyle="bold"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.02"
                     android:maxLines="1"
@@ -395,10 +395,22 @@
                 android:gravity="center_vertical">
 
                 <ImageView
+                    android:id="@+id/btnTopTransactions"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_receipt"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:tint="@color/white" />
+
+                <ImageView
                     android:id="@+id/btnTopNotifications"
                     android:layout_width="38dp"
                     android:layout_height="38dp"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="8dp"
                     android:padding="8dp"
                     android:src="@drawable/ic_notifications"
                     android:background="?attr/selectableItemBackgroundBorderless"

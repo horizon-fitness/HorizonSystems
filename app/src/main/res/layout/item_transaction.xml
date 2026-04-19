@@ -68,15 +68,36 @@
             app:layout_constraintStart_toEndOf="@id/cardDateBlock"
             app:layout_constraintEnd_toStartOf="@id/layoutPaymentInfo">
 
-            <TextView
-                android:id="@+id/txnService"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Optimal Plan"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.01" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/txnService"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Optimal Plan"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.01" />
+
+                <TextView
+                    android:id="@+id/tvTxnTypeBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="1dp"
+                    android:text="MEM"
+                    android:textColor="@color/white"
+                    android:textSize="8sp"
+                    android:fontFamily="sans-serif-black"
+                    android:alpha="0.4"
+                    android:background="@drawable/badge_bg_outline" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txnReference"

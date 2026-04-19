@@ -226,15 +226,8 @@ class LandingActivity : AppCompatActivity() {
         
         val rawGymName = user.gymName?.uppercase() ?: (branding?.gymName?.uppercase() ?: "HORIZON SYSTEMS")
         
-        // Apply "Brand + PORTAL" style if branded
-        if (branding != null || rawGymName != "HORIZON SYSTEMS") {
-            val portalSuffix = " PORTAL"
-            val fullText = if (rawGymName.endsWith("PORTAL")) rawGymName else rawGymName + portalSuffix
-            // Set as plain text for now ("default muna")
-            gymNameHeader?.text = fullText
-        } else {
-            gymNameHeader?.text = rawGymName
-        }
+        // Apply Brand Name (Clean Style)
+        gymNameHeader?.text = rawGymName
 
         // Apply Dynamic Background to Dashboard (Matching Login Screen)
         val bgColorStr = GymManager.getBgColor(this)
@@ -264,6 +257,10 @@ class LandingActivity : AppCompatActivity() {
         // Note: Actual fragment view might need to be reached if it's already inflated, 
         // but since we call loadFragment(HomeFragment()), it will handle its own UI.
         
+        findViewById<View>(R.id.btnTopTransactions)?.setOnClickListener {
+            loadFragment(PaymentFragment())
+        }
+
         findViewById<View>(R.id.btnTopNotifications)?.setOnClickListener {
             // Launch Notifications Sheet
             try {

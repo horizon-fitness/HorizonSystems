@@ -21,10 +21,10 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
         val tvTxnMonth: TextView = view.findViewById(R.id.tvTxnMonth)
         val tvTxnDay: TextView = view.findViewById(R.id.tvTxnDay)
         val service: TextView = view.findViewById(R.id.txnService)
-        val dateTime: TextView = view.findViewById(R.id.txnDateTime)
         val amount: TextView = view.findViewById(R.id.txnAmount)
         val status: TextView = view.findViewById(R.id.txnStatus)
         val reference: TextView = view.findViewById(R.id.txnReference)
+        val typeBadge: TextView = view.findViewById(R.id.tvTxnTypeBadge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -57,67 +57,63 @@ class TransactionAdapter(private var transactions: List<Transaction>) :
         // 3. Date Parsing (Modern Date Block)
         parseAndSetDate(txn.date, holder.tvTxnMonth, holder.tvTxnDay)
         holder.tvTxnDay.setTextColor(themeColor)
-        holder.tvTxnMonth.setTextColor(Color.WHITE) // User requested white month
-        holder.tvTxnMonth.alpha = 1.0f
+        holder.tvTxnMonth.setTextColor(Color.WHITE)
+        holder.tvTxnMonth.alpha = 0.4f
 
-        // 4. Content
-        holder.service.text = txn.service ?: "Membership Plan"
-        holder.dateTime.text = txn.time ?: "Subscription Payment"
+        // 4. Distinction Logic (Membership vs Booking)
+        val serviceName = txn.service ?: "Service"
+        val isMembership = serviceName.contains("Plan", ignoreCase = true) || 
+                           serviceName.contains("Month", ignoreCase = true) || 
+                           serviceName.contains("Subscription", ignoreCase = true)
+        
+        holder.typeBadge.text = if (isMembership) "MEMBERSHIP" else "BOOKING"
+        holder.typeBadge.setTextColor(themeColor)
+        holder.typeBadge.backgroundTintList = ColorStateList.valueOf(themeColor)
+        holder.typeBadge.alpha = 0.6f
+
+        // 5. Content Binding
+        holder.service.text = serviceName
         holder.amount.text = "₱${txn.amount ?: "0.00"}"
-        holder.reference.text = "Ref: ${txn.reference ?: "N/A"}"
-        holder.reference.setTextColor(Color.WHITE) // User requested white reference
-        holder.reference.alpha = 1.0f
+        holder.reference.text = "ID: #${txn.reference ?: "N/A"}"
         
-        holder.status.text = txn.status ?: "Pending"
-        
-        // 4. Status Badge Branding (Match Tenant Theme for positive states)
+        // 6. Status Badge Branding
         val statusStr = txn.status ?: "Pending"
+        holder.status.text = statusStr.uppercase()
+        
         if (statusStr.contains("Approved", ignoreCase = true) || 
             statusStr.contains("Completed", ignoreCase = true) || 
             statusStr.contains("Paid", ignoreCase = true)) {
             holder.status.setTextColor(themeColor)
-            holder.status.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(30)
         } else if (statusStr.contains("Rejected", ignoreCase = true) || statusStr.contains("Cancelled", ignoreCase = true)) {
             holder.status.setTextColor(Color.parseColor("#F87171")) // Red 400
-            holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#F87171")).withAlpha(30)
         } else {
             holder.status.setTextColor(Color.parseColor("#FBBF24")) // Amber 400
-            holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FBBF24")).withAlpha(30)
         }
     }
 
     private fun parseAndSetDate(dateStr: String?, monthView: TextView, dayView: TextView) {
         if (dateStr.isNullOrEmpty()) {
-            monthView.text = "---"
-            dayView.text = "--"
-            return
+            monthView.text = "---"; dayView.text = "--"; return
         }
-
         val formats = arrayOf(
             SimpleDateFormat("yyyy-MM-dd", Locale.US),
             SimpleDateFormat("MMM d, yyyy", Locale.US),
             SimpleDateFormat("MMMM d, yyyy", Locale.US)
         )
-
         var date: Date? = null
         for (format in formats) {
-            try {
-                date = format.parse(dateStr)
-                if (date != null) break
-            } catch (e: Exception) { }
+            try { date = format.parse(dateStr); if (date != null) break } catch (e: Exception) { }
         }
-
         if (date != null) {
             monthView.text = SimpleDateFormat("MMM", Locale.US).format(date).uppercase()
             dayView.text = SimpleDateFormat("d", Locale.US).format(date)
         } else {
-            monthView.text = "VAR"
-            dayView.text = "??"
+            monthView.text = "VAR"; dayView.text = "??"
         }
     }
 
     fun updateTransactions(newTransactions: List<Transaction>) {
-        transactions = newTransactions
+        this.transactions = newTransactions
         notifyDataSetChanged()
     }
 

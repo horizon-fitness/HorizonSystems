@@ -263,60 +263,68 @@
                     android:letterSpacing="-0.02" />
             </LinearLayout>
 
-            <!-- Membership History Filter (Segmented Control Style) -->
+            <!-- Labs Search Header -->
             <LinearLayout
-                android:id="@+id/layoutSegmentedFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:padding="6dp"
-                android:weightSum="3">
+                android:gravity="center_vertical"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFilterAll"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                <LinearLayout
+                    android:id="@+id/containerSearchHistory"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:text="ALL"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.05"
-                    app:backgroundTint="@null"
-                    app:cornerRadius="10dp"
-                    app:rippleColor="#33FFFFFF" />
+                    android:background="@drawable/bg_search_modern"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFilterPending"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:text="PENDING"
-                    android:textColor="#94A3B8"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.05"
-                    app:backgroundTint="@null"
-                    app:cornerRadius="10dp"
-                    app:rippleColor="#33FFFFFF" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/text_secondary"
+                        android:alpha="0.4" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFilterApproved"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:text="APPROVED"
-                    android:textColor="#94A3B8"
-                    android:textSize="10sp"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.05"
-                    app:backgroundTint="@null"
-                    app:cornerRadius="10dp"
-                    app:rippleColor="#33FFFFFF" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSearchHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:hint="Search history..."
+                        android:textColor="@color/white"
+                        android:textColorHint="#4DFFFFFF"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingStart="8dp"
+                        android:inputType="text"
+                        android:imeOptions="actionSearch" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnSortHistory"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_action_icon"
+                    android:src="@drawable/ic_sort"
+                    app:tint="@color/white"
+                    android:padding="12dp"
+                    android:scaleType="centerInside" />
+
+                <ImageButton
+                    android:id="@+id/btnFilterHistory"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_action_icon"
+                    android:src="@drawable/ic_tune"
+                    app:tint="@color/white"
+                    android:padding="12dp"
+                    android:scaleType="centerInside" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

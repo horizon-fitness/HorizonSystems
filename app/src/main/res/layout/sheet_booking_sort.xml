@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootSortContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:background="#33FFFFFF" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sort Sessions"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-black"
+        android:layout_marginBottom="24dp" />
+
+    <RadioGroup
+        android:id="@+id/rgSortBooking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbNewest"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Newest Session First"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <RadioButton
+            android:id="@+id/rbOldest"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Oldest Session First"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <RadioButton
+            android:id="@+id/rbCoach"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Sort by Coach Name"
+            android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+    </RadioGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApplySort"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Apply Sorting"
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="16dp" />
+
+</LinearLayout>
