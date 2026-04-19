@@ -25,7 +25,6 @@ import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.card.MaterialCardView
 import java.util.*
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, PaymentSortSheet.SortListener {
     private lateinit var adapter: TransactionAdapter
@@ -220,15 +219,10 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
         }
     }
 
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        swipeRefresh = view.findViewById(R.id.swipeRefreshMembership)
-        
         applyBranding(view)
-        setupRefresh()
 
         val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         parentFragmentManager.setFragmentResultListener("plan_selection", viewLifecycleOwner) { _, bundle ->
@@ -237,25 +231,6 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
             val price = bundle.getDouble("price")
             val days = bundle.getInt("days")
             if (id != 0) showConfirmationSheet(id, name, price, days)
-        }
-    }
-
-    private fun setupRefresh() {
-        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
-        swipeRefresh.setColorSchemeColors(themeColor)
-        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
-        
-        swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                fetchData()
-                swipeRefresh.isRefreshing = false
-            }
-        }
-    }
-
-    private fun fetchData() {
-        view?.let {
-            fetchData(it)
         }
     }
 
@@ -309,7 +284,6 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
                 }
             }
             
-            // Empty State Branding (Matching Text Color as requested)
             view.findViewById<ImageView>(R.id.ivEmptyMembership)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
             view.findViewById<TextView>(R.id.tvNoMembershipPlans)?.setTextColor(textColor)
         } catch (e: Exception) { Log.e("MembershipFragment", "Branding Error: ${e.message}") }

@@ -55,6 +55,16 @@
         android:textColor="@color/text_secondary"
         android:visibility="gone" />
 
+    <ProgressBar
+        android:id="@+id/pbNotifications"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:layout_marginVertical="20dp"
+        android:indeterminateTint="#A855F7"
+        android:visibility="visible" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotifications"
         android:layout_width="match_parent"

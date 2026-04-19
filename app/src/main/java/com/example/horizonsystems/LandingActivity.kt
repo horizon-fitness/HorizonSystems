@@ -183,6 +183,8 @@ class LandingActivity : AppCompatActivity() {
         bottomNav.menu.clear()
         bottomNav.inflateMenu(R.menu.bottom_nav_menu)
         bottomNav.setOnItemSelectedListener { item ->
+            if (bottomNav.selectedItemId == item.itemId) return@setOnItemSelectedListener true
+            
             val fragment = when (item.itemId) {
                 R.id.nav_home -> HomeFragment()
                 R.id.nav_booking -> BookingFragment()

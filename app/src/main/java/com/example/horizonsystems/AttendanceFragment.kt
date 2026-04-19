@@ -26,13 +26,11 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, AttendanceSortSheet.SortListener {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var attendanceAdapter: AttendanceAdapter
-    private lateinit var swipeRefresh: SwipeRefreshLayout
     private val CAMERA_PERMISSION_CODE = 1001
     private var isScanning = false
     
@@ -70,10 +68,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        swipeRefresh = view.findViewById(R.id.swipeRefreshAttendance)
-        
         applyBranding(view)
-        setupRefresh()
     }
 
     private fun setupSearchAndFilters(view: View) {
@@ -252,25 +247,6 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         }
     }
 
-    private fun setupRefresh() {
-        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
-        swipeRefresh.setColorSchemeColors(themeColor)
-        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
-        
-        swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                fetchData()
-                swipeRefresh.isRefreshing = false
-            }
-        }
-    }
-
-    private fun fetchData() {
-        view?.let {
-            fetchAttendanceLogs(it)
-        }
-    }
-
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
@@ -328,9 +304,6 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             view.findViewById<TextView>(R.id.tvLaunchScannerLabel)?.setTextColor(themeColor)
 
             // 5. Scanner Overlay Branding
-            view.findViewById<View>(R.id.vScannerOverlay)?.let {
-                it.backgroundTintList = ColorStateList.valueOf(themeColor)
-            }
             view.findViewById<ImageView>(R.id.ivScannerIcon)?.let {
                 it.imageTintList = ColorStateList.valueOf(themeColor)
             }

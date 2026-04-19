@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
 import com.example.horizonsystems.utils.DialogUtils
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSortSheet.SortListener {
     private lateinit var adapter: TrainingLogAdapter
@@ -219,15 +220,16 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
 
             view.setBackgroundColor(bgColor)
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_quick_book)?.let { btn ->
-                btn.strokeColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1AFFFFFF"))
-                btn.setTextColor(textColor) 
-                btn.setIconTint(android.content.res.ColorStateList.valueOf(textColor))
+                btn.strokeColor = android.content.res.ColorStateList.valueOf(themeColor)
+                btn.setTextColor(themeColor) 
+                btn.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
             }
 
             view.findViewById<TextView>(R.id.tv_booking_theme_title)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tv_selected_date_label)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tv_upcoming_sessions_accent)?.setTextColor(themeColor)
 
+            // Pagination Buttons
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next_booking)?.setIconTint(android.content.res.ColorStateList.valueOf(themeColor))
 
@@ -244,7 +246,7 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
                     container.background = shape
                 }
             }
-
+            
             // Empty State Branding (Matching Text Color as requested)
             view.findViewById<ImageView>(R.id.ivEmptyBooking)?.imageTintList = android.content.res.ColorStateList.valueOf(textColor)
             view.findViewById<TextView>(R.id.bookingEmptyState)?.setTextColor(textColor)

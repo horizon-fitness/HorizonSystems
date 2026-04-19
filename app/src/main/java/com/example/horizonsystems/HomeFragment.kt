@@ -32,7 +32,6 @@ import androidx.core.os.bundleOf
 class HomeFragment : Fragment() {
     private var currentPlans: List<MembershipPlan>? = null
     private var hasActivePlan = false
-    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,10 +43,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        swipeRefresh = view.findViewById(R.id.swipeRefreshHome)
-        
         applyBranding(view)
-        setupRefresh()
 
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
@@ -112,21 +108,6 @@ class HomeFragment : Fragment() {
         fetchServicesOffered(view)
         
         ThemeUtils.applyThemeToView(view)
-    }
-
-    private fun setupRefresh() {
-        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
-        swipeRefresh.setColorSchemeColors(themeColor)
-        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
-        
-        swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                GymManager.syncBranding(requireContext())
-                applyBranding(requireView())
-                fetchData()
-                swipeRefresh.isRefreshing = false
-            }
-        }
     }
 
     private fun fetchData() {

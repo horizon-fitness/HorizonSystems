@@ -8,7 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.horizonsystems.models.Notification
 import com.example.horizonsystems.utils.ThemeUtils
+import com.example.horizonsystems.utils.GymManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.example.horizonsystems.network.RetrofitClient
+import android.widget.ProgressBar
 
 class NotificationSheet : BottomSheetDialogFragment() {
 
@@ -23,22 +30,10 @@ class NotificationSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvNotifications = view.findViewById<RecyclerView>(R.id.rvNotifications)
-        val emptyState = view.findViewById<View>(R.id.tvEmptyState)
-
-        val notifications = getMockNotifications()
-
-        if (notifications.isEmpty()) {
-            emptyState.visibility = View.VISIBLE
-            rvNotifications.visibility = View.GONE
-        } else {
-            emptyState.visibility = View.GONE
-            rvNotifications.visibility = View.VISIBLE
-            rvNotifications.adapter = NotificationAdapter(notifications)
-        }
-
         ThemeUtils.applyThemeToView(view)
         applyBranding(view)
+        
+        fetchNotifications(view)
     }
 
     private fun applyBranding(view: View) {
@@ -50,6 +45,10 @@ class NotificationSheet : BottomSheetDialogFragment() {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
                 view.findViewById<TextView>(R.id.sheetSubtitle)?.setTextColor(themeColor)
+                
+                // Theme the progress bar too
+                view.findViewById<ProgressBar>(R.id.pbNotifications)?.indeterminateTintList = 
+                    android.content.res.ColorStateList.valueOf(themeColor)
             } catch (e: Exception) {}
         }
 
@@ -66,6 +65,53 @@ class NotificationSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun fetchNotifications(view: View) {
+        val rvNotifications = view.findViewById<RecyclerView>(R.id.rvNotifications)
+        val emptyState = view.findViewById<View>(R.id.tvEmptyState)
+        val progressBar = view.findViewById<ProgressBar>(R.id.pbNotifications)
+        
+        val ctx = context ?: return
+        val userId = GymManager.getUserId(ctx)
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val api = RetrofitClient.getApi(GymManager.getBypassCookie(ctx), GymManager.getBypassUA(ctx))
+                val response = api.getNotifications(userId)
+                
+                withContext(Dispatchers.Main) {
+                    progressBar?.visibility = View.GONE
+                    
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val notifications = response.body()?.notifications ?: emptyList()
+                        if (notifications.isEmpty()) {
+                            emptyState.visibility = View.VISIBLE
+                            rvNotifications.visibility = View.GONE
+                        } else {
+                            emptyState.visibility = View.GONE
+                            rvNotifications.visibility = View.VISIBLE
+                            rvNotifications.adapter = NotificationAdapter(notifications)
+                        }
+                    } else {
+                        // Fallback to mock on failure
+                        loadMockNotifications(rvNotifications, emptyState)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    progressBar?.visibility = View.GONE
+                    loadMockNotifications(rvNotifications, emptyState)
+                }
+            }
+        }
+    }
+
+    private fun loadMockNotifications(rv: RecyclerView, empty: View) {
+        val mocks = getMockNotifications()
+        empty.visibility = if (mocks.isEmpty()) View.VISIBLE else View.GONE
+        rv.visibility = if (mocks.isEmpty()) View.GONE else View.VISIBLE
+        rv.adapter = NotificationAdapter(mocks)
+    }
+
     private fun getMockNotifications(): List<Notification> {
         return listOf(
             Notification(
@@ -75,30 +121,6 @@ class NotificationSheet : BottomSheetDialogFragment() {
                 time = "Just now",
                 type = "system",
                 isRead = false
-            ),
-            Notification(
-                id = "2",
-                title = "Membership Confirmed",
-                message = "Your Unlimited Gym Plan is now active. Let's start training!",
-                time = "2 hours ago",
-                type = "membership",
-                isRead = true
-            ),
-            Notification(
-                id = "3",
-                title = "Booking Success",
-                message = "Your session for Personal Training with Coach Sam is confirmed for Monday at 10:00 AM.",
-                time = "5 hours ago",
-                type = "booking",
-                isRead = true
-            ),
-            Notification(
-                id = "4",
-                title = "System Update",
-                message = "The gym will be closed for maintenance on Sunday from 2:00 PM to 6:00 PM.",
-                time = "Yesterday",
-                type = "system",
-                isRead = true
             )
         )
     }

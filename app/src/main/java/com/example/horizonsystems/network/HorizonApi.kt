@@ -161,4 +161,10 @@ interface HorizonApi {
         @Body request: Map<String, @JvmSuppressWildcards Any>,
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.LoginResponse>
+
+    @GET("api/get_notifications.php")
+    suspend fun getNotifications(
+        @Query("user_id") userId: Int,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.NotificationResponse>
 }

@@ -24,18 +24,12 @@ import java.io.InputStream
 
 class ProfileFragment : Fragment() {
 
-
-    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
-        swipeRefresh = view.findViewById(R.id.swipeRefreshProfile)
         
         // Hide top notifications icon when on Profile screen
         (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
-        setupRefresh()
         applyBranding(view)
         refreshUI()
         fetchProfileData(false) // Background sync
@@ -74,19 +68,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun setupRefresh() {
-        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
-        swipeRefresh.setColorSchemeColors(themeColor)
-        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
-        
-        swipeRefresh.setOnRefreshListener {
-            lifecycleScope.launch {
-                if (!isAdded) return@launch
-                context?.let { GymManager.syncBranding(it) }
-                view?.let { applyBranding(it) }
-                fetchProfileData(true)
-            }
-        }
     }
 
     private fun fetchProfileData(showToast: Boolean) {
@@ -138,7 +119,7 @@ class ProfileFragment : Fragment() {
             } catch (e: Exception) {
                 if (showToast && isAdded) Toast.makeText(safeContext, "Refresh failed", Toast.LENGTH_SHORT).show()
             } finally {
-                if (isAdded) swipeRefresh.isRefreshing = false
+                // Done
             }
         }
     }
@@ -191,6 +172,9 @@ class ProfileFragment : Fragment() {
                         card.strokeColor = strokeAlphaColor
                     }
                 }
+
+                // 6. Refresh Indicator Branding
+                // Removed
                 
             } catch (e: Exception) {}
         }
