@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/attendanceRoot"
+    android:id="@+id/swipeRefreshAttendance"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0a090d">
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -16,37 +14,55 @@
             android:layout_height="wrap_content"
             android:padding="24dp">
 
-            <!-- Header Section -->
-            <TextView
-                android:id="@+id/tvAttendanceTitle"
+            <LinearLayout
+                android:id="@+id/headerContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.02"
-                android:text="ATTENDANCE"
-                android:textColor="@color/white"
-                android:textSize="28sp"
+                android:orientation="horizontal"
+                android:gravity="bottom"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    android:id="@+id/tvAttendanceTitlePart1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    android:text="ATTENDANCE "
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/tvAttendanceTitlePart2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    android:text="TRACKER"
+                    android:textColor="#A855F7"
+                    android:textSize="28sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvAttendanceThemeSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.6"
-                android:fontFamily="sans-serif-medium"
-                android:text="Track your consistency"
-                android:textColor="#A855F7"
-                android:textSize="14sp"
+                android:layout_marginTop="8dp"
+                android:text="TRACK YOUR PROGRESS"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:letterSpacing="0.05"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAttendanceTitle" />
+                app:layout_constraintTop_toBottomOf="@id/headerContainer" />
 
             <LinearLayout
                 android:id="@+id/attendance_tabs_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="32dp"
                 android:orientation="horizontal"
                 android:weightSum="2"
                 app:layout_constraintTop_toBottomOf="@id/tvAttendanceThemeSubtitle">
@@ -55,30 +71,32 @@
                     android:id="@+id/btn_tab_scan_web"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.05"
                     android:text="SCAN WEB"
                     android:textColor="#A855F7"
-                    android:textSize="10sp"
+                    android:textSize="13sp"
                     android:backgroundTint="#1AA855F7"
-                    app:cornerRadius="10dp"
+                    app:cornerRadius="16dp"
                     app:rippleColor="#33FFFFFF" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_tab_my_qr"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
+                    android:layout_marginStart="6dp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.05"
                     android:text="MY QR CODE"
                     android:textColor="#94A3B8"
-                    android:textSize="10sp"
+                    android:textSize="13sp"
                     android:backgroundTint="@android:color/transparent"
-                    app:cornerRadius="10dp"
+                    app:cornerRadius="16dp"
                     app:rippleColor="#33FFFFFF" />
             </LinearLayout>
 
@@ -219,19 +237,109 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="cardScanner,cardMyQR" />
 
-            <!-- Logs Section -->
-            <TextView
-                android:id="@+id/tvLogsLabel"
+            <!-- Logs Section Header -->
+            <LinearLayout
+                android:id="@+id/logs_title_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.05"
-                android:text="ATTENDANCE LOGS"
-                android:textColor="@color/white"
-                android:textSize="12sp"
+                android:layout_marginTop="48dp"
+                android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardBarrier" />
+                app:layout_constraintTop_toBottomOf="@id/cardBarrier">
+
+                <TextView
+                    android:id="@+id/tvLogsLabelPart1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    android:text="ATTENDANCE "
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/tvLogsLabelPart2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.02"
+                    android:text="LOGS"
+                    android:textColor="#A855F7"
+                    android:textSize="28sp" />
+            </LinearLayout>
+
+            <!-- Search and Filter Bar -->
+            <LinearLayout
+                android:id="@+id/labs_search_header_attendance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/logs_title_container">
+
+                <LinearLayout
+                    android:id="@+id/containerSearchAttendance"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_search_modern"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/text_secondary"
+                        android:alpha="0.4" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSearchAttendance"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:hint="Search logs..."
+                        android:textColor="@color/white"
+                        android:textColorHint="#4DFFFFFF"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingStart="8dp"
+                        android:inputType="text"
+                        android:imeOptions="actionSearch" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnSortAttendance"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_sort"
+                    app:tint="@color/white"
+                    android:padding="12dp"
+                    android:scaleType="centerInside" />
+
+                <ImageButton
+                    android:id="@+id/btnFilterAttendance"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_tune"
+                    app:tint="@color/white"
+                    android:padding="12dp"
+                    android:scaleType="centerInside" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider_attendance"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#1AFFFFFF"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/labs_search_header_attendance" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvAttendanceLogs"
@@ -239,16 +347,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/tvLogsLabel" />
+                app:layout_constraintTop_toBottomOf="@id/divider_attendance" />
 
-            <!-- Empty State -->
             <LinearLayout
                 android:id="@+id/emptyStateAttendance"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/tvLogsLabel">
+                app:layout_constraintTop_toBottomOf="@id/divider_attendance">
 
                 <ImageView
                     android:layout_width="64dp"
@@ -270,5 +377,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

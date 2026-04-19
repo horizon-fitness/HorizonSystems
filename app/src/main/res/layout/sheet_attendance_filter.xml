@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sheetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#0a090d">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FILTER LOGS"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.05" />
+
+        <ImageButton
+            android:id="@+id/btnCloseSheet"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:tint="@color/white"
+            android:alpha="0.4"
+            android:padding="8dp"
+            android:scaleType="centerInside" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="STATUS"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:fontFamily="sans-serif-black"
+        android:alpha="0.4"
+        android:letterSpacing="0.1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/chipAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/badge_pill_border"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="ALL"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black" />
+
+        <TextView
+            android:id="@+id/chipActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/badge_pill_border"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="ACTIVE NOW"
+            android:textColor="#94A3B8"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black" />
+
+        <TextView
+            android:id="@+id/chipCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/badge_pill_border"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp"
+            android:text="COMPLETED"
+            android:textColor="#94A3B8"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="48dp"
+        android:text="Apply Filters"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#A855F7" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnResetFilters"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:text="Reset to Default"
+        android:textAllCaps="false"
+        android:textColor="#94A3B8"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium" />
+
+</LinearLayout>

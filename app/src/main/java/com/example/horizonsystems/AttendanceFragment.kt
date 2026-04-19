@@ -27,12 +27,21 @@ import java.util.concurrent.Executors
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 
-class AttendanceFragment : Fragment() {
+class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, AttendanceSortSheet.SortListener {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var attendanceAdapter: AttendanceAdapter
     private val CAMERA_PERMISSION_CODE = 1001
     private var isScanning = false
+    
+    private val fullLogsList = mutableListOf<GymAttendance>()
+    private val displayLogsList = mutableListOf<GymAttendance>()
+    
+    private var currentFilterStatus = "ALL"
+    private var currentSort = "NEWEST"
+    private var searchQuery = ""
+    private var startDate: Long? = null
+    private var endDate: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +55,7 @@ class AttendanceFragment : Fragment() {
         ThemeUtils.applyThemeToView(view)
         
         setupTabs(view)
+        setupSearchAndFilters(view)
         
         // Manual Start Launcher
         view.findViewById<View>(R.id.layoutStartScanner)?.setOnClickListener {
@@ -53,6 +63,73 @@ class AttendanceFragment : Fragment() {
         }
         
         return view
+    }
+
+    private fun setupSearchAndFilters(view: View) {
+        val etSearch = view.findViewById<android.widget.EditText>(R.id.etSearchAttendance)
+        val btnSort = view.findViewById<View>(R.id.btnSortAttendance)
+        val btnFilter = view.findViewById<View>(R.id.btnFilterAttendance)
+
+        etSearch?.addTextChangedListener(object: android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchQuery = s.toString().trim()
+                applyFilterAndSort()
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
+        btnSort?.setOnClickListener {
+            val sheet = AttendanceSortSheet()
+            sheet.setParams(currentSort, this)
+            sheet.show(childFragmentManager, "ATTENDANCE_SORT")
+        }
+
+        btnFilter?.setOnClickListener {
+            val sheet = AttendanceFilterSheet()
+            sheet.setParams(currentFilterStatus, startDate, endDate, this)
+            sheet.show(childFragmentManager, "ATTENDANCE_FILTER")
+        }
+    }
+
+    override fun onFiltersApplied(status: String, start: Long?, end: Long?) {
+        this.currentFilterStatus = status
+        this.startDate = start
+        this.endDate = end
+        applyFilterAndSort()
+    }
+
+    override fun onSortSelected(sort: String) {
+        this.currentSort = sort
+        applyFilterAndSort()
+    }
+
+    private fun applyFilterAndSort() {
+        val filtered = fullLogsList.filter { log ->
+            val statusMatch = if (currentFilterStatus == "ALL") true else log.status.contains(currentFilterStatus, ignoreCase = true)
+            val searchMatch = if (searchQuery.isEmpty()) true else log.gymName.contains(searchQuery, ignoreCase = true) || log.date.contains(searchQuery, ignoreCase = true)
+            statusMatch && searchMatch
+        }
+
+        val sorted = when(currentSort) {
+            "OLDEST" -> filtered.sortedBy { it.date }
+            else -> filtered.sortedByDescending { it.date }
+        }
+
+        displayLogsList.clear()
+        displayLogsList.addAll(sorted)
+        attendanceAdapter.updateLogs(displayLogsList)
+
+        val rv = view?.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
+        val emptyState = view?.findViewById<View>(R.id.emptyStateAttendance)
+        
+        if (displayLogsList.isEmpty()) {
+            rv?.visibility = View.GONE
+            emptyState?.visibility = View.VISIBLE
+        } else {
+            rv?.visibility = View.VISIBLE
+            emptyState?.visibility = View.GONE
+        }
     }
 
     private fun setupTabs(view: View) {
@@ -66,26 +143,32 @@ class AttendanceFragment : Fragment() {
         val themeColorStr = GymManager.getThemeColor(ctx)
         val themeColor = try { Color.parseColor(themeColorStr) } catch(e: Exception) { Color.parseColor("#A855F7") }
         
+        fun updateTabStyles(isScanActive: Boolean) {
+            if (isScanActive) {
+                btnScan?.setTextColor(themeColor)
+                btnScan?.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+                
+                btnMyQr?.setTextColor(Color.parseColor("#94A3B8"))
+                btnMyQr?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            } else {
+                btnMyQr?.setTextColor(themeColor)
+                btnMyQr?.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
+                
+                btnScan?.setTextColor(Color.parseColor("#94A3B8"))
+                btnScan?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            }
+        }
+
         btnScan?.setOnClickListener {
             cardScanner?.visibility = View.VISIBLE
             cardMyQr?.visibility = View.GONE
-            
-            btnScan.setTextColor(themeColor)
-            btnScan.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26) // 10%
-            
-            btnMyQr?.setTextColor(Color.parseColor("#94A3B8"))
-            btnMyQr?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            updateTabStyles(true)
         }
         
         btnMyQr?.setOnClickListener {
             cardScanner?.visibility = View.GONE
             cardMyQr?.visibility = View.VISIBLE
-            
-            btnMyQr.setTextColor(themeColor)
-            btnMyQr.backgroundTintList = ColorStateList.valueOf(themeColor).withAlpha(26)
-            
-            btnScan?.setTextColor(Color.parseColor("#94A3B8"))
-            btnScan?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            updateTabStyles(false)
             
             // Generate and load QR
             val userId = GymManager.getUserId(ctx)
@@ -99,7 +182,7 @@ class AttendanceFragment : Fragment() {
 
     private fun setupRecyclerView(view: View) {
         val rv = view.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
-        attendanceAdapter = AttendanceAdapter(emptyList())
+        attendanceAdapter = AttendanceAdapter(displayLogsList)
         rv?.layoutManager = LinearLayoutManager(requireContext())
         rv?.adapter = attendanceAdapter
         
@@ -144,22 +227,33 @@ class AttendanceFragment : Fragment() {
                         GymAttendance(date, formattedTime, formattedTimeOut, gName, status)
                     }
                     
-                    attendanceAdapter.updateLogs(mappedLogs)
-                    
-                    val rv = rootView.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
-                    val emptyState = rootView.findViewById<View>(R.id.emptyStateAttendance)
-                    
-                    if (mappedLogs.isEmpty()) {
-                        rv?.visibility = View.GONE
-                        emptyState?.visibility = View.VISIBLE
-                    } else {
-                        rv?.visibility = View.VISIBLE
-                        emptyState?.visibility = View.GONE
-                    }
+                    fullLogsList.clear()
+                    fullLogsList.addAll(mappedLogs)
+                    applyFilterAndSort()
                 }
             } catch (e: Exception) {
                 // Keep UI states unmodified or show generic error UI
             }
+        }
+    }
+
+    private fun setupRefresh() {
+        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
+        swipeRefresh.setColorSchemeColors(themeColor)
+        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
+        
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                fetchData()
+                swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun fetchData() {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId != -1) {
+            fetchAttendanceLogs(userId)
         }
     }
 
@@ -176,11 +270,24 @@ class AttendanceFragment : Fragment() {
             
             // 1. Root Background & Global Labels
             view.findViewById<View>(R.id.attendanceRoot)?.setBackgroundColor(bgColor)
-            view.findViewById<TextView>(R.id.tvAttendanceTitle)?.setTextColor(Color.WHITE)
-            view.findViewById<TextView>(R.id.tvLogsLabel)?.setTextColor(Color.WHITE)
+            view.findViewById<TextView>(R.id.tvAttendanceTitlePart1)?.setTextColor(Color.WHITE)
+            view.findViewById<TextView>(R.id.tvLogsLabelPart1)?.setTextColor(Color.WHITE)
             
-            // 2. Title Accent
-            view.findViewById<TextView>(R.id.tvAttendanceThemeSubtitle)?.setTextColor(themeColor)
+            // 2. Title & Log Accents
+            view.findViewById<TextView>(R.id.tvAttendanceTitlePart2)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvLogsLabelPart2)?.setTextColor(themeColor)
+            
+            val textColorStr = GymManager.getTextColor(ctx)
+            val textColor = if (!textColorStr.isNullOrEmpty()) Color.parseColor(textColorStr) else Color.parseColor("#D1D5DB")
+            
+            // Apply text color to labels if needed or keep white for premium contrast
+            
+            // 3. Search and Filter Branding
+            view.findViewById<ImageView>(R.id.btnSortAttendance)?.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            view.findViewById<ImageView>(R.id.btnFilterAttendance)?.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            
+            // Subtitle
+            view.findViewById<TextView>(R.id.tvAttendanceThemeSubtitle)?.alpha = 0.6f
             
             // 3. Scanner Card Surface
             val cardSurface = if (isAutoCard) {

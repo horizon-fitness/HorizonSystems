@@ -301,7 +301,7 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
         if (::adapter.isInitialized) adapter.updateLogs(pageItems)
 
         // Visibility & UI
-        root.findViewById<View>(R.id.emptyStateContainer)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
+        root.findViewById<View>(R.id.emptyStateBooking)?.visibility = if (pageItems.isEmpty()) View.VISIBLE else View.GONE
         root.findViewById<View>(R.id.rvTrainingLogs)?.visibility = if (pageItems.isEmpty()) View.GONE else View.VISIBLE
         root.findViewById<View>(R.id.pagination_container_booking)?.visibility = if (totalPages > 1) View.VISIBLE else View.GONE
         root.findViewById<TextView>(R.id.tv_page_number_booking)?.text = "$currentPage/$totalPages"

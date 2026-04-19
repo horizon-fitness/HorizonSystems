@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.horizonsystems.utils.ThemeUtils
 import com.example.horizonsystems.utils.GymManager
+import com.example.horizonsystems.utils.DialogUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,12 +31,22 @@ import androidx.core.os.bundleOf
 class HomeFragment : Fragment() {
     private var currentPlans: List<MembershipPlan>? = null
     private var hasActivePlan = false
+    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        swipeRefresh = view.findViewById(R.id.swipeRefreshHome)
+        
+        applyBranding(view)
+        setupRefresh()
 
         val userName = activity?.intent?.getStringExtra("user_name") ?: "User"
         val dashUserName = view.findViewById<TextView>(R.id.dashUserName)
@@ -52,8 +63,6 @@ class HomeFragment : Fragment() {
         val profileBanner = view.findViewById<ImageView>(R.id.memberProfilePic)
         val profileCard = profileBanner?.parent?.let { it.parent as? MaterialCardView }
         
-        applyBranding(view)
-
         // Initialize Initials
         val initials = userName.trim().split(" ")
             .filter { it.isNotEmpty() }
@@ -67,12 +76,17 @@ class HomeFragment : Fragment() {
         rvPreview?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         fetchMembershipPlans(view)
 
-        // Status Card Clicks (Restricted to Booking)
-
-
         // Status Card Clicks
         val bookClick = View.OnClickListener {
-            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
+            if (hasActivePlan) {
+                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
+            } else {
+                DialogUtils.showConfirmationDialog(
+                    requireContext(),
+                    "Membership Required",
+                    "You must have an Active Membership to book a session."
+                )
+            }
         }
         view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
         view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
@@ -86,7 +100,29 @@ class HomeFragment : Fragment() {
         fetchServicesOffered(view)
         
         ThemeUtils.applyThemeToView(view)
-        return view
+    }
+
+    private fun setupRefresh() {
+        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
+        swipeRefresh.setColorSchemeColors(themeColor)
+        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
+        
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                GymManager.syncBranding(requireContext())
+                applyBranding(requireView())
+                fetchData()
+                swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun fetchData() {
+        val view = view ?: return
+        fetchMembershipPlans(view)
+        fetchActiveStatus(view)
+        fetchUpcomingSession(view)
+        fetchServicesOffered(view)
     }
 
     private fun fetchServicesOffered(root: View) {
@@ -112,10 +148,18 @@ class HomeFragment : Fragment() {
                         emptyState?.visibility = View.GONE
 
                         val adapter = HomeServiceAdapter(services) { service ->
-                            val bookingSheet = BookingSheet().apply {
-                                preSelectedServiceId = service.serviceId
+                            if (hasActivePlan) {
+                                val bookingSheet = BookingSheet().apply {
+                                    preSelectedServiceId = service.serviceId
+                                }
+                                bookingSheet.show(parentFragmentManager, "HomeBookingSheet")
+                            } else {
+                                DialogUtils.showConfirmationDialog(
+                                    requireContext(),
+                                    "Membership Required",
+                                    "You must have an Active Membership to book a session."
+                                )
                             }
-                            bookingSheet.show(parentFragmentManager, "HomeBookingSheet")
                         }
                         rvServices.adapter = adapter
                     } else {

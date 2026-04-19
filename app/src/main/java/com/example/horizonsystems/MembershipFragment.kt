@@ -219,16 +219,44 @@ class MembershipFragment : Fragment(), MembershipFilterSheet.FilterListener, Pay
         }
     }
 
+    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        swipeRefresh = view.findViewById(R.id.swipeRefreshMembership)
+        
         applyBranding(view)
+        setupRefresh()
 
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
         parentFragmentManager.setFragmentResultListener("plan_selection", viewLifecycleOwner) { _, bundle ->
             val id = bundle.getInt("id")
             val name = bundle.getString("name") ?: ""
             val price = bundle.getDouble("price")
             val days = bundle.getInt("days")
             if (id != 0) showConfirmationSheet(id, name, price, days)
+        }
+    }
+
+    private fun setupRefresh() {
+        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
+        swipeRefresh.setColorSchemeColors(themeColor)
+        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
+        
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                fetchData()
+                swipeRefresh.isRefreshing = false
+            }
+        }
+    }
+
+    private fun fetchData() {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId != -1) {
+            fetchMembershipPlans(userId)
+            fetchMembershipHistory(userId)
         }
     }
 

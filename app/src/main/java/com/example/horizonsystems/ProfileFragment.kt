@@ -30,14 +30,20 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        swipeRefresh = view.findViewById(R.id.swipeRefreshProfile)
         
         // Hide top notifications icon when on Profile screen
         (activity as? LandingActivity)?.setTopNotificationsVisibility(false)
 
+        setupRefresh()
         applyBranding(view)
         refreshUI()
+        fetchProfileData(false) // Background sync
 
         // Sign Out Logic
         view.findViewById<View>(R.id.btnSignOut)?.setOnClickListener {
@@ -73,6 +79,72 @@ class ProfileFragment : Fragment() {
             try {
                 ChangePasswordSheet().show(parentFragmentManager, "change_password")
             } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun setupRefresh() {
+        val themeColor = Color.parseColor(GymManager.getThemeColor(requireContext()))
+        swipeRefresh.setColorSchemeColors(themeColor)
+        swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#141216"))
+        
+        swipeRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                GymManager.syncBranding(requireContext())
+                applyBranding(requireView())
+                fetchProfileData(true)
+            }
+        }
+    }
+
+    private fun fetchProfileData(showToast: Boolean) {
+        val userId = activity?.intent?.getIntExtra("user_id", -1) ?: -1
+        if (userId == -1) {
+            swipeRefresh.isRefreshing = false
+            return
+        }
+
+        val cookie = GymManager.getBypassCookie(requireContext())
+        val ua = GymManager.getBypassUA(requireContext())
+        val api = RetrofitClient.getApi(cookie, ua)
+
+        lifecycleScope.launch {
+            try {
+                // Using existing login/check endpoint or similar
+                val tenant = GymManager.getTenantCode(requireContext())
+                val response = api.getProfile(userId, tenant)
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val user = response.body()?.user
+                    if (user != null) {
+                        // Update LandingActivity intent so other fragments see it
+                        val updates = mutableMapOf<String, String>()
+                        updates["first_name"] = user.firstName ?: ""
+                        updates["last_name"] = user.lastName ?: ""
+                        updates["middle_name"] = user.middleName ?: ""
+                        updates["email"] = user.email ?: ""
+                        updates["contact_number"] = user.contactNumber ?: ""
+                        updates["address_line"] = user.addressLine ?: ""
+                        updates["barangay"] = user.barangay ?: ""
+                        updates["city"] = user.city ?: ""
+                        updates["province"] = user.province ?: ""
+                        updates["region"] = user.region ?: ""
+                        updates["birth_date"] = user.birthDate ?: ""
+                        updates["sex"] = user.sex ?: ""
+                        updates["occupation"] = user.occupation ?: ""
+                        updates["medical_history"] = user.medicalHistory ?: ""
+                        updates["emergency_contact_name"] = user.emergencyContactName ?: ""
+                        updates["emergency_contact_number"] = user.emergencyContactNumber ?: ""
+                        updates["profile_pic"] = user.profilePic ?: ""
+                        
+                        (activity as? LandingActivity)?.updateUserData(updates)
+                        refreshUI()
+                        if (showToast) Toast.makeText(requireContext(), "Profile updated!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                if (showToast) Toast.makeText(requireContext(), "Refresh failed", Toast.LENGTH_SHORT).show()
+            } finally {
+                swipeRefresh.isRefreshing = false
             }
         }
     }
