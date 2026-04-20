@@ -8,5 +8,5 @@ data class TrainingLog(
     val duration: String?,
     val service: String?,
     val trainer: String?,
-    val status: String? // ACTIVE, COMPLETED, CANCELLED, FORFEITED
+    val status: String? // ACTIVE, COMPLETED, CANCELLED, REJECTED
 )

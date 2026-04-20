@@ -78,7 +78,7 @@ class TrainingLogAdapter(
         
         // --- 4. Status Styling ---
         val rawStatus = log.status?.uppercase() ?: "PENDING"
-        val displayStatus = if (rawStatus == "CANCELLED") "REJECTED" else rawStatus
+        val displayStatus = rawStatus // Stop mapping CANCELLED to REJECTED
         holder.status.text = displayStatus
 
         val tintColor: String = when (rawStatus) {
