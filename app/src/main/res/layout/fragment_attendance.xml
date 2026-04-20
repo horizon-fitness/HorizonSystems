@@ -173,6 +173,37 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
+                    <!-- Processing Overlay -->
+                    <LinearLayout
+                        android:id="@+id/layoutScannerProcessing"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#E60D0D10"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:elevation="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        
+                        <ProgressBar
+                            android:id="@+id/pbScanner"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:indeterminateTint="#A855F7" />
+                            
+                        <TextView
+                            android:id="@+id/tvScannerProcessing"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="0.05"
+                            android:text="PROCESSING..."
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 

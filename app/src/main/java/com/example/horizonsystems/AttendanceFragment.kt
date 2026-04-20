@@ -21,7 +21,7 @@ import com.google.android.material.card.MaterialCardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import com.bumptech.glide.Glide
@@ -33,6 +33,8 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     private lateinit var attendanceAdapter: AttendanceAdapter
     private val CAMERA_PERMISSION_CODE = 1001
     private var isScanning = false
+    private var isProcessing = false
+    private var refreshJob: Job? = null
     
     private val fullLogsList = mutableListOf<GymAttendance>()
     private val displayLogsList = mutableListOf<GymAttendance>()
@@ -69,6 +71,31 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         super.onViewCreated(view, savedInstanceState)
         
         applyBranding(view)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startPolling()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopPolling()
+    }
+
+    private fun startPolling() {
+        stopPolling()
+        refreshJob = lifecycleScope.launch {
+            while (isActive) {
+                view?.let { fetchAttendanceLogs(it) }
+                delay(5000) // Poll every 5 seconds
+            }
+        }
+    }
+
+    private fun stopPolling() {
+        refreshJob?.cancel()
+        refreshJob = null
     }
 
     private fun setupSearchAndFilters(view: View) {
@@ -139,6 +166,8 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         } else {
             rv?.visibility = View.VISIBLE
             emptyState?.visibility = View.GONE
+            // Ensure the newest scan is visible at the top
+            rv?.scrollToPosition(0)
         }
     }
 
@@ -187,6 +216,9 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             val qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=$encoded&color=000000&bgcolor=ffffff&margin=4&qzone=1"
             
             Glide.with(this).load(qrUrl).into(ivMyQrCode)
+            
+            // Immediate refresh when checking My QR logic
+            view?.let { fetchAttendanceLogs(it) }
         }
     }
 
@@ -195,8 +227,6 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         attendanceAdapter = AttendanceAdapter(displayLogsList)
         rv?.layoutManager = LinearLayoutManager(requireContext())
         rv?.adapter = attendanceAdapter
-        
-        fetchAttendanceLogs(view)
     }
 
     private fun Int.withAlpha(alpha: Int): Int {
@@ -213,11 +243,15 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         val ua = GymManager.getBypassUA(requireContext())
         val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
         
-        lifecycleScope.launch {
+        android.util.Log.d("AttendanceFragment", "Fetching logs for user: $userId, gym: $gymId")
+        
+        lifecycleScope.launch(Dispatchers.Main) {
             try {
                 val response = api.getAttendanceLogs(userId, gymId)
                 if (response.isSuccessful && response.body()?.success == true) {
                     val logs = response.body()?.logs ?: emptyList()
+                    android.util.Log.d("AttendanceFragment", "Found ${logs.size} logs")
+                    
                     val mappedLogs = logs.map { log ->
                         val date = log.attendance_date ?: "1970-01-01"
                         
@@ -311,7 +345,11 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             view.findViewById<ImageView>(R.id.ivScannerIcon)?.let {
                 it.imageTintList = ColorStateList.valueOf(themeColor)
             }
-
+            
+            // 6. Processing Overlay Branding
+            view.findViewById<android.widget.ProgressBar>(R.id.pbScanner)?.indeterminateTintList = ColorStateList.valueOf(themeColor)
+            view.findViewById<TextView>(R.id.tvScannerProcessing)?.setTextColor(Color.WHITE) // High contrast
+            
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -409,7 +447,18 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     }
 
     private fun handleScannedQR(qrCodeContent: String) {
+        if (isProcessing) return
+        isProcessing = true
         isScanning = true
+        
+        val rootView = view ?: return
+        val processingOverlay = rootView.findViewById<View>(R.id.layoutScannerProcessing)
+        val tvStatus = rootView.findViewById<TextView>(R.id.tvScannerProcessing)
+        
+        // Show immediate processing feedback
+        processingOverlay?.visibility = View.VISIBLE
+        tvStatus?.text = "PROCESSING..."
+
         try {
             val json = org.json.JSONObject(qrCodeContent)
             var scannedGymId = -1
@@ -422,36 +471,60 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             val userId = GymManager.getUserId(requireContext())
             
             if (scannedGymId != -1 && userId != -1) {
-                Toast.makeText(requireContext(), "Processing Check In...", Toast.LENGTH_SHORT).show()
                 val request = com.example.horizonsystems.models.AttendanceRequest(userId, scannedGymId, action)
-                
                 val cookie = GymManager.getBypassCookie(requireContext())
                 val ua = GymManager.getBypassUA(requireContext())
                 val api = com.example.horizonsystems.network.RetrofitClient.getApi(cookie, ua)
                 
                 lifecycleScope.launch {
                     try {
+                        // Momentarily unbind analysis to prevent redundant processing while network is busy
+                        val cameraProvider = ProcessCameraProvider.getInstance(requireContext()).get()
+                        cameraProvider.unbindAll()
+
                         val response = api.recordAttendance(request)
                         if (response.isSuccessful && response.body()?.success == true) {
+                            tvStatus?.text = "SUCCESS!"
                             Toast.makeText(requireContext(), response.body()?.message ?: "Check-in successful!", Toast.LENGTH_LONG).show()
-                            view?.let { fetchAttendanceLogs(it) }
+                            
+                            // Small delay ensuring server-side write is fully finished before fetching logs
+                            kotlinx.coroutines.delay(800) 
+                            fetchAttendanceLogs(rootView)
                         } else {
+                            tvStatus?.text = "FAILED"
                             Toast.makeText(requireContext(), response.body()?.message ?: "Failed to check in.", Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
+                        tvStatus?.text = "ERROR"
                         Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show()
                     } finally {
-                        kotlinx.coroutines.delay(3000)
+                        // Force a 5 second cooldown to keep the success/fail message visible and prevent double-scans
+                        kotlinx.coroutines.delay(5000)
+                        
+                        // Resume Camera for next scan
+                        processingOverlay?.visibility = View.GONE
+                        isProcessing = false
                         isScanning = false
+                        startCamera(rootView)
                     }
                 }
             } else {
+                tvStatus?.text = "INVALID CODE"
                 Toast.makeText(requireContext(), "Invalid QR Code for Check-in", Toast.LENGTH_SHORT).show()
-                view?.postDelayed({ isScanning = false }, 2000)
+                rootView.postDelayed({ 
+                    processingOverlay?.visibility = View.GONE
+                    isProcessing = false
+                    isScanning = false 
+                }, 3000)
             }
         } catch (e: Exception) {
+            tvStatus?.text = "INVALID FORMAT"
             Toast.makeText(requireContext(), "Invalid QR format", Toast.LENGTH_SHORT).show()
-            view?.postDelayed({ isScanning = false }, 2000)
+            rootView.postDelayed({ 
+                processingOverlay?.visibility = View.GONE
+                isProcessing = false
+                isScanning = false 
+            }, 3000)
         }
     }
 
