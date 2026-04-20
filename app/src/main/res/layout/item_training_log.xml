@@ -129,6 +129,20 @@
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.05"
                 android:textAllCaps="true" />
+                
+            <TextView
+                android:id="@+id/btnCancelBooking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="CANCEL"
+                android:textColor="#EF4444"
+                android:textSize="9sp"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:background="#1AEF4444"
+                android:fontFamily="sans-serif-bold"
+                android:visibility="gone" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

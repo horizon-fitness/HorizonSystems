@@ -12,8 +12,10 @@ import com.example.horizonsystems.utils.GymManager
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TrainingLogAdapter(private var logs: List<TrainingLog>) :
-    RecyclerView.Adapter<TrainingLogAdapter.ViewHolder>() {
+class TrainingLogAdapter(
+    private var logs: List<TrainingLog>,
+    private val onCancelClick: (TrainingLog) -> Unit = {}
+) : RecyclerView.Adapter<TrainingLogAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val month: TextView = view.findViewById(R.id.tvLogMonth)
@@ -22,6 +24,7 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
         val service: TextView = view.findViewById(R.id.logService)
         val trainer: TextView = view.findViewById(R.id.logTrainer)
         val status: TextView = view.findViewById(R.id.logStatus)
+        val btnCancel: TextView = view.findViewById(R.id.btnCancelBooking)
         val cardDateBlock: com.google.android.material.card.MaterialCardView = view.findViewById(R.id.cardDateBlock)
     }
 
@@ -98,6 +101,15 @@ class TrainingLogAdapter(private var logs: List<TrainingLog>) :
             holder.status.backgroundTintList = ColorStateList.valueOf(Color.parseColor(tintColor))
         } catch (e: Exception) {
             holder.status.setTextColor(Color.WHITE)
+        }
+
+        // --- 4.5. Cancel Button Visibility ---
+        if (rawStatus in listOf("PENDING", "APPROVED", "CONFIRMED")) {
+            holder.btnCancel.visibility = View.VISIBLE
+            holder.btnCancel.setOnClickListener { onCancelClick(log) }
+        } else {
+            holder.btnCancel.visibility = View.GONE
+            holder.btnCancel.setOnClickListener(null)
         }
 
         // --- 5. Branding Sync (mirrors TransactionAdapter) ---

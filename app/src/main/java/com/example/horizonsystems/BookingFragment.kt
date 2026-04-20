@@ -57,7 +57,9 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
         ThemeUtils.applyThemeToView(view)
         applyBranding(view)
 
-        adapter = TrainingLogAdapter(emptyList())
+        adapter = TrainingLogAdapter(emptyList()) { log ->
+            showCancelDialog(log)
+        }
         rvTrainingLogs?.let {
             it.layoutManager = LinearLayoutManager(context ?: return@let)
             it.adapter = adapter
@@ -165,6 +167,61 @@ class BookingFragment : Fragment(), BookingFilterSheet.FilterListener, BookingSo
         }
 
         fetchBookings(view)
+    }
+
+    private fun showCancelDialog(log: TrainingLog) {
+        val ctx = context ?: return
+        val reasons = arrayOf("Schedule Conflict", "Health Issues", "Emergency", "Change of Mind", "Others")
+        var selectedReasonIndex = -1
+
+        androidx.appcompat.app.AlertDialog.Builder(ctx)
+            .setTitle("Cancel Booking")
+            .setSingleChoiceItems(reasons, -1) { _, which ->
+                selectedReasonIndex = which
+            }
+            .setPositiveButton("Confirm") { dialog, _ ->
+                if (selectedReasonIndex == -1) {
+                    Toast.makeText(ctx, "Please select a reason for cancellation.", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                val selectedReason = reasons[selectedReasonIndex]
+                processCancellation(log, selectedReason)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Back") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun processCancellation(log: TrainingLog, reason: String) {
+        val ctx = context ?: return
+        val userId = GymManager.getUserId(ctx)
+        val gymId = GymManager.getTenantId(ctx)
+        val bookingId = log.booking_id
+        
+        if (userId == -1 || bookingId == 0) return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val cookie = GymManager.getBypassCookie(ctx)
+                val ua = GymManager.getBypassUA(ctx)
+                val api = RetrofitClient.getApi(cookie, ua)
+                val response = api.cancelBooking(userId, gymId, bookingId, reason)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        Toast.makeText(ctx, response.body()?.message ?: "Booking cancelled.", Toast.LENGTH_LONG).show()
+                        fetchBookings(view ?: return@withContext)
+                    } else {
+                        Toast.makeText(ctx, response.body()?.message ?: "Failed to cancel booking.", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(ctx, "Network error. Please try again.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun formatTime(time: String?): String {

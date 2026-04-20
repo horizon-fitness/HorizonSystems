@@ -67,6 +67,16 @@ interface HorizonApi {
         @Query("i") bypass: Int = 1
     ): Response<com.example.horizonsystems.models.BookingResponse>
 
+    @FormUrlEncoded
+    @POST("api/cancel_booking.php")
+    suspend fun cancelBooking(
+        @Field("user_id") userId: Int,
+        @Field("gym_id") gymId: Int,
+        @Field("booking_id") bookingId: Int,
+        @Field("cancellation_reason") reason: String,
+        @Query("i") bypass: Int = 1
+    ): Response<com.example.horizonsystems.models.LoginResponse>
+
     @GET("api/get_membership_history.php")
     suspend fun getMembershipHistory(
         @Query("user_id") userId: Int,

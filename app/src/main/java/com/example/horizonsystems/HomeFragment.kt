@@ -56,6 +56,7 @@ class HomeFragment : Fragment() {
         val bookClick = View.OnClickListener {
             if (hasActivePlan && !isPendingPlan) {
                 (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
+                BookingSheet().show(parentFragmentManager, "HomeBookingSheet")
             } else if (isPendingPlan) {
                 DialogUtils.showConfirmationDialog(
                     requireContext(),
@@ -155,6 +156,7 @@ class HomeFragment : Fragment() {
 
                         val adapter = HomeServiceAdapter(services) { service ->
                             if (hasActivePlan && !isPendingPlan) {
+                                (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_booking
                                 val bookingSheet = BookingSheet().apply {
                                     preSelectedServiceId = service.serviceId
                                 }
@@ -340,8 +342,8 @@ class HomeFragment : Fragment() {
                         
                         // Find the closest upcoming approved/confirmed booking
                         val upcoming = allBookings
-                            .filter { (it.status.uppercase() == "APPROVED" || it.status.uppercase() == "CONFIRMED") && it.date >= today }
-                            .sortedWith(compareBy({ it.date }, { it.time }))
+                            .filter { (it.status?.uppercase() == "APPROVED" || it.status?.uppercase() == "CONFIRMED") && (it.date ?: "") >= today }
+                            .sortedWith(compareBy({ it.date ?: "" }, { it.time ?: "00:00:00" }))
                             .firstOrNull()
 
                         if (upcoming != null) {
@@ -352,19 +354,19 @@ class HomeFragment : Fragment() {
                                 try {
                                     val inSdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
                                     val outSdf = java.text.SimpleDateFormat("MMM dd", java.util.Locale.US)
-                                    outSdf.format(inSdf.parse(upcoming.date)!!)
+                                    outSdf.format(inSdf.parse(upcoming.date ?: "")!!)
                                 } catch (e: Exception) {
-                                    upcoming.date
+                                    upcoming.date ?: ""
                                 }
                             }
                             // Format Time to 12h: hh:mm AM/PM
                             val timeFormatted = try {
                                 val sdf24 = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
                                 val sdf12 = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
-                                val dateObj = sdf24.parse(upcoming.time)
+                                val dateObj = sdf24.parse(upcoming.time ?: "00:00:00")
                                 sdf12.format(dateObj!!)
                             } catch (e: Exception) {
-                                upcoming.time.substringBeforeLast(":") // Fallback
+                                (upcoming.time ?: "00:00").substringBeforeLast(":") // Fallback
                             }
                             sessionStatus?.text = upcoming.service ?: "Session"
                             
