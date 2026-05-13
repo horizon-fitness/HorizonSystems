@@ -273,11 +273,50 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                     pbUploadPhoto.visibility = View.VISIBLE
                 }
 
+                // 1. Get Bitmap from Uri
                 val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
-                val bytes = inputStream?.readBytes()
-                if (bytes == null) return@launch
+                val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+
+                if (originalBitmap == null) {
+                    withContext(Dispatchers.Main) {
+                        pbUploadPhoto.visibility = View.GONE
+                        Toast.makeText(requireContext(), "Could not read image", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                // 2. Handle Rotation (EXIF)
+                val rotationInputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
+                val exif = androidx.exifinterface.media.ExifInterface(rotationInputStream!!)
+                val orientation = exif.getAttributeInt(androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION, androidx.exifinterface.media.ExifInterface.ORIENTATION_NORMAL)
+                rotationInputStream.close()
+
+                val matrix = android.graphics.Matrix()
+                when (orientation) {
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                }
+
+                // 3. Resize and Compress
+                val maxDim = 800
+                val ratio = originalBitmap.width.toFloat() / originalBitmap.height.toFloat()
+                val (newW, newH) = if (ratio > 1) {
+                    maxDim to (maxDim / ratio).toInt()
+                } else {
+                    (maxDim * ratio).toInt() to maxDim
+                }
                 
-                val base64Image = Base64.encodeToString(bytes, Base64.DEFAULT)
+                // Create the final bitmap with rotation applied
+                val scaledBitmap = android.graphics.Bitmap.createScaledBitmap(originalBitmap, newW, newH, true)
+                val rotatedBitmap = android.graphics.Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
+                
+                val outStream = java.io.ByteArrayOutputStream()
+                rotatedBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, outStream)
+                val bytes = outStream.toByteArray()
+                
+                val base64Image = Base64.encodeToString(bytes, Base64.NO_WRAP)
                 
                 val request = mapOf(
                     "user_id" to userId,
@@ -291,16 +330,18 @@ class EditProfileSheet : BottomSheetDialogFragment() {
 
                 withContext(Dispatchers.Main) {
                     pbUploadPhoto.visibility = View.GONE
-                    if (response.isSuccessful && response.body()?.success == true) {
+                    val body = response.body()
+                    if (response.isSuccessful && body?.success == true) {
                         Toast.makeText(requireContext(), "Photo updated!", Toast.LENGTH_SHORT).show()
-                        val newPath = response.body()?.path ?: ""
+                        val newPath = body.path ?: ""
                         activity?.intent?.putExtra("profile_pic", newPath)
                         
                         GymManager.loadProfilePicture(requireContext(), newPath, sheetProfileImage)
                         
                         onSavedListener?.invoke()
                     } else {
-                        Toast.makeText(requireContext(), "Upload failed", Toast.LENGTH_SHORT).show()
+                        val errorMsg = body?.message ?: "Upload failed (Status: ${response.code()})"
+                        Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {

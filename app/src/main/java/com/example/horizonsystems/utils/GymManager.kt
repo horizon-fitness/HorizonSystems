@@ -253,12 +253,37 @@ object GymManager {
      */
     fun loadProfilePicture(context: Context, path: String?, imageView: ImageView?) {
         if (imageView == null) return
-        
+
         if (path.isNullOrEmpty()) {
             imageView.setImageResource(com.example.horizonsystems.R.drawable.ic_profile)
             return
         }
 
+        // --- Base64 data URL (stored directly in DB) ---
+        if (path.startsWith("data:image")) {
+            try {
+                val commaIndex = path.indexOf(',')
+                if (commaIndex >= 0) {
+                    val rawBase64 = path.substring(commaIndex + 1)
+                    val bytes = android.util.Base64.decode(rawBase64, android.util.Base64.DEFAULT)
+                    val bitmap = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    if (bitmap != null) {
+                        Glide.with(context)
+                            .load(bitmap)
+                            .circleCrop()
+                            .into(imageView)
+                        return
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            // Fallback if base64 decode fails
+            imageView.setImageResource(com.example.horizonsystems.R.drawable.ic_profile)
+            return
+        }
+
+        // --- Regular URL or file path ---
         val baseUrl = "https://horizonfitnesscorp.gt.tc/"
         val fullUrl = if (path.startsWith("http")) path else baseUrl + path.removePrefix("/")
 
