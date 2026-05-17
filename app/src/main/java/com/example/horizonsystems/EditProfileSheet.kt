@@ -158,6 +158,11 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 updates["medical_history"] = view.findViewById<TextInputEditText>(R.id.editMedical).text.toString()
                 updates["emergency_contact_name"] = view.findViewById<TextInputEditText>(R.id.editEmergencyName).text.toString()
                 updates["emergency_contact_number"] = view.findViewById<TextInputEditText>(R.id.editEmergencyPhone).text.toString()
+                
+                val hStr = view.findViewById<TextInputEditText>(R.id.editHeightCm).text.toString().trim()
+                val wStr = view.findViewById<TextInputEditText>(R.id.editWeightKg).text.toString().trim()
+                if (hStr.isNotEmpty()) updates["height_cm"] = hStr.toDoubleOrNull() ?: 0.0
+                if (wStr.isNotEmpty()) updates["weight_kg"] = wStr.toDoubleOrNull() ?: 0.0
             }
         }
     }
@@ -208,6 +213,64 @@ class EditProfileSheet : BottomSheetDialogFragment() {
                 view.findViewById<TextInputEditText>(R.id.editMedical).setText(intent.getStringExtra("medical_history"))
                 view.findViewById<TextInputEditText>(R.id.editEmergencyName).setText(intent.getStringExtra("emergency_contact_name"))
                 view.findViewById<TextInputEditText>(R.id.editEmergencyPhone).setText(intent.getStringExtra("emergency_contact_number"))
+                
+                val height = intent.getStringExtra("height_cm") ?: ""
+                val weight = intent.getStringExtra("weight_kg") ?: ""
+                
+                val editHeight = view.findViewById<TextInputEditText>(R.id.editHeightCm)
+                val editWeight = view.findViewById<TextInputEditText>(R.id.editWeightKg)
+                val editBmi = view.findViewById<TextInputEditText>(R.id.editBmiVal)
+                
+                editHeight.setText(height)
+                editWeight.setText(weight)
+                
+                val textWatcher = object : android.text.TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        try {
+                            val hVal = editHeight.text.toString().toDoubleOrNull()
+                            val wVal = editWeight.text.toString().toDoubleOrNull()
+                            if (hVal != null && wVal != null && hVal > 0) {
+                                val hM = hVal / 100.0
+                                val bmiVal = wVal / (hM * hM)
+                                val formatted = String.format(Locale.US, "%.1f", bmiVal)
+                                val classification = when {
+                                    bmiVal < 18.5 -> " (Underweight)"
+                                    bmiVal < 24.9 -> " (Normal)"
+                                    bmiVal < 29.9 -> " (Overweight)"
+                                    else -> " (Obese)"
+                                }
+                                editBmi.setText("$formatted$classification")
+                            } else {
+                                editBmi.setText("")
+                            }
+                        } catch (e: Exception) {
+                            editBmi.setText("")
+                        }
+                    }
+                    override fun afterTextChanged(s: android.text.Editable?) {}
+                }
+                
+                editHeight.addTextChangedListener(textWatcher)
+                editWeight.addTextChangedListener(textWatcher)
+                
+                // Trigger initial calculation
+                if (height.isNotEmpty() && weight.isNotEmpty()) {
+                    val hVal = height.toDoubleOrNull()
+                    val wVal = weight.toDoubleOrNull()
+                    if (hVal != null && wVal != null && hVal > 0) {
+                        val hM = hVal / 100.0
+                        val bmiVal = wVal / (hM * hM)
+                        val formatted = String.format(Locale.US, "%.1f", bmiVal)
+                        val classification = when {
+                            bmiVal < 18.5 -> " (Underweight)"
+                            bmiVal < 24.9 -> " (Normal)"
+                            bmiVal < 29.9 -> " (Overweight)"
+                            else -> " (Obese)"
+                        }
+                        editBmi.setText("$formatted$classification")
+                    }
+                }
             }
             4 -> {
                 view.findViewById<TextInputEditText>(R.id.editMemberCode).setText(intent.getStringExtra("member_code"))

@@ -105,6 +105,9 @@ class ProfileFragment : Fragment() {
                         updates["emergency_contact_name"] = user.emergencyContactName ?: ""
                         updates["emergency_contact_number"] = user.emergencyContactNumber ?: ""
                         updates["profile_pic"] = user.profilePic ?: ""
+                        updates["height_cm"] = user.heightCm?.toString() ?: ""
+                        updates["weight_kg"] = user.weightKg?.toString() ?: ""
+                        updates["bmi"] = user.bmi?.toString() ?: ""
                         
                         (activity as? LandingActivity)?.updateUserData(updates)
                         refreshUI()
@@ -145,6 +148,7 @@ class ProfileFragment : Fragment() {
                     R.id.iconPhone, R.id.iconEmail,
                     R.id.iconAddressLine, R.id.iconBarangay, R.id.iconCity, R.id.iconProvince, R.id.iconRegion,
                     R.id.iconOccupation, R.id.iconMedHistory,
+                    R.id.iconHeight, R.id.iconWeight, R.id.iconBmi,
                     R.id.iconEmergencyName, R.id.iconEmergencyPhone,
                     R.id.iconParentName, R.id.iconParentPhone,
                     R.id.iconMenuNotify, R.id.iconMenuInfo, R.id.iconMenuSecure
@@ -195,6 +199,9 @@ class ProfileFragment : Fragment() {
         val medHistory = intent?.getStringExtra("medical_history") ?: ""
         val emergencyName = intent?.getStringExtra("emergency_contact_name") ?: ""
         val emergencyPhone = intent?.getStringExtra("emergency_contact_number") ?: ""
+        val heightCm = intent?.getStringExtra("height_cm") ?: ""
+        val weightKg = intent?.getStringExtra("weight_kg") ?: ""
+        val bmiVal = intent?.getStringExtra("bmi") ?: ""
         
         // Parent / Guardian
         val parentName = intent?.getStringExtra("parent_name") ?: ""
@@ -255,6 +262,24 @@ class ProfileFragment : Fragment() {
         // 4. Occupation & Health Status
         view.findViewById<TextView>(R.id.profileOccupation)?.text = occupation.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.profileMedHistory)?.text = medHistory.ifEmpty { "None listed" }
+        
+        view.findViewById<TextView>(R.id.profileHeight)?.text = if (heightCm.isNotEmpty()) "$heightCm cm" else "---"
+        view.findViewById<TextView>(R.id.profileWeight)?.text = if (weightKg.isNotEmpty()) "$weightKg kg" else "---"
+        
+        if (bmiVal.isNotEmpty()) {
+            val bmiDouble = bmiVal.toDoubleOrNull()
+            val classification = if (bmiDouble != null) {
+                when {
+                    bmiDouble < 18.5 -> " (Underweight)"
+                    bmiDouble < 24.9 -> " (Normal)"
+                    bmiDouble < 29.9 -> " (Overweight)"
+                    else -> " (Obese)"
+                }
+            } else ""
+            view.findViewById<TextView>(R.id.profileBmi)?.text = "$bmiVal$classification"
+        } else {
+            view.findViewById<TextView>(R.id.profileBmi)?.text = "---"
+        }
 
         // 5. Emergency Contact
         view.findViewById<TextView>(R.id.profileEmergencyName)?.text = emergencyName.ifEmpty { "---" }

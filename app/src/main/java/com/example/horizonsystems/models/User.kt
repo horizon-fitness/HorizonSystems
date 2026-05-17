@@ -35,5 +35,8 @@ data class User(
     @SerializedName("emergency_contact_number") val emergencyContactNumber: String? = null,
     @SerializedName("member_code") val memberCode: String? = null,
     @SerializedName("parent_name") val parentName: String? = null,
-    @SerializedName("parent_contact_number") val parentContactNumber: String? = null
+    @SerializedName("parent_contact_number") val parentContactNumber: String? = null,
+    @SerializedName("height_cm") val heightCm: Double? = null,
+    @SerializedName("weight_kg") val weightKg: Double? = null,
+    @SerializedName("bmi") val bmi: Double? = null
 )
