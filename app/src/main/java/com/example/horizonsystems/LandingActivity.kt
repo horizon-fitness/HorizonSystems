@@ -190,7 +190,7 @@ class LandingActivity : AppCompatActivity() {
                 R.id.nav_booking -> BookingFragment()
                 R.id.nav_membership -> MembershipFragment()
                 R.id.nav_attendance -> AttendanceFragment()
-                R.id.nav_profile -> ProfileFragment()
+                R.id.nav_bmi -> BmiFragment()
                 else -> HomeFragment()
             }
             loadFragment(fragment)
@@ -198,7 +198,7 @@ class LandingActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment(fragment: androidx.fragment.app.Fragment) {
+    fun loadFragment(fragment: androidx.fragment.app.Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
@@ -305,6 +305,15 @@ class LandingActivity : AppCompatActivity() {
                 NotificationSheet().show(supportFragmentManager, "notifications")
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Error showing NotificationSheet: ${e.message}")
+            }
+        }
+
+        findViewById<View>(R.id.btnTopSettings)?.setOnClickListener {
+            // Launch Settings Sheet
+            try {
+                SettingsSheet().show(supportFragmentManager, "settings")
+            } catch (e: Exception) {
+                Log.e("LandingActivity", "Error showing SettingsSheet: ${e.message}")
             }
         }
         

@@ -396,15 +396,9 @@
 
                 <ImageView
                     android:id="@+id/btnTopTransactions"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_marginEnd="8dp"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_receipt"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:tint="@color/white" />
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/btnTopNotifications"
@@ -419,15 +413,21 @@
                     app:tint="@color/white" />
 
                 <ImageView
-                    android:id="@+id/btnTopLogout"
+                    android:id="@+id/btnTopSettings"
                     android:layout_width="38dp"
                     android:layout_height="38dp"
                     android:padding="8dp"
-                    android:src="@drawable/ic_logout"
+                    android:src="@drawable/ic_settings"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
                     app:tint="@color/white" />
+
+                <ImageView
+                    android:id="@+id/btnTopLogout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
             </LinearLayout>
         </RelativeLayout>
 
