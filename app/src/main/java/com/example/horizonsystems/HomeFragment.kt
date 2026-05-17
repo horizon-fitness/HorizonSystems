@@ -235,6 +235,7 @@ class HomeFragment : Fragment() {
             // 4. Labels & Buttons
             view.findViewById<TextView>(R.id.tvUpcomingLabel)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tvPlansHeaderPart2)?.setTextColor(themeColor)
+            view.findViewById<TextView>(R.id.tvDailyPlanHeaderPart2)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tvServicesHeaderPart2)?.setTextColor(themeColor)
             view.findViewById<TextView>(R.id.tvServicesSubtitle)?.setTextColor(textColor)
             view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBookNow)?.let {

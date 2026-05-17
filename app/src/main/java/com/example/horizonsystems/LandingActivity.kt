@@ -35,15 +35,15 @@ class LandingActivity : AppCompatActivity() {
     
     // UI References
     private var loginScrollView: NestedScrollView? = null
-    private var dashContainer: LinearLayout? = null
+    private var dashContainer: android.view.View? = null
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Temporarily disabled to rule out API level issues
-        // enableEdgeToEdge()
+        enableEdgeToEdge()
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
         setContentView(R.layout.activity_landing)
         
         // native splash screen wait removed for speed (0.5s max or just immediate)

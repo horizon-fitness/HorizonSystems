@@ -26,7 +26,7 @@ object ThemeUtils {
         try {
             val color = Color.parseColor(themeColor)
             activity.window.statusBarColor = color
-            activity.window.navigationBarColor = Color.BLACK
+            activity.window.navigationBarColor = Color.TRANSPARENT
         } catch (e: Exception) {
             // Fallback to default
         }

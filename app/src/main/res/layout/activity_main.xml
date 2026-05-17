@@ -18,23 +18,37 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="80dp" />
+        android:layout_height="match_parent" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        style="@style/Widget.App.BottomNavigationView"
-        android:id="@+id/bottomNavigationView"
+    <!-- Floating Glassmorphic Pill Tab Navigation Bar -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom"
-        android:background="@color/landing_background"
-        app:elevation="8dp"
-        app:itemIconSize="26dp"
-        app:itemIconTint="@color/nav_item_selector"
-        app:itemPaddingBottom="12dp"
-        app:itemPaddingTop="12dp"
-        app:itemRippleColor="@android:color/transparent"
-        app:labelVisibilityMode="unlabeled" />
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="#CC121115"
+        app:strokeColor="#1AFFFFFF"
+        app:strokeWidth="1dp">
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            style="@style/Widget.App.BottomNavigationView"
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:backgroundTint="@android:color/transparent"
+            android:translationY="6dp"
+            app:elevation="0dp"
+            app:itemIconSize="24dp"
+            app:itemIconTint="@color/nav_item_selector"
+            app:paddingBottomSystemWindowInsets="false"
+            app:paddingTopSystemWindowInsets="false"
+            app:itemPaddingTop="0dp"
+            app:itemPaddingBottom="0dp"
+            app:labelVisibilityMode="unlabeled" />
+    </com.google.android.material.card.MaterialCardView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

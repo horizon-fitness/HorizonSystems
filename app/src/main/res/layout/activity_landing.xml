@@ -327,18 +327,19 @@
     </androidx.core.widget.NestedScrollView>
 
     <!-- Dash Container (Moved out of scrollable area to keep navigation fixed at bottom) -->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/dashContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:visibility="gone"
         android:background="@color/landing_background">
 
         <!-- Top Header Navigation (Persistent across all fragments) -->
         <RelativeLayout
+            android:id="@+id/landingHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:paddingHorizontal="16dp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp">
@@ -431,23 +432,44 @@
             </LinearLayout>
         </RelativeLayout>
 
+        <!-- Fragment Container fills the rest of the screen and scrolls behind the floating card -->
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_below="@id/landingHeader" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            style="@style/Widget.App.BottomNavigationView"
+        <!-- Floating Glassmorphic Pill Tab Navigation Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/navCard"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@color/landing_background"
-            app:elevation="8dp"
-            app:itemIconSize="26dp"
-            app:itemIconTint="@color/nav_item_selector"
-            app:labelVisibilityMode="unlabeled" />
-    </LinearLayout>
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#CC121115"
+            app:strokeColor="#1AFFFFFF"
+            app:strokeWidth="1dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigationView"
+                style="@style/Widget.App.BottomNavigationView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:backgroundTint="@android:color/transparent"
+                android:translationY="6dp"
+                app:elevation="0dp"
+                app:itemIconSize="24dp"
+                app:paddingBottomSystemWindowInsets="false"
+                app:paddingTopSystemWindowInsets="false"
+                app:itemPaddingTop="0dp"
+                app:itemPaddingBottom="0dp"
+                app:labelVisibilityMode="unlabeled" />
+        </com.google.android.material.card.MaterialCardView>
+    </RelativeLayout>
 
     <!-- Loading Overlay -->
     <FrameLayout

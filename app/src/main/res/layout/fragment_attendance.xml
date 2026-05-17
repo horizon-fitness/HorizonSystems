@@ -3,6 +3,8 @@
     android:id="@+id/attendanceRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="100dp"
+    android:clipToPadding="false"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="100dp"
+    android:clipToPadding="false"
     android:background="@android:color/transparent"
     android:fillViewport="true"
     android:scrollbars="none">
@@ -10,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="100dp"
+        android:paddingBottom="0dp"
         android:paddingTop="24dp">
 
         <LinearLayout
