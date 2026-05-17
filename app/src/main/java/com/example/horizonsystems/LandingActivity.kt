@@ -26,6 +26,7 @@ import kotlinx.coroutines.withContext
 
 import com.example.horizonsystems.utils.NetworkBypass
 import com.example.horizonsystems.utils.GymManager
+import com.example.horizonsystems.utils.ThemeUtils
 
 class LandingActivity : AppCompatActivity() {
 
@@ -55,6 +56,7 @@ class LandingActivity : AppCompatActivity() {
         if (!cachedBg.isNullOrEmpty()) {
             try { rootLayout.setBackgroundColor(android.graphics.Color.parseColor(cachedBg)) } catch(e: Exception) {}
         }
+        ThemeUtils.applyThemeToActivity(this)
         
         // Initialize view references
         loginScrollView = findViewById(R.id.loginScrollView)
@@ -553,6 +555,10 @@ class LandingActivity : AppCompatActivity() {
     private fun applyDynamicColors(themeColor: String) {
         try {
             val color = android.graphics.Color.parseColor(themeColor)
+            
+            // Apply Dynamic Status/Navigation Bar Styling to blend seamlessly
+            ThemeUtils.applyThemeToActivity(this)
+            
             val btnSignIn = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSignIn)
             val btnSwitchGym = findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSwitchGym)
             val rememberMe = findViewById<android.widget.CheckBox>(R.id.rememberMe)
@@ -566,9 +572,12 @@ class LandingActivity : AppCompatActivity() {
             btnForgotPassword?.setTextColor(color)
             btnCreateAccount?.setTextColor(color)
 
-            // 5. Update Bottom Navigation (Active Tint & Background)
+            // 5. Update Bottom Navigation (Reverted to original styling)
             val bottomNav = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)
             if (bottomNav != null) {
+                // Ensure no active indicator background pill is drawn
+                bottomNav.itemActiveIndicatorColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
+                
                 // Dynamic StateList for icons
                 val states = arrayOf(
                     intArrayOf(android.R.attr.state_checked),
@@ -586,7 +595,12 @@ class LandingActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     android.graphics.Color.parseColor("#050505")
                 }
-                bottomNav.setBackgroundColor(bColor)
+                
+                // Apply solid background to parent navCard so it's not cut off by translationY
+                bottomNav.background = null
+                bottomNav.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
+                val navCard = findViewById<com.google.android.material.card.MaterialCardView>(R.id.navCard)
+                navCard?.setCardBackgroundColor(android.content.res.ColorStateList.valueOf(bColor))
             }
         } catch (e: Exception) {
             Log.e("LandingActivity", "Error parsing color: $themeColor")
@@ -602,6 +616,9 @@ class LandingActivity : AppCompatActivity() {
                 val bg = android.graphics.Color.parseColor(it)
                 findViewById<android.view.View>(R.id.rootLayout).setBackgroundColor(bg)
                 findViewById<android.view.View>(android.R.id.content).rootView.setBackgroundColor(bg)
+                
+                // Re-apply activity theme so the status bar gets the newly updated background color
+                ThemeUtils.applyThemeToActivity(this)
             } catch (e: Exception) {
                 Log.e("LandingActivity", "Invalid bg color: $it")
             }

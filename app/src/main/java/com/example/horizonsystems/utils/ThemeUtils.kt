@@ -22,13 +22,22 @@ object ThemeUtils {
      * Applies the gym's theme color to the Activity's Status Bar and Navigation Bar.
      */
     fun applyThemeToActivity(activity: Activity) {
-        val themeColor = GymManager.getThemeColor(activity)
+        val bgColorStr = GymManager.getBgColor(activity)
+        val themeColorStr = GymManager.getThemeColor(activity)
         try {
-            val color = Color.parseColor(themeColor)
+            val color = if (bgColorStr.isNotEmpty()) {
+                Color.parseColor(bgColorStr)
+            } else {
+                Color.parseColor(themeColorStr)
+            }
             activity.window.statusBarColor = color
             activity.window.navigationBarColor = Color.TRANSPARENT
         } catch (e: Exception) {
-            // Fallback to default
+            try {
+                activity.window.statusBarColor = Color.parseColor(themeColorStr)
+            } catch (ex: Exception) {
+                // Fallback to default
+            }
         }
     }
 
@@ -36,15 +45,23 @@ object ThemeUtils {
      * Re-tints the BottomNavigationView items (active state) with the gym's theme color.
      */
     fun applyThemeToBottomNav(bottomNav: BottomNavigationView) {
+        // Strip any default backgrounds or shadows that create horizontal split lines
+        bottomNav.background = null
+        bottomNav.elevation = 0f
+        
         val themeColor = GymManager.getThemeColor(bottomNav.context)
         try {
             val color = Color.parseColor(themeColor)
+            
+            // Set the active indicator pill color to the dynamic gym theme color
+            bottomNav.itemActiveIndicatorColor = ColorStateList.valueOf(color)
+            
             val states = arrayOf(
                 intArrayOf(android.R.attr.state_checked),
                 intArrayOf(-android.R.attr.state_checked)
             )
             val colors = intArrayOf(
-                color,
+                Color.WHITE, // Active icon is white to contrast beautifully inside the colored pill
                 Color.parseColor("#80FFFFFF") // 50% White for inactive
             )
             val colorList = ColorStateList(states, colors)
@@ -54,7 +71,7 @@ object ThemeUtils {
             bottomNav.itemRippleColor = ColorStateList.valueOf(color.adjustAlpha(0.1f))
             
         } catch (e: Exception) {
-            // Fallback to default purple
+            // Fallback to default
         }
     }
 
