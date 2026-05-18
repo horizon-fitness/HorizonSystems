@@ -74,6 +74,18 @@ class HomeFragment : Fragment() {
         view.findViewById<View>(R.id.todayStatusCard)?.setOnClickListener(bookClick)
         view.findViewById<View>(R.id.btnBookNow)?.setOnClickListener(bookClick)
 
+        // Membership Card and Manage clicks
+        val membershipClick = View.OnClickListener {
+            val landingActivity = activity as? LandingActivity
+            if (landingActivity != null) {
+                landingActivity.loadFragment(MembershipFragment())
+            } else {
+                (activity as? MainActivity)?.loadFragment(MembershipFragment())
+            }
+        }
+        view.findViewById<View>(R.id.cardMembership)?.setOnClickListener(membershipClick)
+        view.findViewById<View>(R.id.btnManageMembership)?.setOnClickListener(membershipClick)
+
         // Services Offered Setup
         val rvServices = view.findViewById<RecyclerView>(R.id.rvServicesPreview)
         rvServices?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -302,7 +314,12 @@ class HomeFragment : Fragment() {
                                 "price" to plan.price,
                                 "days" to plan.durationDays
                             ))
-                            (activity as? LandingActivity)?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.nav_membership
+                            val landingActivity = activity as? LandingActivity
+                            if (landingActivity != null) {
+                                landingActivity.loadFragment(MembershipFragment())
+                            } else {
+                                (activity as? MainActivity)?.loadFragment(MembershipFragment())
+                            }
                         }
                         rvPreview.adapter = adapter
                     } else {

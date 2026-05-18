@@ -40,6 +40,17 @@ class SettingsSheet : BottomSheetDialogFragment() {
             landingActivity?.loadFragment(PaymentFragment())
         }
 
+        // Membership Button Click
+        view.findViewById<View>(R.id.btnSettingMembership)?.setOnClickListener {
+            dismiss()
+            val landingActivity = activity as? LandingActivity
+            if (landingActivity != null) {
+                landingActivity.loadFragment(MembershipFragment())
+            } else {
+                (activity as? MainActivity)?.loadFragment(MembershipFragment())
+            }
+        }
+
         // Sign Out Button Click
         view.findViewById<View>(R.id.btnSettingLogout)?.setOnClickListener {
             dismiss()
@@ -61,9 +72,11 @@ class SettingsSheet : BottomSheetDialogFragment() {
                 // Brand the icon tints inside the actions
                 val iconProfile = view.findViewById<ImageView>(R.id.iconProfile)
                 val iconTransactions = view.findViewById<ImageView>(R.id.iconTransactions)
+                val iconMembership = view.findViewById<ImageView>(R.id.iconMembership)
                 
                 iconProfile?.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
                 iconTransactions?.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                iconMembership?.imageTintList = android.content.res.ColorStateList.valueOf(themeColor)
             } catch (e: Exception) {}
         }
 

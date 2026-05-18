@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             val fragment = when (item.itemId) {
                 R.id.nav_home -> HomeFragment()
                 R.id.nav_booking -> BookingFragment()
-                R.id.nav_membership -> MembershipFragment()
+                R.id.nav_workout -> WorkoutFragment()
                 R.id.nav_attendance -> AttendanceFragment()
                 R.id.nav_bmi -> BmiFragment()
                 else -> HomeFragment()
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment(fragment: androidx.fragment.app.Fragment) {
+    fun loadFragment(fragment: androidx.fragment.app.Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

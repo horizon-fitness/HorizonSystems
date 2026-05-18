@@ -190,7 +190,7 @@ class LandingActivity : AppCompatActivity() {
             val fragment = when (item.itemId) {
                 R.id.nav_home -> HomeFragment()
                 R.id.nav_booking -> BookingFragment()
-                R.id.nav_membership -> MembershipFragment()
+                R.id.nav_workout -> WorkoutFragment()
                 R.id.nav_attendance -> AttendanceFragment()
                 R.id.nav_bmi -> BmiFragment()
                 else -> HomeFragment()

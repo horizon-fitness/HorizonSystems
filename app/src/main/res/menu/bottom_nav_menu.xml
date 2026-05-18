@@ -13,11 +13,11 @@
         android:icon="@drawable/ic_bmi"
         android:title="BMI" />
     <item
-        android:id="@+id/nav_membership"
-        android:icon="@drawable/ic_membership"
-        android:title="Membership" />
+        android:id="@+id/nav_workout"
+        android:icon="@drawable/ic_dumbbell"
+        android:title="Workout" />
     <item
         android:id="@+id/nav_attendance"
-        android:icon="@drawable/ic_appointment"
+        android:icon="@drawable/ic_qr_code"
         android:title="Attendance" />
 </menu>
