@@ -32,31 +32,60 @@ class AttendanceSortSheet : BottomSheetDialogFragment() {
     }
 
     private fun setupLogic(view: View) {
-        val btnClose = view.findViewById<View>(R.id.btnCloseSheet)
-        btnClose?.setOnClickListener { dismiss() }
+        val rgSort = view.findViewById<android.widget.RadioGroup>(R.id.rgSortOptions)
+        val btnApply = view.findViewById<View>(R.id.btnApplySort)
 
-        val sortOptions = listOf(
-            view.findViewById<TextView>(R.id.optionNewest),
-            view.findViewById<TextView>(R.id.optionOldest)
-        )
+        when(currentSort) {
+            "NEWEST" -> view.findViewById<android.widget.RadioButton>(R.id.rbNewest)?.isChecked = true
+            "OLDEST" -> view.findViewById<android.widget.RadioButton>(R.id.rbOldest)?.isChecked = true
+        }
 
-        sortOptions.forEach { option ->
-            option?.setOnClickListener {
-                val selectedSort = when(option.id) {
-                    R.id.optionOldest -> "OLDEST"
-                    else -> "NEWEST"
-                }
-                listener?.onSortSelected(selectedSort)
-                dismiss()
+        btnApply?.setOnClickListener {
+            val selectedSort = when(rgSort?.checkedRadioButtonId) {
+                R.id.rbOldest -> "OLDEST"
+                else -> "NEWEST"
             }
+            listener?.onSortSelected(selectedSort)
+            dismiss()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
+            it.setBackgroundResource(android.R.color.transparent)
         }
     }
 
     private fun applyBranding(view: View) {
         val ctx = context ?: return
-        val themeColor = Color.parseColor(GymManager.getThemeColor(ctx))
-        val bgColor = Color.parseColor(GymManager.getBgColor(ctx))
         
-        view.findViewById<View>(R.id.sheetRoot)?.setBackgroundColor(bgColor)
+        view.findViewById<android.widget.LinearLayout>(R.id.sheetRoot)?.let { root ->
+            val shape = android.graphics.drawable.GradientDrawable()
+            shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            val bgColor = try { Color.parseColor(GymManager.getBgColor(ctx)) } 
+                          catch(e: Exception) { Color.parseColor("#151518") }
+            shape.setColor(bgColor)
+            val radius = (28 * ctx.resources.displayMetrics.density)
+            shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+            root.background = shape
+        }
+
+        val themeColorStr = GymManager.getThemeColor(ctx)
+        if (!themeColorStr.isNullOrEmpty()) {
+            try {
+                val themeColor = android.graphics.Color.parseColor(themeColorStr)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.backgroundTintList = 
+                    android.content.res.ColorStateList.valueOf(themeColor)
+                
+                val rg = view.findViewById<android.widget.RadioGroup>(R.id.rgSortOptions)
+                for (i in 0 until (rg?.childCount ?: 0)) {
+                    val rb = rg?.getChildAt(i) as? android.widget.RadioButton
+                    rb?.buttonTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                }
+            } catch (e: Exception) {}
+        }
     }
+
+    override fun getTheme(): Int = R.style.CustomBottomSheetDialogTheme
 }

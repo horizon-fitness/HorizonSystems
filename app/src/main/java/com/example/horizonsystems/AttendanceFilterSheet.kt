@@ -39,27 +39,40 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
     }
 
     private fun setupLogic(view: View) {
-        val btnClose = view.findViewById<View>(R.id.btnCloseSheet)
-        btnClose?.setOnClickListener { dismiss() }
 
-        val statusChips = listOf(
-            view.findViewById<TextView>(R.id.chipAll),
-            view.findViewById<TextView>(R.id.chipActive),
-            view.findViewById<TextView>(R.id.chipCompleted)
-        )
+        val cbAll = view.findViewById<android.widget.CheckBox>(R.id.cbStatusAll)
+        val cbActive = view.findViewById<android.widget.CheckBox>(R.id.cbStatusActive)
+        val cbCompleted = view.findViewById<android.widget.CheckBox>(R.id.cbStatusCompleted)
 
-        statusChips.forEach { chip ->
-            chip?.setOnClickListener {
-                currentStatus = when(chip.id) {
-                    R.id.chipActive -> "Active"
-                    R.id.chipCompleted -> "Completed"
-                    else -> "ALL"
-                }
-                updateChips(statusChips)
+        var isUpdating = true
+        if (currentStatus == "ALL") {
+            cbAll?.isChecked = true; cbActive?.isChecked = false; cbCompleted?.isChecked = false
+        } else {
+            cbAll?.isChecked = false
+            val filters = currentStatus.split(",")
+            cbActive?.isChecked = filters.contains("Active")
+            cbCompleted?.isChecked = filters.contains("Completed")
+        }
+        isUpdating = false
+
+        val checkBoxes = listOf(cbActive, cbCompleted)
+        cbAll?.setOnCheckedChangeListener { _, isChecked ->
+            if (isUpdating) return@setOnCheckedChangeListener
+            if (isChecked) {
+                isUpdating = true
+                checkBoxes.forEach { it?.isChecked = false }
+                isUpdating = false
             }
         }
 
-        updateChips(statusChips)
+        val childListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
+            if (!isUpdating && isChecked) {
+                isUpdating = true
+                cbAll?.isChecked = false
+                isUpdating = false
+            }
+        }
+        checkBoxes.forEach { it?.setOnCheckedChangeListener(childListener) }
 
         // Date Picker Setup
         val tvFromDate = view.findViewById<TextView>(R.id.tvFromDate)
@@ -96,11 +109,21 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
         }
 
         view.findViewById<View>(R.id.btnApplyFilters)?.setOnClickListener {
+            val selected = mutableListOf<String>()
+            if (cbActive?.isChecked == true) selected.add("Active")
+            if (cbCompleted?.isChecked == true) selected.add("Completed")
+
+            currentStatus = if (cbAll?.isChecked == true || selected.size == 2 || selected.isEmpty()) {
+                "ALL"
+            } else {
+                selected.joinToString(",")
+            }
+
             listener?.onFiltersApplied(currentStatus, startDate, endDate)
             dismiss()
         }
 
-        view.findViewById<View>(R.id.btnResetFilters)?.setOnClickListener {
+        view.findViewById<View>(R.id.tvClearAll)?.setOnClickListener {
             currentStatus = "ALL"
             startDate = null
             endDate = null
@@ -109,33 +132,40 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun updateChips(chips: List<TextView?>) {
-        val ctx = context ?: return
-        val themeColor = Color.parseColor(GymManager.getThemeColor(ctx))
-        
-        chips.forEach { chip ->
-            val isSelected = when(chip?.id) {
-                R.id.chipActive -> currentStatus == "Active"
-                R.id.chipCompleted -> currentStatus == "Completed"
-                else -> currentStatus == "ALL"
-            }
 
-            if (isSelected) {
-                chip?.setTextColor(Color.WHITE)
-                chip?.backgroundTintList = ColorStateList.valueOf(themeColor)
-            } else {
-                chip?.setTextColor(Color.parseColor("#94A3B8"))
-                chip?.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#1AFFFFFF"))
-            }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
+            it.setBackgroundResource(android.R.color.transparent)
         }
     }
 
     private fun applyBranding(view: View) {
         val ctx = context ?: return
         val themeColor = Color.parseColor(GymManager.getThemeColor(ctx))
-        val bgColor = Color.parseColor(GymManager.getBgColor(ctx))
         
-        view.findViewById<View>(R.id.sheetRoot)?.setBackgroundColor(bgColor)
-        view.findViewById<TextView>(R.id.btnApplyFilters)?.backgroundTintList = ColorStateList.valueOf(themeColor)
+        view.findViewById<android.widget.LinearLayout>(R.id.sheetRoot)?.let { root ->
+            val shape = android.graphics.drawable.GradientDrawable()
+            shape.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            val bgColor = try { Color.parseColor(GymManager.getBgColor(ctx)) } 
+                          catch(e: Exception) { Color.parseColor("#151518") }
+            shape.setColor(bgColor)
+            val radius = (28 * ctx.resources.displayMetrics.density)
+            shape.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+            root.background = shape
+        }
+
+        view.findViewById<TextView>(R.id.btnApplyFilters)?.let { btn ->
+            btn.backgroundTintList = ColorStateList.valueOf(themeColor)
+            btn.setTextColor(Color.WHITE)
+        }
+
+        val checkBoxes = listOf(R.id.cbStatusAll, R.id.cbStatusActive, R.id.cbStatusCompleted)
+        checkBoxes.forEach { id ->
+            view.findViewById<android.widget.CheckBox>(id)?.buttonTintList = ColorStateList.valueOf(themeColor)
+        }
     }
+
+    override fun getTheme(): Int = R.style.CustomBottomSheetDialogTheme
 }

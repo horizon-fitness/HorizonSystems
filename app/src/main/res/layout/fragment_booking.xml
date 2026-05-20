@@ -271,8 +271,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_prev_booking"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
@@ -280,25 +280,25 @@
                 android:padding="0dp"
                 app:icon="@drawable/ic_chevron_left"
                 app:iconGravity="textStart"
-                app:iconSize="16dp"
+                app:iconSize="24dp"
                 app:iconTint="#A855F7" />
 
             <TextView
                 android:id="@+id/tv_page_number_booking"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="6dp"
+                android:layout_marginHorizontal="12dp"
                 android:alpha="0.5"
                 android:fontFamily="sans-serif-black"
-                android:text="1/1"
+                android:text="1 / 1"
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_next_booking"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
@@ -306,7 +306,7 @@
                 android:padding="0dp"
                 app:icon="@drawable/ic_chevron_right"
                 app:iconGravity="textStart"
-                app:iconSize="16dp"
+                app:iconSize="24dp"
                 app:iconTint="#A855F7" />
         </LinearLayout>
 

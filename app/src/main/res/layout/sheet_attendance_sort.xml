@@ -5,70 +5,60 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:background="#0a090d">
+    android:padding="24dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!-- Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:background="#33FFFFFF" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SORT LOGS"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.05" />
-
-        <ImageButton
-            android:id="@+id/btnCloseSheet"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_close"
-            app:tint="@color/white"
-            android:alpha="0.4"
-            android:padding="8dp"
-            android:scaleType="centerInside" />
-    </RelativeLayout>
-
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical">
+        android:text="Sort logs"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-black" />
 
-        <TextView
-            android:id="@+id/optionNewest"
+    <RadioGroup
+        android:id="@+id/rgSortOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbNewest"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:gravity="center_vertical"
+            android:layout_height="56dp"
             android:text="Newest First"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:fontFamily="sans-serif-medium"
-            android:background="?attr/selectableItemBackground"
-            android:paddingHorizontal="12dp" />
+            app:buttonTint="@color/white" />
 
-        <View
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/rbOldest"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#1AFFFFFF" />
-
-        <TextView
-            android:id="@+id/optionOldest"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:gravity="center_vertical"
+            android:layout_height="56dp"
             android:text="Oldest First"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:fontFamily="sans-serif-medium"
-            android:background="?attr/selectableItemBackground"
-            android:paddingHorizontal="12dp" />
+            app:buttonTint="@color/white" />
+    </RadioGroup>
 
-    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApplySort"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Apply Sorting"
+        android:textAllCaps="false"
+        android:fontFamily="sans-serif-black"
+        app:cornerRadius="16dp" />
 
 </LinearLayout>

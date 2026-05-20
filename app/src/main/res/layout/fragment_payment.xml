@@ -143,8 +143,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_prev"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -152,24 +152,24 @@
             android:padding="0dp"
             app:icon="@drawable/ic_chevron_left"
             app:iconTint="#A855F7"
-            app:iconSize="14dp" />
+            app:iconSize="24dp" />
 
         <TextView
             android:id="@+id/tv_page_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="6dp"
-            android:text="1/1"
+            android:layout_marginHorizontal="12dp"
+            android:text="1 / 1"
             android:textColor="@color/white"
-            android:textSize="9sp"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-black"
             android:alpha="0.4" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_next"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -177,7 +177,7 @@
             android:padding="0dp"
             app:icon="@drawable/ic_chevron_right"
             app:iconTint="#A855F7"
-            app:iconSize="14dp" />
+            app:iconSize="24dp" />
     </LinearLayout>
 
     <FrameLayout
