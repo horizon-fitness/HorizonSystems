@@ -239,6 +239,7 @@ class VerifyActivity : AppCompatActivity() {
                 val color = android.graphics.Color.parseColor(themeColor)
                 val csl = android.content.res.ColorStateList.valueOf(color)
                 btnVerify.backgroundTintList = csl
+                btnVerify.setTextColor(android.graphics.Color.WHITE)
                 btnResendPin.setTextColor(color)
             }
             if (!bgColor.isNullOrEmpty()) {

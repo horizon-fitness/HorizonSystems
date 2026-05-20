@@ -75,8 +75,10 @@ class AttendanceSortSheet : BottomSheetDialogFragment() {
         if (!themeColorStr.isNullOrEmpty()) {
             try {
                 val themeColor = android.graphics.Color.parseColor(themeColorStr)
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.backgroundTintList = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.let { btn ->
+                    btn.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
                 
                 val rg = view.findViewById<android.widget.RadioGroup>(R.id.rgSortOptions)
                 for (i in 0 until (rg?.childCount ?: 0)) {

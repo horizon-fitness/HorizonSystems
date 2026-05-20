@@ -110,6 +110,7 @@ object ThemeUtils {
                 if (view.tag == "no_theme_override") return
                 if (view.backgroundTintList != null || view.id != View.NO_ID) {
                      view.backgroundTintList = colorList
+                     view.setTextColor(Color.WHITE)
                 }
             }
             is FloatingActionButton -> {

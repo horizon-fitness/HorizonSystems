@@ -58,6 +58,7 @@ class HomeServiceAdapter(
         
         // 2. Branding Application
         holder.btnBookServiceAction.backgroundTintList = ColorStateList.valueOf(themeColor)
+        holder.btnBookServiceAction.setTextColor(Color.WHITE)
         holder.cvHomeServiceBadge.setCardBackgroundColor(ColorStateList.valueOf(themeColor).withAlpha(40))
         holder.cardHomeService.setCardBackgroundColor(cardSurface)
         holder.cardHomeService.setStrokeColor(ColorStateList.valueOf(themeColor).withAlpha(40))

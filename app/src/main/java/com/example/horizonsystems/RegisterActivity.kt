@@ -687,7 +687,9 @@ class RegisterActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.registerStepIndicator)?.setTextColor(color)
                 findViewById<TextView>(R.id.btnSignBack)?.setTextColor(color)
                 btnNext.backgroundTintList = csl
+                btnNext.setTextColor(android.graphics.Color.WHITE)
                 btnRegister.backgroundTintList = csl
+                btnRegister.setTextColor(android.graphics.Color.WHITE)
             }
             
             if (!bgColor.isNullOrEmpty()) {

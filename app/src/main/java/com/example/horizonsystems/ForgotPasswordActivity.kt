@@ -223,8 +223,14 @@ class ForgotPasswordActivity : AppCompatActivity() {
             val colorStateList = android.content.res.ColorStateList.valueOf(color)
             findViewById<View>(R.id.rootLayout)?.setBackgroundColor(bg)
             findViewById<TextView>(R.id.stepIndicator)?.setTextColor(color)
-            findViewById<MaterialButton>(R.id.btnNext)?.backgroundTintList = colorStateList
-            findViewById<MaterialButton>(R.id.btnResetPass)?.backgroundTintList = colorStateList
+            findViewById<MaterialButton>(R.id.btnNext)?.let { btn ->
+                btn.backgroundTintList = colorStateList
+                btn.setTextColor(android.graphics.Color.WHITE)
+            }
+            findViewById<MaterialButton>(R.id.btnResetPass)?.let { btn ->
+                btn.backgroundTintList = colorStateList
+                btn.setTextColor(android.graphics.Color.WHITE)
+            }
             btnResendOtp.setTextColor(color)
         } catch (e: Exception) {}
     }

@@ -86,8 +86,10 @@ class PaymentSortSheet : BottomSheetDialogFragment() {
                     root.background = shape
                 }
 
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.backgroundTintList = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.let { btn ->
+                    btn.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
                 
                 // Radio buttons tint
                 val rg = view.findViewById<RadioGroup>(R.id.rgSortOptions)

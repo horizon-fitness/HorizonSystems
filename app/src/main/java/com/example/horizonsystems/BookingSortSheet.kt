@@ -83,8 +83,10 @@ class BookingSortSheet : BottomSheetDialogFragment() {
                     root.background = shape
                 }
 
-                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.backgroundTintList = 
-                    android.content.res.ColorStateList.valueOf(themeColor)
+                view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplySort)?.let { btn ->
+                    btn.backgroundTintList = android.content.res.ColorStateList.valueOf(themeColor)
+                    btn.setTextColor(android.graphics.Color.WHITE)
+                }
                 
                 val radios = listOf(R.id.rbNewest, R.id.rbOldest, R.id.rbCoach)
                 radios.forEach { id ->
