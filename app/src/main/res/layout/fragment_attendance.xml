@@ -361,6 +361,7 @@
                     android:scaleType="centerInside" />
             </LinearLayout>
 
+
             <View
                 android:id="@+id/divider_attendance"
                 android:layout_width="match_parent"
@@ -376,6 +377,64 @@
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/divider_attendance" />
+
+            <!-- Pagination -->
+            <LinearLayout
+                android:id="@+id/pagination_container_attendance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/rvAttendanceLogs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_prev_attendance"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:visibility="invisible"
+                    app:icon="@drawable/ic_chevron_left"
+                    app:iconGravity="textStart"
+                    app:iconSize="24dp"
+                    app:iconPadding="0dp"
+                    app:iconTint="#A855F7"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp" />
+
+                <TextView
+                    android:id="@+id/tv_page_number_attendance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="1 / 1"
+                    android:textColor="@color/white"
+                    android:alpha="0.6"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_next_attendance"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:visibility="invisible"
+                    app:icon="@drawable/ic_chevron_right"
+                    app:iconGravity="textStart"
+                    app:iconSize="24dp"
+                    app:iconPadding="0dp"
+                    app:iconTint="#A855F7"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/emptyStateAttendance"

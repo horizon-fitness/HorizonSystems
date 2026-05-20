@@ -45,6 +45,10 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     private var startDate: Long? = null
     private var endDate: Long? = null
 
+    private var currentPage = 1
+    private val itemsPerPage = 5
+    private var totalPagesCount = 1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,6 +62,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         
         setupTabs(view)
         setupSearchAndFilters(view)
+        setupPagination(view)
         
         // Manual Start Launcher
         view.findViewById<View>(R.id.layoutStartScanner)?.setOnClickListener {
@@ -65,6 +70,21 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         }
         
         return view
+    }
+
+    private fun setupPagination(view: View) {
+        view.findViewById<View>(R.id.btn_prev_attendance)?.setOnClickListener {
+            if (currentPage > 1) {
+                currentPage--
+                applyFilterAndSort()
+            }
+        }
+        view.findViewById<View>(R.id.btn_next_attendance)?.setOnClickListener {
+            if (currentPage < totalPagesCount) {
+                currentPage++
+                applyFilterAndSort()
+            }
+        }
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,6 +127,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchQuery = s.toString().trim()
+                currentPage = 1
                 applyFilterAndSort()
             }
             override fun afterTextChanged(s: android.text.Editable?) {}
@@ -129,19 +150,28 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         this.currentFilterStatus = status
         this.startDate = start
         this.endDate = end
+        this.currentPage = 1
         applyFilterAndSort()
     }
 
     override fun onSortSelected(sort: String) {
         this.currentSort = sort
+        this.currentPage = 1
         applyFilterAndSort()
     }
 
     private fun applyFilterAndSort() {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
         val filtered = fullLogsList.filter { log ->
             val statusMatch = if (currentFilterStatus == "ALL") true else log.status.contains(currentFilterStatus, ignoreCase = true)
             val searchMatch = if (searchQuery.isEmpty()) true else log.gymName.contains(searchQuery, ignoreCase = true) || log.date.contains(searchQuery, ignoreCase = true)
-            statusMatch && searchMatch
+            val dateMatch = if (startDate != null && endDate != null) {
+                try {
+                    val logDate = sdf.parse(log.date)?.time ?: 0L
+                    logDate in startDate!!..endDate!!
+                } catch (e: Exception) { true }
+            } else true
+            statusMatch && searchMatch && dateMatch
         }
 
         val sorted = when(currentSort) {
@@ -149,8 +179,15 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             else -> filtered.sortedByDescending { it.date }
         }
 
+        totalPagesCount = Math.max(1, Math.ceil(sorted.size.toDouble() / itemsPerPage).toInt())
+        if (currentPage > totalPagesCount) currentPage = totalPagesCount
+        if (currentPage < 1) currentPage = 1
+
+        val startIndex = (currentPage - 1) * itemsPerPage
+        val pageItems = if (sorted.isEmpty()) emptyList() else sorted.subList(startIndex, Math.min(startIndex + itemsPerPage, sorted.size))
+
         displayLogsList.clear()
-        displayLogsList.addAll(sorted)
+        displayLogsList.addAll(pageItems)
         attendanceAdapter.updateLogs(displayLogsList)
 
         val rv = view?.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
@@ -169,6 +206,17 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             // Ensure the newest scan is visible at the top
             rv?.scrollToPosition(0)
         }
+
+        // Update pagination UI
+        val pContainer = view?.findViewById<View>(R.id.pagination_container_attendance)
+        val tvPageNum = view?.findViewById<TextView>(R.id.tv_page_number_attendance)
+        val btnPrev = view?.findViewById<View>(R.id.btn_prev_attendance)
+        val btnNext = view?.findViewById<View>(R.id.btn_next_attendance)
+
+        pContainer?.visibility = if (totalPagesCount > 1) View.VISIBLE else View.GONE
+        tvPageNum?.text = "$currentPage / $totalPagesCount"
+        btnPrev?.visibility = if (currentPage > 1) View.VISIBLE else View.INVISIBLE
+        btnNext?.visibility = if (currentPage < totalPagesCount) View.VISIBLE else View.INVISIBLE
     }
 
     private fun setupTabs(view: View) {
@@ -349,6 +397,16 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             // 6. Processing Overlay Branding
             view.findViewById<android.widget.ProgressBar>(R.id.pbScanner)?.indeterminateTintList = ColorStateList.valueOf(themeColor)
             view.findViewById<TextView>(R.id.tvScannerProcessing)?.setTextColor(Color.WHITE) // High contrast
+
+            // 7. Pagination Buttons
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_prev_attendance)?.let { btn ->
+                btn.setIconTint(ColorStateList.valueOf(themeColor))
+                btn.setStrokeColor(ColorStateList.valueOf(themeColor.withAlpha(50)))
+            }
+            view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_next_attendance)?.let { btn ->
+                btn.setIconTint(ColorStateList.valueOf(themeColor))
+                btn.setStrokeColor(ColorStateList.valueOf(themeColor.withAlpha(50)))
+            }
             
         } catch (e: Exception) {
             e.printStackTrace()

@@ -9,6 +9,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.graphics.Color
 import android.content.res.ColorStateList
 import com.example.horizonsystems.utils.GymManager
+import android.app.DatePickerDialog
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AttendanceFilterSheet : BottomSheetDialogFragment() {
 
@@ -57,6 +60,40 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
         }
 
         updateChips(statusChips)
+
+        // Date Picker Setup
+        val tvFromDate = view.findViewById<TextView>(R.id.tvFromDate)
+        val tvToDate = view.findViewById<TextView>(R.id.tvToDate)
+        val displayFmt = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+        
+        startDate?.let { tvFromDate.text = displayFmt.format(Date(it)); tvFromDate.alpha = 1f }
+        endDate?.let { tvToDate.text = displayFmt.format(Date(it)); tvToDate.alpha = 1f }
+
+        tvFromDate?.setOnClickListener {
+            val cal = Calendar.getInstance()
+            startDate?.let { cal.timeInMillis = it }
+            val dlg = DatePickerDialog(requireContext(), { _, y, m, d ->
+                val sel = Calendar.getInstance().apply { set(y, m, d, 0, 0, 0); set(Calendar.MILLISECOND, 0) }
+                startDate = sel.timeInMillis
+                tvFromDate.text = displayFmt.format(sel.time); tvFromDate.alpha = 1f
+                endDate?.let { if (it < sel.timeInMillis) { endDate = null; tvToDate.text = "Select"; tvToDate.alpha = 0.5f } }
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dlg.datePicker.maxDate = System.currentTimeMillis()
+            dlg.show()
+        }
+
+        tvToDate?.setOnClickListener {
+            val cal = Calendar.getInstance()
+            endDate?.let { cal.timeInMillis = it }
+            val dlg = DatePickerDialog(requireContext(), { _, y, m, d ->
+                val sel = Calendar.getInstance().apply { set(y, m, d, 23, 59, 59) }
+                endDate = sel.timeInMillis
+                tvToDate.text = displayFmt.format(sel.time); tvToDate.alpha = 1f
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            dlg.datePicker.maxDate = System.currentTimeMillis()
+            startDate?.let { dlg.datePicker.minDate = it }
+            dlg.show()
+        }
 
         view.findViewById<View>(R.id.btnApplyFilters)?.setOnClickListener {
             listener?.onFiltersApplied(currentStatus, startDate, endDate)
