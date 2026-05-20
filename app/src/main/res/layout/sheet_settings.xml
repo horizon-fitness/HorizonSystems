@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="ACCOUNT &amp; PREFERENCES"
-        android:textColor="#A855F7"
+        android:textColor="#FFFFFF"
         android:textSize="11sp"
         android:textStyle="bold"
         android:textAllCaps="true"

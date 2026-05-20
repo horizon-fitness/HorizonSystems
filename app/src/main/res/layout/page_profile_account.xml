@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="5. MEMBER IDENTITY"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -29,8 +29,8 @@
             android:hint="Member Code"
             android:layout_marginBottom="12dp"
             android:enabled="false"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7"
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF"
             app:startIconDrawable="@drawable/ic_lock"
             app:startIconTint="#80FFFFFF">
             <com.google.android.material.textfield.TextInputEditText

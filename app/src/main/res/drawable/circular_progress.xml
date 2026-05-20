@@ -20,7 +20,7 @@
                 android:useLevel="true">
                 <gradient
                     android:startColor="#C084FC"
-                    android:endColor="#A855F7"
+                    android:endColor="#FFFFFF"
                     android:type="sweep" />
             </shape>
         </rotate>

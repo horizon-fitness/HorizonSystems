@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1. ACCOUNT INFORMATION"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -29,8 +29,8 @@
             android:layout_height="wrap_content"
             android:hint="Username"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editUsername"
                 android:layout_width="match_parent"
@@ -45,8 +45,8 @@
             android:layout_height="wrap_content"
             android:hint="First Name"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editFirstName"
                 android:layout_width="match_parent"
@@ -61,8 +61,8 @@
             android:layout_height="wrap_content"
             android:hint="Last Name"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editLastName"
                 android:layout_width="match_parent"
@@ -77,8 +77,8 @@
             android:layout_height="wrap_content"
             android:hint="Middle Name"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editMiddleName"
                 android:layout_width="match_parent"
@@ -101,8 +101,8 @@
                 android:layout_weight="1"
                 android:hint="Birth Date"
                 android:layout_marginEnd="8dp"
-                app:boxStrokeColor="#A855F7"
-                app:hintTextColor="#A855F7">
+                app:boxStrokeColor="#FFFFFF"
+                app:hintTextColor="#FFFFFF">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editBirthDate"
                     android:layout_width="match_parent"
@@ -119,8 +119,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
                 android:hint="Sex"
-                app:boxStrokeColor="#A855F7"
-                app:hintTextColor="#A855F7">
+                app:boxStrokeColor="#FFFFFF"
+                app:hintTextColor="#FFFFFF">
                 <AutoCompleteTextView
                     android:id="@+id/editSex"
                     android:layout_width="match_parent"

@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4. HEALTH &amp; DETAILS"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -28,8 +28,8 @@
             android:layout_height="wrap_content"
             android:hint="Occupation"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editOccupation"
                 android:layout_width="match_parent"
@@ -44,8 +44,8 @@
             android:layout_height="wrap_content"
             android:hint="Medical History / Allergies"
             android:layout_marginBottom="24dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editMedical"
                 android:layout_width="match_parent"
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="PHYSICAL ASSESSMENT"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -81,8 +81,8 @@
                 android:layout_weight="1"
                 android:hint="Height (cm)"
                 android:layout_marginEnd="6dp"
-                app:boxStrokeColor="#A855F7"
-                app:hintTextColor="#A855F7">
+                app:boxStrokeColor="#FFFFFF"
+                app:hintTextColor="#FFFFFF">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editHeightCm"
                     android:layout_width="match_parent"
@@ -98,8 +98,8 @@
                 android:layout_weight="1"
                 android:hint="Weight (kg)"
                 android:layout_marginStart="6dp"
-                app:boxStrokeColor="#A855F7"
-                app:hintTextColor="#A855F7">
+                app:boxStrokeColor="#FFFFFF"
+                app:hintTextColor="#FFFFFF">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editWeightKg"
                     android:layout_width="match_parent"
@@ -116,13 +116,13 @@
             android:layout_height="wrap_content"
             android:hint="Calculated BMI"
             android:layout_marginBottom="24dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editBmiVal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:focusable="false"
                 android:clickable="false"
@@ -135,7 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="EMERGENCY CONTACT"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -148,8 +148,8 @@
             android:layout_height="wrap_content"
             android:hint="Contact Person"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmergencyName"
                 android:layout_width="match_parent"
@@ -164,8 +164,8 @@
             android:layout_height="wrap_content"
             android:hint="Emergency Number"
             android:layout_marginBottom="32dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmergencyPhone"
                 android:layout_width="match_parent"

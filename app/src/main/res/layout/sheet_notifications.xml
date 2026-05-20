@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="SYSTEM BROADCAST LOG"
-        android:textColor="#A855F7"
+        android:textColor="#FFFFFF"
         android:textSize="11sp"
         android:textStyle="bold"
         android:textAllCaps="true"
@@ -62,7 +62,7 @@
         android:layout_height="24dp"
         android:layout_gravity="center"
         android:layout_marginVertical="20dp"
-        android:indeterminateTint="#A855F7"
+        android:indeterminateTint="#FFFFFF"
         android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView

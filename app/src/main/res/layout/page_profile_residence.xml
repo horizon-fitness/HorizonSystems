@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="3. RESIDENTIAL ADDRESS"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="9sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -28,8 +28,8 @@
             android:layout_height="wrap_content"
             android:hint="Street Address Line"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editAddressLine"
                 android:layout_width="match_parent"
@@ -44,8 +44,8 @@
             android:layout_height="wrap_content"
             android:hint="Barangay"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editBarangay"
                 android:layout_width="match_parent"
@@ -60,8 +60,8 @@
             android:layout_height="wrap_content"
             android:hint="City / Municipality"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editCity"
                 android:layout_width="match_parent"
@@ -76,8 +76,8 @@
             android:layout_height="wrap_content"
             android:hint="Province"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editProvince"
                 android:layout_width="match_parent"
@@ -92,8 +92,8 @@
             android:layout_height="wrap_content"
             android:hint="Region"
             android:layout_marginBottom="12dp"
-            app:boxStrokeColor="#A855F7"
-            app:hintTextColor="#A855F7">
+            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="#FFFFFF">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editRegion"
                 android:layout_width="match_parent"

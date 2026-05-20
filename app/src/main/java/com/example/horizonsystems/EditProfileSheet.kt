@@ -281,7 +281,7 @@ class EditProfileSheet : BottomSheetDialogFragment() {
         val themeColorStr = GymManager.getThemeColor(requireContext())
         if (!themeColorStr.isNullOrEmpty()) {
             val themeColor = Color.parseColor(themeColorStr)
-            tintTextsByColor(view as ViewGroup, Color.parseColor("#A855F7"), themeColor)
+            tintTextsByColor(view as ViewGroup, Color.parseColor("#FFFFFF"), themeColor)
             tintInputLayouts(view, themeColor)
         }
     }

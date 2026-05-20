@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="ELITE IDENTITY MANAGEMENT"
-            android:textColor="#A855F7"
+            android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold"
             android:textAllCaps="true"
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Tap image to change photo"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:clickable="true"
                     android:focusable="true" />
@@ -122,7 +122,7 @@
                     android:layout_height="16dp"
                     android:layout_marginTop="8dp"
                     android:visibility="gone"
-                    android:indeterminateTint="#A855F7" />
+                    android:indeterminateTint="#FFFFFF" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
@@ -135,7 +135,7 @@
         android:background="@android:color/transparent"
         app:tabMode="scrollable"
         app:tabIndicatorHeight="3dp"
-        app:tabIndicatorColor="#A855F7"
+        app:tabIndicatorColor="#FFFFFF"
         app:tabSelectedTextColor="#FFFFFF"
         app:tabTextColor="#80FFFFFF"
         app:tabRippleColor="@android:color/transparent"
@@ -167,7 +167,7 @@
             android:textAllCaps="true"
             android:letterSpacing="0.1"
             app:cornerRadius="16dp"
-            app:backgroundTint="#A855F7"
+            app:backgroundTint="#FFFFFF"
             android:layout_marginBottom="8dp" />
 
         <ProgressBar

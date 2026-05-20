@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Just now"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"

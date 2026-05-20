@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ACTIVITY"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="28sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="-0.02" />
@@ -84,7 +84,7 @@
                     android:src="@drawable/ic_clock"
                     android:tag="theme_tint"
                     android:layout_marginBottom="8dp"
-                    app:tint="#A855F7" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/tvWorkoutStatMinutes"
@@ -122,7 +122,7 @@
                     android:src="@drawable/ic_dumbbell"
                     android:tag="theme_tint"
                     android:layout_marginBottom="8dp"
-                    app:tint="#A855F7" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/tvWorkoutStatCompleted"
@@ -161,7 +161,7 @@
                     android:src="@drawable/ic_receipt"
                     android:tag="theme_tint"
                     android:layout_marginBottom="8dp"
-                    app:tint="#A855F7" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/tvWorkoutStatCalories"
@@ -215,7 +215,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Upper Body Push Split"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="16dp" />
@@ -270,7 +270,7 @@
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.05"
-                    app:backgroundTint="#A855F7"
+                    app:backgroundTint="#FFFFFF"
                     app:cornerRadius="26dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -306,8 +306,8 @@
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/text_secondary"
                     android:layout_marginBottom="12dp"
-                    app:hintTextColor="#A855F7"
-                    app:boxStrokeColor="#A855F7"
+                    app:hintTextColor="#FFFFFF"
+                    app:boxStrokeColor="#FFFFFF"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -333,8 +333,8 @@
                         android:layout_weight="1"
                         android:textColorHint="@color/text_secondary"
                         android:layout_marginEnd="6dp"
-                        app:hintTextColor="#A855F7"
-                        app:boxStrokeColor="#A855F7"
+                        app:hintTextColor="#FFFFFF"
+                        app:boxStrokeColor="#FFFFFF"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -353,8 +353,8 @@
                         android:layout_weight="1"
                         android:textColorHint="@color/text_secondary"
                         android:layout_marginStart="6dp"
-                        app:hintTextColor="#A855F7"
-                        app:boxStrokeColor="#A855F7"
+                        app:hintTextColor="#FFFFFF"
+                        app:boxStrokeColor="#FFFFFF"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -377,7 +377,7 @@
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.05"
-                    app:backgroundTint="#A855F7"
+                    app:backgroundTint="#FFFFFF"
                     app:cornerRadius="26dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -141,7 +141,7 @@ class ChangePasswordSheet : BottomSheetDialogFragment() {
                 val themeColor = Color.parseColor(themeColorStr)
                 val themeList = ColorStateList.valueOf(themeColor)
                 
-                val defaultPurple = Color.parseColor("#A855F7")
+                val defaultPurple = Color.parseColor("#FFFFFF")
                 tintTextsByColor(view as ViewGroup, defaultPurple, themeColor)
 
                 // Button Branding

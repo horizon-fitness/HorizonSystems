@@ -37,7 +37,7 @@
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="-0.02"
                     android:text="TRACKER"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="28sp" />
             </LinearLayout>
 
@@ -74,7 +74,7 @@
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="0.05"
                     android:text="SCAN WEB"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="13sp"
                     android:backgroundTint="@android:color/transparent"
                     app:cornerRadius="16dp"
@@ -192,7 +192,7 @@
                             android:id="@+id/pbScanner"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:indeterminateTint="#A855F7" />
+                            android:indeterminateTint="#FFFFFF" />
                             
                         <TextView
                             android:id="@+id/tvScannerProcessing"
@@ -292,7 +292,7 @@
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="-0.02"
                     android:text="LOGS"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="22sp" />
             </LinearLayout>
 
@@ -402,7 +402,7 @@
                     app:iconGravity="textStart"
                     app:iconSize="36dp"
                     app:iconPadding="0dp"
-                    app:iconTint="#A855F7"
+                    app:iconTint="#FFFFFF"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"
@@ -429,7 +429,7 @@
                     app:iconGravity="textStart"
                     app:iconSize="36dp"
                     app:iconPadding="0dp"
-                    app:iconTint="#A855F7"
+                    app:iconTint="#FFFFFF"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"

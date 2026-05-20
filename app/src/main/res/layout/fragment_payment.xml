@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="HISTORY"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="-0.02" />
@@ -151,7 +151,7 @@
             android:insetBottom="0dp"
             android:padding="0dp"
             app:icon="@drawable/ic_chevron_left"
-            app:iconTint="#A855F7"
+            app:iconTint="#FFFFFF"
             app:iconSize="24dp" />
 
         <TextView
@@ -176,7 +176,7 @@
             android:insetBottom="0dp"
             android:padding="0dp"
             app:icon="@drawable/ic_chevron_right"
-            app:iconTint="#A855F7"
+            app:iconTint="#FFFFFF"
             app:iconSize="24dp" />
     </LinearLayout>
 

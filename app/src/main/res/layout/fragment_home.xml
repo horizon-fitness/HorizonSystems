@@ -137,7 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="MY PLAN FOR TODAY"
-                        android:textColor="#A855F7"
+                        android:textColor="#FFFFFF"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.05" />
@@ -242,7 +242,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PLAN"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="-0.02" />
@@ -547,7 +547,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PLANS"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="-0.02" />
@@ -619,7 +619,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="OFFERED"
-                    android:textColor="#A855F7"
+                    android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif-black"
                     android:letterSpacing="-0.02" />

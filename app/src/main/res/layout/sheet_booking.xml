@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="SELECT YOUR PREFERRED SCHEDULE"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="10sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.2"
@@ -361,7 +361,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:text="BOOKING TERMS &amp; CONDITIONS"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="9sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.2" />
@@ -412,7 +412,7 @@
                 android:enabled="false"
                 android:alpha="0.3"
                 app:cornerRadius="32dp"
-                app:backgroundTint="#A855F7" />
+                app:backgroundTint="#FFFFFF" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelBooking"

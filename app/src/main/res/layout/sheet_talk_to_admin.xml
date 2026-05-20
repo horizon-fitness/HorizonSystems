@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="SEND AN INQUIRY OR MESSAGE"
-        android:textColor="#A855F7"
+        android:textColor="#FFFFFF"
         android:textSize="10sp"
         android:fontFamily="sans-serif-black"
         android:letterSpacing="0.2"
@@ -140,7 +140,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_business"
-                app:tint="#A855F7"
+                app:tint="#FFFFFF"
                 android:id="@+id/imgAdminIcon" />
             
             <LinearLayout
@@ -180,6 +180,6 @@
         android:textSize="14sp"
         android:fontFamily="sans-serif-black"
         app:cornerRadius="32dp"
-        app:backgroundTint="#A855F7" />
+        app:backgroundTint="#FFFFFF" />
 
 </LinearLayout>

@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="VITALITY"
-                android:textColor="#A855F7"
+                android:textColor="#FFFFFF"
                 android:textSize="28sp"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="-0.02" />

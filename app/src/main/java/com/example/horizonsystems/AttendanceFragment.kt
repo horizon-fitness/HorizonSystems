@@ -228,7 +228,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         
         val ctx = context ?: return
         val themeColorStr = GymManager.getThemeColor(ctx)
-        val themeColor = try { Color.parseColor(themeColorStr) } catch(e: Exception) { Color.parseColor("#A855F7") }
+        val themeColor = try { Color.parseColor(themeColorStr) } catch(e: Exception) { Color.parseColor("#FFFFFF") }
         
         fun updateTabStyles(isScanActive: Boolean) {
             if (isScanActive) {
@@ -341,7 +341,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         val isAutoCard = GymManager.getAutoCardTheme(ctx) == "1"
 
         try {
-            val themeColor = if (!themeColorStr.isNullOrEmpty()) Color.parseColor(themeColorStr) else Color.parseColor("#A855F7")
+            val themeColor = if (!themeColorStr.isNullOrEmpty()) Color.parseColor(themeColorStr) else Color.parseColor("#FFFFFF")
             val bgColor = if (!bgColorStr.isNullOrEmpty()) Color.parseColor(bgColorStr) else Color.parseColor("#0a090d")
             
             // 1. Root Background & Global Labels
