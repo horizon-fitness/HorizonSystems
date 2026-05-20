@@ -163,20 +163,47 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
     private fun applyFilterAndSort() {
         val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
         val filtered = fullLogsList.filter { log ->
-            val statusMatch = if (currentFilterStatus == "ALL") true else log.status.contains(currentFilterStatus, ignoreCase = true)
+            val statusMatch = when (currentFilterStatus) {
+                "ALL" -> true
+                "Active" -> log.status.equals("ACTIVE NOW", ignoreCase = true)
+                "Completed" -> log.status.equals("COMPLETED", ignoreCase = true)
+                else -> true
+            }
             val searchMatch = if (searchQuery.isEmpty()) true else log.gymName.contains(searchQuery, ignoreCase = true) || log.date.contains(searchQuery, ignoreCase = true)
-            val dateMatch = if (startDate != null && endDate != null) {
-                try {
-                    val logDate = sdf.parse(log.date)?.time ?: 0L
-                    logDate in startDate!!..endDate!!
-                } catch (e: Exception) { true }
-            } else true
+            val dateMatch = try {
+                val logDate = sdf.parse(log.date)?.time ?: 0L
+                when {
+                    startDate != null && endDate != null -> logDate in startDate!!..endDate!!
+                    startDate != null -> logDate >= startDate!!
+                    endDate != null -> logDate <= endDate!!
+                    else -> true
+                }
+            } catch (e: Exception) {
+                true
+            }
             statusMatch && searchMatch && dateMatch
         }
 
+        val parseDateTime = { log: GymAttendance ->
+            val fullDateStr = "${log.date} ${log.timeIn}"
+            try {
+                java.text.SimpleDateFormat("yyyy-MM-dd hh:mm a", java.util.Locale.US).parse(fullDateStr)?.time
+            } catch (e: Exception) {
+                try {
+                    java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).parse(fullDateStr)?.time
+                } catch (e2: Exception) {
+                    try {
+                        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(log.date)?.time
+                    } catch (e3: Exception) {
+                        0L
+                    }
+                }
+            } ?: 0L
+        }
+
         val sorted = when(currentSort) {
-            "OLDEST" -> filtered.sortedBy { it.date }
-            else -> filtered.sortedByDescending { it.date }
+            "OLDEST" -> filtered.sortedBy(parseDateTime)
+            else -> filtered.sortedByDescending(parseDateTime)
         }
 
         totalPagesCount = Math.max(1, Math.ceil(sorted.size.toDouble() / itemsPerPage).toInt())
@@ -193,7 +220,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         val rv = view?.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
         val emptyState = view?.findViewById<View>(R.id.emptyStateAttendance)
         
-        val hasActiveFilter = currentFilterStatus != "ALL" || startDate != null || searchQuery.isNotEmpty()
+        val hasActiveFilter = currentFilterStatus != "ALL" || startDate != null || endDate != null || searchQuery.isNotEmpty()
         val emptyMsg = if (hasActiveFilter) "No records in this filter" else "No logs found for this period"
         view?.findViewById<android.widget.TextView>(R.id.tvEmptyAttendanceText)?.text = emptyMsg
 
@@ -268,11 +295,20 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
             // Immediate refresh when checking My QR logic
             view?.let { fetchAttendanceLogs(it) }
         }
+        
+        // Initialize tab styles immediately on startup
+        updateTabStyles(true)
     }
 
     private fun setupRecyclerView(view: View) {
         val rv = view.findViewById<RecyclerView>(R.id.rvAttendanceLogs)
         attendanceAdapter = AttendanceAdapter(displayLogsList)
+        attendanceAdapter.onItemClickListener = { log ->
+            com.example.horizonsystems.utils.DialogUtils.showAttendanceDetailsDialog(
+                context = requireContext(),
+                log = log
+            )
+        }
         rv?.layoutManager = LinearLayoutManager(requireContext())
         rv?.adapter = attendanceAdapter
     }
@@ -437,6 +473,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
         val previewView = rootView.findViewById<PreviewView>(R.id.attendancePreviewView)
         val launchOverlay = rootView.findViewById<View>(R.id.layoutStartScanner)
         val scannerOverlay = rootView.findViewById<View>(R.id.vScannerOverlay)
+        val scannerIcon = rootView.findViewById<View>(R.id.ivScannerIcon)
 
         cameraProviderFuture.addListener({
             try {
@@ -469,6 +506,7 @@ class AttendanceFragment : Fragment(), AttendanceFilterSheet.FilterListener, Att
                 launchOverlay?.visibility = View.GONE
                 previewView?.visibility = View.VISIBLE
                 scannerOverlay?.visibility = View.VISIBLE
+                scannerIcon?.visibility = View.VISIBLE
                 
             } catch (e: Exception) {
                 android.util.Log.e("AttendanceFragment", "CameraX initialization failed", e)

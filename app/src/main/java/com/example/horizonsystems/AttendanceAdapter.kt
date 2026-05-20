@@ -23,6 +23,8 @@ data class GymAttendance(
 
 class AttendanceAdapter(private var logs: List<GymAttendance>) : RecyclerView.Adapter<AttendanceAdapter.ViewHolder>() {
 
+    var onItemClickListener: ((GymAttendance) -> Unit)? = null
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMonth: TextView = view.findViewById(R.id.tvAttendanceMonth)
         val tvDay: TextView = view.findViewById(R.id.tvAttendanceDay)
@@ -85,6 +87,10 @@ class AttendanceAdapter(private var logs: List<GymAttendance>) : RecyclerView.Ad
                 it.setCardBackgroundColor(cardColor)
                 it.setStrokeColor(ColorStateList.valueOf(Color.WHITE).withAlpha(26))
             }
+        }
+        
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.invoke(log)
         }
     }
 

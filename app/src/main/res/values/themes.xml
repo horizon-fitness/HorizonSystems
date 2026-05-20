@@ -9,6 +9,8 @@
         <item name="colorPrimary">@color/nav_active_color</item>
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryContainer">@android:color/transparent</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
         
         <!-- Selection & Cursor Tints -->
         <item name="colorAccent">@color/white</item>
@@ -19,26 +21,31 @@
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerSize">12dp</item>
     </style>
-
+ 
     <style name="BottomNavText" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
-
+ 
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="android:background">@null</item>
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="elevation">0dp</item>
     </style>
-
+ 
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Material3.DayNight.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="colorPrimary">#FFFFFF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorControlActivated">#FFFFFF</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="android:colorControlHighlight">@android:color/transparent</item>
     </style>
-
+ 
     <style name="CustomBottomSheetStyle" parent="Widget.Material3.BottomSheet">
         <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
     </style>
-
+ 
     <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
         <item name="cornerSizeTopLeft">24dp</item>
         <item name="cornerSizeTopRight">24dp</item>
@@ -87,6 +94,9 @@
         <item name="android:backgroundDimAmount">0.75</item>
         <item name="android:windowMinWidthMajor">85%</item>
         <item name="android:windowMinWidthMinor">85%</item>
+        <item name="colorPrimary">#FFFFFF</item>
+        <item name="colorAccent">#FFFFFF</item>
+        <item name="colorControlActivated">#FFFFFF</item>
     </style>
 
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">

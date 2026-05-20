@@ -45,7 +45,8 @@
             android:layout_height="48dp"
             android:text="All Status"
             android:textColor="@color/white"
-            android:buttonTint="@color/white" />
+            app:checkedIconTint="@color/white"
+            app:rippleColor="@android:color/transparent" />
 
         <CheckBox
             android:id="@+id/cbStatusActive"
@@ -53,7 +54,8 @@
             android:layout_height="48dp"
             android:text="Active Now"
             android:textColor="@color/white"
-            android:buttonTint="@color/white" />
+            app:checkedIconTint="@color/white"
+            app:rippleColor="@android:color/transparent" />
 
         <CheckBox
             android:id="@+id/cbStatusCompleted"
@@ -61,7 +63,8 @@
             android:layout_height="48dp"
             android:text="Completed"
             android:textColor="@color/white"
-            android:buttonTint="@color/white" />
+            app:checkedIconTint="@color/white"
+            app:rippleColor="@android:color/transparent" />
     </LinearLayout>
 
     <View
@@ -179,9 +182,8 @@
         android:layout_marginTop="16dp"
         android:text="Clear all"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="#EF4444"
         android:textSize="14sp"
-        android:fontFamily="sans-serif-black"
-        android:alpha="0.6" />
+        android:fontFamily="sans-serif-black" />
 
 </LinearLayout>

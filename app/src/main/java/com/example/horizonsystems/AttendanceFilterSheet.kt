@@ -46,33 +46,42 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
 
         var isUpdating = true
         if (currentStatus == "ALL") {
-            cbAll?.isChecked = true; cbActive?.isChecked = false; cbCompleted?.isChecked = false
+            cbAll?.isChecked = true
+            cbActive?.isChecked = true
+            cbCompleted?.isChecked = true
         } else {
             cbAll?.isChecked = false
             val filters = currentStatus.split(",")
             cbActive?.isChecked = filters.contains("Active")
             cbCompleted?.isChecked = filters.contains("Completed")
+            if (cbActive?.isChecked == true && cbCompleted?.isChecked == true) {
+                cbAll?.isChecked = true
+            }
         }
         isUpdating = false
 
-        val checkBoxes = listOf(cbActive, cbCompleted)
         cbAll?.setOnCheckedChangeListener { _, isChecked ->
             if (isUpdating) return@setOnCheckedChangeListener
-            if (isChecked) {
-                isUpdating = true
-                checkBoxes.forEach { it?.isChecked = false }
-                isUpdating = false
-            }
+            isUpdating = true
+            cbActive?.isChecked = isChecked
+            cbCompleted?.isChecked = isChecked
+            isUpdating = false
         }
 
-        val childListener = { _: android.widget.CompoundButton, isChecked: Boolean ->
-            if (!isUpdating && isChecked) {
-                isUpdating = true
+        val childListener = android.widget.CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            if (isUpdating) return@OnCheckedChangeListener
+            isUpdating = true
+            if (!isChecked) {
                 cbAll?.isChecked = false
-                isUpdating = false
+            } else {
+                if (cbActive?.isChecked == true && cbCompleted?.isChecked == true) {
+                    cbAll?.isChecked = true
+                }
             }
+            isUpdating = false
         }
-        checkBoxes.forEach { it?.setOnCheckedChangeListener(childListener) }
+        cbActive?.setOnCheckedChangeListener(childListener)
+        cbCompleted?.setOnCheckedChangeListener(childListener)
 
         // Date Picker Setup
         val tvFromDate = view.findViewById<TextView>(R.id.tvFromDate)
@@ -82,10 +91,13 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
         startDate?.let { tvFromDate.text = displayFmt.format(Date(it)); tvFromDate.alpha = 1f }
         endDate?.let { tvToDate.text = displayFmt.format(Date(it)); tvToDate.alpha = 1f }
 
+        val themeColor = try { Color.parseColor(GymManager.getThemeColor(requireContext())) } catch(e: Exception) { Color.parseColor("#FFFFFF") }
+
         tvFromDate?.setOnClickListener {
             val cal = Calendar.getInstance()
             startDate?.let { cal.timeInMillis = it }
-            val dlg = DatePickerDialog(requireContext(), { _, y, m, d ->
+            val calTheme = com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(requireContext())
+            val dlg = DatePickerDialog(requireContext(), calTheme, { _, y, m, d ->
                 val sel = Calendar.getInstance().apply { set(y, m, d, 0, 0, 0); set(Calendar.MILLISECOND, 0) }
                 startDate = sel.timeInMillis
                 tvFromDate.text = displayFmt.format(sel.time); tvFromDate.alpha = 1f
@@ -93,12 +105,15 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
             dlg.datePicker.maxDate = System.currentTimeMillis()
             dlg.show()
+            dlg.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(themeColor)
+            dlg.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(themeColor)
         }
 
         tvToDate?.setOnClickListener {
             val cal = Calendar.getInstance()
             endDate?.let { cal.timeInMillis = it }
-            val dlg = DatePickerDialog(requireContext(), { _, y, m, d ->
+            val calTheme = com.example.horizonsystems.utils.CalendarUtils.getCalendarTheme(requireContext())
+            val dlg = DatePickerDialog(requireContext(), calTheme, { _, y, m, d ->
                 val sel = Calendar.getInstance().apply { set(y, m, d, 23, 59, 59) }
                 endDate = sel.timeInMillis
                 tvToDate.text = displayFmt.format(sel.time); tvToDate.alpha = 1f
@@ -106,6 +121,8 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
             dlg.datePicker.maxDate = System.currentTimeMillis()
             startDate?.let { dlg.datePicker.minDate = it }
             dlg.show()
+            dlg.getButton(DatePickerDialog.BUTTON_POSITIVE)?.setTextColor(themeColor)
+            dlg.getButton(DatePickerDialog.BUTTON_NEGATIVE)?.setTextColor(themeColor)
         }
 
         view.findViewById<View>(R.id.btnApplyFilters)?.setOnClickListener {
@@ -162,8 +179,18 @@ class AttendanceFilterSheet : BottomSheetDialogFragment() {
         }
 
         val checkBoxes = listOf(R.id.cbStatusAll, R.id.cbStatusActive, R.id.cbStatusCompleted)
+        val checkboxStates = ColorStateList(
+            arrayOf(
+                intArrayOf(-android.R.attr.state_checked),
+                intArrayOf(android.R.attr.state_checked)
+            ),
+            intArrayOf(
+                Color.parseColor("#94A3B8"), // Slate gray border for unchecked
+                themeColor                  // Gym theme color for checked
+            )
+        )
         checkBoxes.forEach { id ->
-            view.findViewById<android.widget.CheckBox>(id)?.buttonTintList = ColorStateList.valueOf(themeColor)
+            view.findViewById<android.widget.CheckBox>(id)?.buttonTintList = checkboxStates
         }
     }
 

@@ -282,6 +282,7 @@ class SwitchGymActivity : AppCompatActivity() {
                 findViewById<View>(R.id.layoutStartScanner)?.visibility = View.GONE
                 previewView.visibility = View.VISIBLE
                 findViewById<View>(R.id.vScannerOverlay)?.visibility = View.VISIBLE
+                findViewById<View>(R.id.ivScannerIcon)?.visibility = View.VISIBLE
             } catch (e: Exception) {
                 Log.e("SwitchGym", "Use case binding failed", e)
             }

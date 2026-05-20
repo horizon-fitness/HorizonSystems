@@ -178,6 +178,26 @@ class LandingActivity : AppCompatActivity() {
         findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationView)?.let {
             setupBottomNavigation()
         }
+
+        // Prevent floating bottom navigation card from being pushed up by the soft keyboard
+        val rootView = findViewById<View>(R.id.rootLayout)
+        rootView?.viewTreeObserver?.addOnGlobalLayoutListener {
+            val rect = android.graphics.Rect()
+            rootView.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = rootView.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            
+            // If keypad height is > 15% of screen height, the keyboard is open
+            val isKeyboardVisible = keypadHeight > screenHeight * 0.15
+            val navCard = findViewById<View>(R.id.navCard)
+            if (isKeyboardVisible) {
+                navCard?.visibility = View.GONE
+            } else {
+                if (dashContainer?.visibility == View.VISIBLE) {
+                    navCard?.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     private fun setupBottomNavigation() {
