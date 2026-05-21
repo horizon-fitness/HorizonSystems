@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/landing_background"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp"
+            android:gravity="center_horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="-8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="@color/white"
+                    android:contentDescription="Back" />
+                    
+                <TextView
+                    android:id="@+id/btnSkip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:text="SKIP"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:padding="8dp"
+                    android:visibility="gone"
+                    android:background="?attr/selectableItemBackground" />
+            </RelativeLayout>
+
+            <!-- Gym Logo Header -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gymLogoContainer"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1AFFFFFF"
+                app:cardCornerRadius="40dp"
+                app:cardElevation="0dp">
+                <ImageView
+                    android:id="@+id/onboardingGymLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/horizon_logo"
+                    android:scaleType="centerInside" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/onboardingTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Personalize Your Journey"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:letterSpacing="-0.02" />
+                
+            <TextView
+                android:id="@+id/onboardingSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Experience the Horizon difference."
+                android:textColor="#A0A0A0"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/onboardingStepIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Step 1 of 5: Experience"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:gravity="center"
+                android:fontFamily="sans-serif-black" />
+
+            <ViewFlipper
+                android:id="@+id/viewFlipper"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="24dp">
+
+                <!-- Step 1: Experience Level -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="What's your experience level?"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="24dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardBeginner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🟢 Beginner (Learning basics)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardIntermediate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🟡 Intermediate (Regularly exercise)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAdvanced"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🔴 Advanced (Push limits)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Step 2: Commitment -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weekly commitment?"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="24dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card1to2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🗓️ 1-2 Days (Light &amp; Consistent)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card3to4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🔥 3-4 Days (Moderate &amp; Balanced)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card5plus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="⚡ 5+ Days (Dedicated Athlete)"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Step 3: Physical Metrics -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Physical Metrics"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
+                        
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Feel free to skip this if you don't know right now."
+                        android:textColor="#80FFFFFF"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="24dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="@drawable/input_field_bg"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/weightEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Current Weight (kg/lbs)"
+                            android:inputType="numberDecimal"
+                            android:textColor="@color/white"
+                            android:textColorHint="#40FFFFFF"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                    
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="@drawable/input_field_bg"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/targetWeightEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Target Weight (kg/lbs)"
+                            android:inputType="numberDecimal"
+                            android:textColor="@color/white"
+                            android:textColorHint="#40FFFFFF"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                    
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="@drawable/input_field_bg"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/heightEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Height (cm/ft)"
+                            android:inputType="numberDecimal"
+                            android:textColor="@color/white"
+                            android:textColorHint="#40FFFFFF"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Step 4: Equipment -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Equipment Availability"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="24dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardFullGym"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🏢 Full Gym"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardHomeGym"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🏡 Home Gym"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardBodyweight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="🤸 Bodyweight Only"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Step 5: Injuries -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Injuries / Limitations"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="24dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardNoInjuries"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="✅ None"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardLowerBack"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="⚠️ Lower Back Pain"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardKnee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="⚠️ Knee Sensitivity"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+                    
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardShoulder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="⚠️ Shoulder Impingement"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardOtherInjury"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#1AFFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="❓ Others"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:id="@+id/otherInjuryInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:background="@drawable/input_field_bg"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="20dp"
+                        android:layout_marginBottom="16dp"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/otherInjuryEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:hint="Please specify your limitation"
+                            android:textColor="@color/white"
+                            android:textColorHint="#40FFFFFF"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </ViewFlipper>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="32dp"
+                android:text="Next Step"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:backgroundTint="@null"
+                android:background="@drawable/button_premium"
+                android:fontFamily="sans-serif-black" />
+
+            <!-- Universal Footer link -->
+            <LinearLayout
+                android:id="@+id/onboardingFooter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already part of the family?"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginEnd="4dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnSignBack"
+                    android:text="Sign In"
+                    android:textColor="@color/nav_active_color"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="© 2026 HORIZON SYSTEM"
+                android:textColor="#66FFFFFF"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -45,6 +45,10 @@
 
         
         <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HorizonSystems" />
+        <activity
             android:name=".VerifyActivity"
             android:exported="false"
             android:theme="@style/Theme.HorizonSystems" />

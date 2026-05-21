@@ -139,7 +139,7 @@ class LandingActivity : AppCompatActivity() {
         }
 
         findViewById<android.widget.TextView>(R.id.btnCreateAccount)?.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
+            val intent = Intent(this, OnboardingActivity::class.java)
             startActivity(intent)
         }
 

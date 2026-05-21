@@ -107,11 +107,27 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var reqSpecial: TextView
     private lateinit var reqCaps: TextView
 
+    private var onboardingExperience: String? = null
+    private var onboardingCommitment: String? = null
+    private var onboardingEquipment: String? = null
+    private var onboardingInjuries: String? = null
+    private var onboardingCurrentWeight: Double? = null
+    private var onboardingTargetWeight: Double? = null
+    private var onboardingHeight: Double? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
             enableEdgeToEdge()
             setContentView(R.layout.activity_register)
+
+            onboardingExperience = intent.getStringExtra("experience_level")
+            onboardingCommitment = intent.getStringExtra("weekly_commitment")
+            onboardingEquipment = intent.getStringExtra("equipment")
+            onboardingInjuries = intent.getStringExtra("injuries")
+            if (intent.hasExtra("current_weight")) onboardingCurrentWeight = intent.getDoubleExtra("current_weight", -1.0)
+            if (intent.hasExtra("target_weight")) onboardingTargetWeight = intent.getDoubleExtra("target_weight", -1.0)
+            if (intent.hasExtra("height_cm")) onboardingHeight = intent.getDoubleExtra("height_cm", -1.0)
 
             bindViews()
             setupListeners()
@@ -204,7 +220,12 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
-            if (currentStep > 1) { currentStep--; updateWizardUI() } else finish()
+            if (currentStep > 1) { 
+                currentStep--
+                updateWizardUI() 
+            } else {
+                goToOnboardingStep5()
+            }
         }
 
         gymIdEdit.filters = arrayOf(android.text.InputFilter { source, start, end, dest, dstart, dend ->
@@ -296,7 +317,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.btnSignBack).setOnClickListener { 
-             if (currentStep > 1) { currentStep--; updateWizardUI() } else finish()
+             finish()
         }
     }
 
@@ -500,6 +521,13 @@ class RegisterActivity : AppCompatActivity() {
             parentName = parentNameEdit.text.toString().takeIf { findViewById<View>(R.id.parentalInfoSection).visibility == View.VISIBLE },
             parentContactNumber = parentPhoneEdit.text.toString().takeIf { findViewById<View>(R.id.parentalInfoSection).visibility == View.VISIBLE },
             tenantCode = gymIdEdit.text.toString(),
+            experienceLevel = onboardingExperience,
+            weeklyCommitment = onboardingCommitment,
+            targetWeight = onboardingTargetWeight,
+            equipmentAvailability = onboardingEquipment,
+            injuriesLimitations = onboardingInjuries,
+            currentWeight = onboardingCurrentWeight,
+            heightCm = onboardingHeight,
             registrationSource = "Mobile",
             action = "request_otp" // Set action to request_otp
         )
@@ -601,18 +629,25 @@ class RegisterActivity : AppCompatActivity() {
                     currentStep--
                     updateWizardUI()
                 } else {
-                    MaterialAlertDialogBuilder(this@RegisterActivity)
-                        .setTitle("Exit Registration?")
-                        .setMessage("Are you sure you want to exit? Your progress will be saved locally.")
-                        .setPositiveButton("Exit") { _, _ -> 
-                            saveRegistrationData()
-                            finish() 
-                        }
-                        .setNegativeButton("Stay", null)
-                        .show()
+                    goToOnboardingStep5()
                 }
             }
         })
+    }
+
+    private fun goToOnboardingStep5() {
+        val intent = Intent(this, OnboardingActivity::class.java).apply {
+            putExtra("start_step", 5)
+            putExtra("experience_level", onboardingExperience)
+            putExtra("weekly_commitment", onboardingCommitment)
+            putExtra("equipment", onboardingEquipment)
+            putExtra("injuries", onboardingInjuries)
+            onboardingCurrentWeight?.let { putExtra("current_weight", it) }
+            onboardingTargetWeight?.let { putExtra("target_weight", it) }
+            onboardingHeight?.let { putExtra("height_cm", it) }
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun saveRegistrationData() {
